@@ -34,7 +34,7 @@ oahu_df <- fortify(as.bathy(oahu_raster))
 str(oahu_df)
 oahu_map <- ggplot(data=world) +
   geom_raster(data = oahu_df, aes(x = x, y = y, fill = z)) +labs(fill = "Depth (m)")+
-  scale_fill_gradient(high = "lightskyblue1", low = "cornflowerblue",limits=c(-1000,1000))+
+  scale_fill_gradient(high = "lightskyblue1", low = "cornflowerblue",limits=c(-10000,1000))+
   new_scale_fill()+
   scale_fill_continuous(labels = scales::label_number(scale = 1000, suffix = "k"))+
   theme_bw()+geom_sf()+coord_sf(xlim=c(-154.9,-179.9999), ylim=c(19, 31.7))
@@ -42,16 +42,12 @@ oahu_map <- ggplot(data=world) +
 
 oahu_map
 #map with points####
-oahu_map+geom_point(data=ik, mapping=aes(y=lat_dd, x=lon_dd))
-                    
-                    
-                    
-  scale_color_viridis_d(option="B")+scale_shape_manual(values=shapes)+
+oahu_map+geom_point(data=ik, mapping=aes(y=lat_dd, x=lon_dd,size=1))
+
+
+
+                      scale_color_viridis_d(option="B")+#scale_shape_manual(values=shapes)+
   theme(axis.title = element_blank(),legend.position = "bottom",legend.box = "horizonal",
         axis.ticks = element_blank(),axis.text = element_blank(),
-        legend.title=element_text(size=16),legend.text=element_text(size=20))+
-  labs(color="Sampling Effort by Cruise Identifier", shape="Larva present (1) or absent(0)", size=element_blank())+
-  guides(color = guide_legend(override.aes = list(size = 5), order=1),
-         shape=guide_legend(override.aes = list(size = 5), order=2),
-         fill= guide_colorbar(barwidth = 20, barheight = 10, order=3),
-         size="none")
+        legend.title=element_text(size=16),legend.text=element_text(size=20))#+
+  #labs(color="Sampling Effort by Cruise Identifier", shape="Larva present (1) or absent(0)", size=element_blank())+
