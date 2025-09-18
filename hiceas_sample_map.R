@@ -112,6 +112,7 @@ merp<-oahu_map+geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "wh
 
 #QCing tows and making a smaller, easier to work with data frame
 ik_lite<-ik2%>%
+  mutate(lon_dd=ifelse(lon_dd < 0,lon_dd+ 360, lon_dd))%>%
   mutate(depth_m=as.numeric(Max.Depth))%>%
   mutate(mean_flow=((Flowmeter.1.End-Flowmeter.1.Start)+
                       (Flowmeter.2.End-Flowmeter.2.Start))/2,
@@ -258,15 +259,21 @@ ggplot()+geom_density(data=df, aes(x=datey),alpha=0.3)+
 ggplot()+geom_density(data=df, aes(x=datey, fill=genus),alpha=0.3)+
   labs(title =paste(fish_taxa,metric,"by Date"))
 
-#uku##
-#Etelinae
+#uku##############
+
 fish_taxa="Aprion"
+metric=density
 df<-paste("se23_",fish_taxa)
 df<-se23%>%
   filter(genus==fish_taxa)
 ggplot()+geom_point(data=df, mapping=aes(x=dec_date, y=density))+
   labs(title =paste(fish_taxa,metric,"by Julian day"))+
   geom_smooth(method="loess")
+anti_df<-se23%>%filter(genus!=fish_taxa)
+
+merp+geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density), shape=19)+
+  geom_point(data=anti_df,mapping=aes(y=lat_dd, x=lon_dd), shape=1)
+
 #Tunas##########
 fish_taxa="Scombridae"
 df<-paste("se23_",fish_taxa)
