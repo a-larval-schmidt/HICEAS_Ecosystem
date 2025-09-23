@@ -1,4 +1,3 @@
-
 ---
 title: "HICEAS Initial Report"
 author: "Oshyn, Dash, Anu, Joey, Jessie, Justin, Lizette, Emily, Don; Dre is lead."
@@ -12,9 +11,9 @@ output: html_document
 
 Larval fish (ichthyoplankton) surveys are used to understand recruitment processes and associations between environmental fluctuations and productivity of commercially and ecologically important fish stocks (Auth and Brodeur 2013). The abundance and distribution of various ichthyoplankton taxa influences their survival and recruitment into adult populations, making these early life stages the basis for the replenishment and health of fish stocks (Panprommin et al., 2020; Panprommin et al., 2021; Huang et al., 2022). Habitat and environmental preferences of marine species determine how they are distributed spatially; therefore, changes in the marine environment can alter population abundance and distribution over time (e.g. Poloczanska et al., 2016; Orio et al., 2019). Many larval fish species rely on ocean currents as an important dispersal mechanism (Suca et.al., 2025), and the timing and location of spawning can greatly influence their settlement or recruitment location. Shifts in known spawning habitats–whether due to climate or the discovery of new spawning stock–can affect our understanding of juvenile distribution and connectivity (Schilling et.al., 2020).
 
-Given the dynamic nature of pelagic ecosystems and the broad geographic ranges of many fish species, it is necessary to sample broadly to understand how various taxa respond to environmental variation in different spatial locations (Thompson et al., 2014). A notable example of a long-term sampling program that has contributed greatly to unveiling the physical and biological drivers of fish production has been the California Cooperative Fisheries Investigation (CalCOFI) program. CalCOFI has been sampling almost continuously since 1949 in the southern California Current, providing ample scientific data to support sustainable resource management. On the contrary, ichthyoplankton surveys in Hawaiʻi have been sparse and relatively restricted geographically (e.g. Boehlert & Mundy 1996, Kobayashi et al. 1989, Lobel et al 1988, Whitney et al 2021). Investigating the spatial and temporal components of species–environment relationships is essential to gain a better understanding of marine stock fluctuations (Tzanatos et al., 2014); hence, pelagic larval research is crucial to the viability of Hawaii’s fisheries. Ultimately, by identifying these relationships we can develop species distribution models (SDMs) for individual fish taxa, which can be used to predict potential spawning locations and likelihood of larval success that are crucial for effective fisheries management. Species distribution models (SDMs) are increasingly being used to assess and manage marine life (Luan et al., 2021; Zhang et al., 2021). 
+Given the dynamic nature of pelagic ecosystems and the broad geographic ranges of many fish species, it is necessary to sample broadly to understand how various taxa respond to environmental variation in different spatial locations (Thompson et al., 2014). A notable example of a long-term sampling program that has contributed greatly to unveiling the physical and biological drivers of fish production has been the California Cooperative Fisheries Investigation (CalCOFI) program. CalCOFI has been sampling almost continuously since 1949 in the southern California Current, providing ample scientific data to support sustainable resource management. On the contrary, ichthyoplankton surveys in Hawaiʻi have been sparse and relatively restricted geographically (e.g. Boehlert & Mundy 1996, Kobayashi et al. 1989, Lobel et al 1988, Whitney et al 2021). Investigating the spatial and temporal components of species–environment relationships is essential to gain a better understanding of marine stock fluctuations (Tzanatos et al., 2014); hence, pelagic larval research is crucial to the viability of Hawaii’s fisheries. Ultimately, by identifying these relationships we can develop species distribution models (SDMs) for individual fish taxa, which can be used to predict potential spawning locations and likelihood of larval success that are crucial for effective fisheries management. Species distribution models (SDMs) are increasingly being used to assess and manage marine life (Luan et al., 2021; Zhang et al., 2021). 
 
-Despite the known importance of ichthyoplankton, we know very little about this life stage for many fish species across Hawaiʻi and other Pacific Islands (Schmidt et.al., 2023). In an effort to better understand the distribution, habitat, and early life history of Hawaiʻi’s larval fish populations, The Pacific Islands Region Ichthyoplankton Survey (PIRIS) was established in 2023.  By partnering with core PIFSC cruises, the survey has an expansive reach and strives to map larval fish distributions across the Pacific islands under NOAA Fisheries’ jurisdiction. PIRIS’ first expedition took place when NOAA’s Pelagic Research Program teamed up with Hawaiian Islands Cetacean and Ecosystem Assessment Survey (HICEAS) to conduct the most geographically expansive ichthyoplankton survey across Hawaiʻi Pae ʻĀina (Hawaiian Archipelago) to date, spanning both the Main Hawaiian Islands and Papahānaumokuākea Marine National Monument. The goal of this research is to characterize larval habitat for managed coastal and pelagic fish species across Hawaiʻi and to begin a regular, fishery-independent ichthyoplankton survey for the region. 
+Despite the known importance of ichthyoplankton, we know very little about this life stage for many fish species across Hawaiʻi and other Pacific Islands (Schmidt et.al., 2023). In an effort to better understand the distribution, habitat, and early life history of Hawaiʻi’s larval fish populations, The Pacific Islands Region Ichthyoplankton Survey (PIRIS) was established in 2023.  By partnering with core PIFSC cruises, the survey has an expansive reach and strives to map larval fish distributions across the Pacific islands under NOAA Fisheries’ jurisdiction. PIRIS’ first expedition took place when NOAA’s Pelagic Research Program teamed up with Hawaiian Islands Cetacean and Ecosystem Assessment Survey (HICEAS) to conduct the most geographically expansive ichthyoplankton survey across Hawaiʻi Pae ʻĀina (Hawaiian Archipelago) to date, spanning both the Main Hawaiian Islands and Papahānaumokuākea Marine National Monument. The goal of this research is to characterize larval habitat for managed coastal and pelagic fish species across Hawaiʻi and to begin a regular, fishery-independent ichthyoplankton survey for the region. 
 
 # Methods
 
@@ -64,18 +63,356 @@ Reef fish were enumerated separately and these data will be made available upon 
 Conducted in R, used ggplot, tidyverse ect ect
 
 The data analysis was performed using
-##Results
-```
-fish_taxa="Aprion"
-metric=density
-df<-paste("se23_",fish_taxa)
-df<-se23%>%
-  filter(genus==fish_taxa)
-ggplot()+geom_point(data=df, mapping=aes(x=dec_date, y=density))+
-  labs(title =paste(fish_taxa,metric,"by Julian day"))+
-  geom_smooth(method="loess")
-anti_df<-se23%>%filter(genus!=fish_taxa)
+---
+## Results
 
-merp+geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density), shape=19)+
-  geom_point(data=anti_df,mapping=aes(y=lat_dd, x=lon_dd), shape=1)
+This section presents the results of our analysis, detailing the distribution and density of various fish taxa in relation to key environmental metrics.
+
+### Plotting Taxa Results
+
+The following plots show the density of each taxon in relation to Sea Surface Temperature (SST), Chlorophyll-a (Chla), and Sea Level Anomaly (SLA). All plots for a given metric share the same axis scales for ease of comparison.
+
+```{r, results-code, warning=FALSE, message=FALSE, echo=FALSE}
+# Load libraries
+###chla, sst, ssh per station###
+# libraries####
+library(lubridate)
+library(rerddap)
+library(rerddapXtracto)
+library(ggplot2)
+library(viridis)
+library(dplyr)
+library(mgcv)
+library(lunar)
+library(TSP)
+library(readxl)
+library(tidyverse)
+library(stringr)
+library(kableExtra)
+library(ggOceanMaps)
+library(marmap)
+library(ggmap)
+library(shape)
+library(sf)
+library(gpkg)
+library(tidyr)
+library(sp)
+library(raster)
+library(scales)
+library(maps)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(ggnewscale)
+library(ggrepel)
+library(sf)
+#station data#####
+#coordinate conversion##
+ik<-read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/IKMT Log - Sheet1.csv")
+#convert ship coordinates into DMS then to DD
+ik<-ik %>% filter(Max.Depth>10) #eliminates neustons and s10s
+ik<-ik %>% mutate(lat_deg= as.numeric(substr(Lat.In,1,2)))#http://127.0.0.1:40641/graphics/4ee7ccc4-d91e-43e0-8b31-d427019a6d2c.png
+ik<-ik %>% mutate(lon_deg= as.numeric(substr(Lon.In,1,4)))
+lat_minsec_string<-substr(ik$Lat.In,3,10)
+ik <- ik %>%mutate(lat_minsec = as.numeric(gsub(" ", "", lat_minsec_string)))
+long_minsec_string <- substr(ik$Lon.In, 5, 10)
+ik <- ik %>%mutate(long_minsec = as.numeric(gsub(" ", "", long_minsec_string)))
+ik<-ik %>% mutate(lat_dd= lat_deg+(lat_minsec/60))
+ik<-ik %>% mutate(lon_dd= lon_deg+(long_minsec/60))
+ik<-ik %>% mutate(date= ymd(Date,tz="HST"))
+ik<-ik %>% mutate(tow_duration= Time.Out.of.Water-Time.In..Local.)
+#base map#####
+world<-ne_countries(scale="medium", returnclass = "sf")
+oahu_raster <- raster(file.path("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/hi_eez_extract_grid.tiff"))
+#from here: https://www.ncei.noaa.gov/maps/bathymetry/
+#settings ETPO_2022(Bedrock, 15 arc seconds)
+df <- fortify(as.bathy(oahu_raster))
+#convert to 360
+oahu_df<-df%>%mutate(x=ifelse(df$x < 0, df$x + 360, df$x))
+load("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Hawaii.RData")
+
+#add in monument boundary######
+
+PMNM<-read_sf("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/PMNM_Shp_File/hi_noaa_nwhi_papahanaumokuakea.shp")
+EEZ<-PMNM$geometry
+#for some reason it is split into east and west of dateline, so need to combine 
+EEZ_Plot1<-as.data.frame(EEZ[[1]][[1]])
+EEZ_Plot2<-as.data.frame(EEZ[[1]][[2]])
+EEZ_Plot<-rbind(EEZ_Plot1, EEZ_Plot2)
+EEZ_Plot$Lon<-NULL
+EEZ_Plot$Lon<-ifelse(EEZ_Plot$X1<0, EEZ_Plot$X1+360, EEZ_Plot$X1)
+
+#connecting the dots in an efficient manner
+xytsp <- ETSP(data.frame(EEZ_Plot$Lon, EEZ_Plot$X2))
+colnames(xytsp) <- c("Lon", "Lat")
+xytour <- solve_TSP(xytsp)
+re_ordered_EEZ <- EEZ_Plot[xytour, ]
+
+#sst data extraction####
+legend_title<-"SST (°C)"
+swchlInfo <- as.info("noaacrwsstDaily", url="https://coastwatch.noaa.gov/erddap/")
+
+SST_Match <- rxtracto(swchlInfo, parameter = 'analysed_sst', 
+                      xcoord = ik$lon_dd, ycoord = ik$lat_dd, tcoord =ik$date , 
+                      xlen = .2, ylen = .2, progress_bar = TRUE)
+ik$sst<-SST_Match$`mean analysed_sst`
+
+#chla####
+legend_title <-expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")")
+
+swchlInfo <- as.info("noaacwN20VIIRSchlaDaily", url="https://coastwatch.noaa.gov/erddap/")
+
+chla_Match <- rxtracto(swchlInfo, parameter = 'chlor_a', 
+                      xcoord = ik$lon_dd, ycoord = ik$lat_dd, tcoord =ik$date, 
+                      zcoord = rep(0, length(ik$lon_dd)),
+                      zName = "altitude",
+                      xlen = .2, ylen = .2, progress_bar = TRUE)
+ik$chla_daily<-chla_Match$`mean chlor_a`
+
+#ssh########
+legend_title <- "SSH Anomaly (m)"
+
+swchlInfo <- as.info("noaacwBLENDEDsshDaily", url="https://coastwatch.noaa.gov/erddap/")
+sla_Match <- rxtracto(swchlInfo, parameter = 'sla', 
+                      xcoord = ik$lon_dd, ycoord = ik$lat_dd, tcoord =ik$date , 
+                      xlen = .2, ylen = .2, progress_bar = TRUE)
+ik$sla<-sla_Match$`mean sla`
+
+#add in fish info#####
+larv<-read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/SE2303 ID Log - ID&Length.csv")
+ik2<-left_join(ik, larv,by=join_by("Station"=="station"))
+se23<-ik2%>%
+  mutate(lon_dd=ifelse(lon_dd < 0,lon_dd+ 360, lon_dd))%>%
+  mutate(depth_m=as.numeric(Max.Depth))%>%
+  mutate(mean_flow=((Flowmeter.1.End-Flowmeter.1.Start)+
+                      (Flowmeter.2.End-Flowmeter.2.Start))/2,
+         na.rm=T)%>%
+  filter(depth_m>30)%>%
+  mutate(tow_duration=as.duration(Time.Out.of.Water-Time.In..Local.))%>%
+  mutate(month=month(date))%>%
+  mutate(toyos=as.numeric(Tow.yo.Count))%>%
+  mutate(total=as.numeric(total))%>%
+  mutate(density=(total/mean_flow))%>%
+  dplyr::select(Station,lat_dd,lon_dd,mean_flow, month, depth_m,total, toyos,tow_duration,
+                sst,chla_daily,sla,FLAG, family, subfamily,genus, species,density)
+
+# Global variables and data prep
+# Recalculate global min/max for consistent scales
+min_sst <- min(se23$sst, na.rm = TRUE)
+max_sst <- max(se23$sst, na.rm = TRUE)
+min_chla <- min(se23$chla_daily, na.rm = TRUE)
+max_chla <- max(se23$chla_daily, na.rm = TRUE)
+min_sla <- min(se23$sla, na.rm = TRUE)
+max_sla <- max(se23$sla, na.rm = TRUE)
+min_density <- min(se23$density, na.rm = TRUE)
+max_density <- max(se23$density, na.rm = TRUE)
+
+# Convert month to a factor with specific names and levels
+se23$month <- factor(se23$month,
+                     levels = c(7, 8, 10),
+                     labels = c("July", "August", "October"))
+
+# Named vector for Hawaiian names
+hawaiian_names <- c(
+  "Thunnus" = "ahi",
+  "Aprion" = "uku",
+  "Acanthocybium" = "ono",
+  "Coryphaena" = "mahi mahi",
+  "Istiophoridae" = "a'u",
+  "Xiphias" = "a'u kū",
+  "Lutjanidae" = "snappers" # Added for completeness
+)
+
+# List of taxa to plot
+taxa_to_plot <- list(
+  family = c("Scombridae", "Istiophoridae", "Lutjanidae"),
+  subfamily = c("Etelinae"),
+  genus = c("Coryphaena", "Aprion", "Katsuwonus", "Thunnus", "Acanthocybium", "Xiphias")
+)
+
+# Initialize a list to store all plots
+all_plots <- list()
+
+# --- Start the plotting loop ---
+for (level in names(taxa_to_plot)) {
+  all_plots[[level]] <- list() # Create a sub-list for each level
+  for (fish_taxa in taxa_to_plot[[level]]) {
+    
+    # Filter the data for the current taxon
+    if (level == "family") {
+      df <- se23 %>% filter(family == fish_taxa)
+      anti_df <- se23 %>% filter(family != fish_taxa)
+    } else if (level == "subfamily") {
+      df <- se23 %>% filter(subfamily == fish_taxa)
+      anti_df <- se23 %>% filter(subfamily != fish_taxa)
+    } else if (level == "genus") {
+      df <- se23 %>% filter(genus == fish_taxa)
+      anti_df <- se23 %>% filter(genus != fish_taxa)
+    }
+    
+    if (nrow(df) == 0) {
+      next
+    }
+    
+    # Store the plots in a list
+    plot_list <- list()
+    
+    # Plot 1: Boxplot of density by month
+    plot_list$boxplot <- ggplot(data = df, aes(x = month, y = density)) +
+      geom_boxplot() +
+      labs(title = paste(fish_taxa, "Density by Month"), y = "Density", x = "Month") +
+      ylim(min_density, max_density) +
+      theme_bw()
+    
+    # Plot 2: Density vs SST
+    plot_list$sst <- ggplot(data = df, aes(x = sst, y = density)) +
+      geom_point(size = 3) +
+      labs(title = paste(fish_taxa, "Density vs SST"), y = "Density", x = "SST (°C)") +
+      xlim(min_sst, max_sst) +
+      ylim(min_density, max_density) +
+      theme_bw()
+    
+    # Plot 3: Density vs Chla
+    plot_list$chla <- ggplot(data = df, aes(x = chla_daily, y = density)) +
+      geom_point(size = 3) +
+      labs(title = paste(fish_taxa, "Density vs Chla"), y = "Density", x = "Chla (mg/m^3)") +
+      xlim(min_chla, max_chla) +
+      ylim(min_density, max_density) +
+      theme_bw()
+    
+    # Plot 4: Density vs SLA
+    plot_list$sla <- ggplot(data = df, aes(x = sla, y = density)) +
+      geom_point(size = 3) +
+      labs(title = paste(fish_taxa, "Density vs SLA"), y = "Density", x = "SLA Anomaly (m)") +
+      xlim(min_sla, max_sla) +
+      ylim(min_density, max_density) +
+      theme_bw()
+    
+    # Plot 5: Map of density locations
+    plot_list$map <- ggplot() +
+      geom_raster(data = Hawaii_df, aes(x = x, y = y, fill = z)) +
+      labs(fill = "Depth (m)") +
+      scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4", limits = c(-10000, 0), na.value = "black", guide = "none") +
+      geom_point(data = df, aes(y = lat_dd, x = lon_dd, size = density, color = month), shape = 19, alpha = 0.5) +
+      scale_size_continuous(range = c(1.5, 5)) +
+      geom_point(data = anti_df, aes(y = lat_dd, x = lon_dd), shape = 1, size = 2.2) +
+      coord_sf(xlim = c(178.3, 204.6), ylim = c(18.6, 31.4)) +
+      scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5), 1)) +
+      scale_color_manual(
+        values = c("chartreuse4", "#800074", "#c99b38"),
+        name = "Month",
+        labels = c("July", "August", "October")
+      ) +
+      theme_bw() +
+      theme(
+        axis.ticks.length = unit(0.25, "cm"),
+        panel.grid = element_blank(),
+        text = element_text(size = 16)
+      ) +
+      ylab("Latitude") +
+      xlab("Longitude") +
+      labs(title = paste(fish_taxa, "Density Locations")) +
+      geom_path(data = re_ordered_EEZ, aes(x = Lon, y = X2), color = "white", linewidth = 1)
+      
+    all_plots[[level]][[fish_taxa]] <- plot_list
+  }
+}
+```
+### Taxa v.s. environment
+####Scombridae
+all_plots$family$Scombridae$boxplot
+all_plots$family$Scombridae$sst
+all_plots$family$Scombridae$chla
+all_plots$family$Scombridae$sla
+#####Aku
+all_plots$genus$Katsuwonus$boxplot
+all_plots$genus$Katsuwonus$sst
+all_plots$genus$Katsuwonus$chla
+all_plots$genus$Katsuwonus$sla
+
+#####'Ahi
+all_plots$genus$Thunnus$boxplot
+all_plots$genus$Thunnus$sst
+all_plots$genus$Thunnus$chla
+all_plots$genus$Thunnus$sla
+
+#####Ono
+all_plots$genus$Acanthocybium$boxplot
+all_plots$genus$Acanthocybium$sst
+all_plots$genus$Acanthocybium$chla
+all_plots$genus$Acanthocybium$sla
+
+####Billfish
+#####Istiophoridae
+all_plots$family$Istiophoridae$boxplot
+all_plots$family$Istiophoridae$sst
+all_plots$family$Istiophoridae$chla
+all_plots$family$Istiophoridae$sla
+
+#####Xiphiidae
+all_plots$genus$Xiphias$boxplot
+all_plots$genus$Xiphias$sst
+all_plots$genus$Xiphias$chla
+all_plots$genus$Xiphias$sla
+
+####Mahi
+all_plots$genus$Coryphaena$boxplot
+all_plots$genus$Coryphaena$sst
+all_plots$genus$Coryphaena$chla
+all_plots$genus$Coryphaena$sla
+
+
+####Lutjanidae: Etelinae
+all_plots$subfamily$Etelinae$boxplot
+all_plots$subfamily$Etelinae$sst
+all_plots$subfamily$Etelinae$chla
+all_plots$subfamily$Etelinae$sla
+#####uku
+all_plots$genus$Aprion$boxplot
+all_plots$genus$Aprion$sst
+all_plots$genus$Aprion$chla
+all_plots$genus$Aprion$sla
+
+
+###Spatial Distributions
+####Scombridae
+all_plots$family$Scombridae$map
+all_plots$genus$Katsuwonus$map
+all_plots$genus$Thunnus$map
+all_plots$genus$Acanthocybium$map
+####Billfish
+all_plots$family$Istiophoridae$map
+all_plots$genus$Xiphias$map
+####Mahi
+all_plots$genus$Coryphaena$map
+####Snappers
+all_plots$subfamily$Etelinae$map
+all_plots$genus$Aprion$map
+#####Aprion v.s. all other Snappers (Lutjanus sp.)
+```{r, results-uku vs to'ao, warning=FALSE, message=FALSE, echo=FALSE}
+# --- Custom comparison plots for Aprion vs Lutjanidae ---
+# Filter data for Aprion and the rest of the Lutjanidae family
+df_aprion <- se23 %>% filter(genus == "Aprion")
+df_lutjanidae_rest <- se23 %>% filter(family == "Lutjanidae" & genus != "Aprion")
+
+# Create a custom comparison plot
+comparison_map <- ggplot() +
+  geom_raster(data = Hawaii_df, aes(x = x, y = y, fill = z)) +
+  labs(fill = "Depth (m)") +
+  scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4", limits = c(-10000, 0), na.value = "black", guide = "none") +
+  geom_point(data = df_aprion, aes(y = lat_dd, x = lon_dd, size = density), color = "red4", shape = 19, alpha = 0.7) +
+  geom_point(data = df_lutjanidae_rest, aes(y = lat_dd, x = lon_dd, size = density), color = "blue", shape = 19, alpha = 0.7) +
+  scale_size_continuous(range = c(1.5, 5)) +
+  coord_sf(xlim = c(178.3, 204.6), ylim = c(18.6, 31.4)) +
+  scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5), 1)) +
+  theme_bw() +
+  theme(
+    axis.ticks.length = unit(0.25, "cm"),
+    panel.grid = element_blank(),
+    text = element_text(size = 16)
+  ) +
+  ylab("Latitude") +
+  xlab("Longitude") +
+  labs(title = "Aprion vs. Lutjanidae Density Locations",
+       color = "Taxa") +
+  geom_path(data = re_ordered_EEZ, aes(x = Lon, y = X2), color = "white", linewidth = 1)
 ```
