@@ -1,0 +1,81 @@
+
+---
+title: "HICEAS Initial Report"
+author: "Oshyn, Dash, Anu, Joey, Jessie, Justin, Lizette, Emily, Don; Dre is lead."
+date: "September 2025"
+output: html_document
+---
+
+# Introduction
+- Main question: How does the distribution of these different taxa relate to the environment? Which species were found when and where?
+2023 HICEAS Tech Report - Introduction Draft
+
+Larval fish (ichthyoplankton) surveys are used to understand recruitment processes and associations between environmental fluctuations and productivity of commercially and ecologically important fish stocks (Auth and Brodeur 2013). The abundance and distribution of various ichthyoplankton taxa influences their survival and recruitment into adult populations, making these early life stages the basis for the replenishment and health of fish stocks (Panprommin et al., 2020; Panprommin et al., 2021; Huang et al., 2022). Habitat and environmental preferences of marine species determine how they are distributed spatially; therefore, changes in the marine environment can alter population abundance and distribution over time (e.g. Poloczanska et al., 2016; Orio et al., 2019). Many larval fish species rely on ocean currents as an important dispersal mechanism (Suca et.al., 2025), and the timing and location of spawning can greatly influence their settlement or recruitment location. Shifts in known spawning habitats–whether due to climate or the discovery of new spawning stock–can affect our understanding of juvenile distribution and connectivity (Schilling et.al., 2020).
+
+Given the dynamic nature of pelagic ecosystems and the broad geographic ranges of many fish species, it is necessary to sample broadly to understand how various taxa respond to environmental variation in different spatial locations (Thompson et al., 2014). A notable example of a long-term sampling program that has contributed greatly to unveiling the physical and biological drivers of fish production has been the California Cooperative Fisheries Investigation (CalCOFI) program. CalCOFI has been sampling almost continuously since 1949 in the southern California Current, providing ample scientific data to support sustainable resource management. On the contrary, ichthyoplankton surveys in Hawaiʻi have been sparse and relatively restricted geographically (e.g. Boehlert & Mundy 1996, Kobayashi et al. 1989, Lobel et al 1988, Whitney et al 2021). Investigating the spatial and temporal components of species–environment relationships is essential to gain a better understanding of marine stock fluctuations (Tzanatos et al., 2014); hence, pelagic larval research is crucial to the viability of Hawaii’s fisheries. Ultimately, by identifying these relationships we can develop species distribution models (SDMs) for individual fish taxa, which can be used to predict potential spawning locations and likelihood of larval success that are crucial for effective fisheries management. Species distribution models (SDMs) are increasingly being used to assess and manage marine life (Luan et al., 2021; Zhang et al., 2021). 
+
+Despite the known importance of ichthyoplankton, we know very little about this life stage for many fish species across Hawaiʻi and other Pacific Islands (Schmidt et.al., 2023). In an effort to better understand the distribution, habitat, and early life history of Hawaiʻi’s larval fish populations, The Pacific Islands Region Ichthyoplankton Survey (PIRIS) was established in 2023.  By partnering with core PIFSC cruises, the survey has an expansive reach and strives to map larval fish distributions across the Pacific islands under NOAA Fisheries’ jurisdiction. PIRIS’ first expedition took place when NOAA’s Pelagic Research Program teamed up with Hawaiian Islands Cetacean and Ecosystem Assessment Survey (HICEAS) to conduct the most geographically expansive ichthyoplankton survey across Hawaiʻi Pae ʻĀina (Hawaiian Archipelago) to date, spanning both the Main Hawaiian Islands and Papahānaumokuākea Marine National Monument. The goal of this research is to characterize larval habitat for managed coastal and pelagic fish species across Hawaiʻi and to begin a regular, fishery-independent ichthyoplankton survey for the region. 
+
+# Methods
+
+Ichthyoplankton collection was conducted between July and November across Hawaiʻi Pae ʻĀina in 2023. A 6 foot Issacs Kidds Midwater Trawl (Friedl, 1971) with 505µm mesh was deployed between an hour after sunset and an hour before sunrise.
+
+## Survey Design
+
+Ichthyoplankton collection was conducted opportunistically overnight in between transects of the 2023 Hawaiian Islands Cetacean and Ecosystem Assessment Survey (HICEAS) expedition (cite). Cetaceans are observed/enumerated along a line transect with visual surveys. Acoustic monitoring occurs simultaneously….Additionally, birds…. HARPS/ DASBRS (with CTDs!). Since the majority of the survey elements are visual cetacean observations are only conducted during the daytime leaving us to make great use of nighttime hours on core PIFSC cruises to start a long-term survey/monitoring program for ichthyoplankton.
+
+This was the first time ichthyoplankton sampling was included in the Ecosystem component of the quinquennial sampling expedition and also marks the first survey of the Pacific Islands Region Ichthyoplankton Survey (PIRIS). The HICEAS survey follows set, parallel transect lines (spaced 42.5 nmi (85 km) apart) that encompass the entirety of the Hawaii Exclusive Economic Zone (EEZ) in WNW to ESE direction (Yano et al., 2025). Sampling along the transects and across the EEZ varied each leg so as to avoid conflating spatial trends with particular seasons (i.e., near MHI early in year and far PMNM late in year), which could lead to false artifacts of spatial-temporal correlation. The line transects themselves consisted of a straight line ahead of the ship, and the survey effort was suspended if the sea state was Beaufort 7 or higher. This standardized survey area allows for quantitative statistics (Yano et al., 2025).
+
+PIRIS participated in HICEAS cruises took place between July and November 2023, encompassing a wide geographical area across the Hawaiian Islands.
+
+## Cultural Protocol
+
+In collaboration with cultural practitioners from the Papahānaumokuakea Marine National Monument, we decided on chanting “E hō mai” at the start of each sampling night. Conducting this oli allowed us to more fully immerse ourselves in working and collecting samples in the monument by asking permission before the sampling was conducted.
+
+- add that we recorded kilo (moon phase, weather and ocean conditions, clouds, etc).
+
+## Net deployment/ Sample Collection
+
+Sampling was conducted opportunistically overnight whilst the cetacean researchers slept. Sites were selected along the night transits where the ship had to get set up on the cetacean line transect for the next day. We tried to space out tows as evenly as possible within the allotted time for sampling. On legs 2 and 4 due to operational constraints it was often a four hour window. The sampling goal on any given night was to have maximum spatial coverage of the nightʻs line of transit. Generally three to four tows were conducted per night resulting in a total of 82 IKMT samples taken at 50m depth; 5, 38 and 39 on each leg respectively. Conditions such as weather, sea state and transit distance altered the number of tows that could be conducted in a given night.
+
+For trawl operations, the ship sailed into the current at 2.5 kts during payout, maintaining 2.5 knts speed during trawling and haul back. The net was deployed to 30m where depth was determined by wire angle with an inclinometer. Net was deployed at a speed of 45 meters wire out per minute. When desired wire out is reached the net was immediately hauled back until the top of the net was visible on the surface, the cable was paid out again and this process was repeated until three trips to the desired depth (or “to-yos”) were completed. Sampling occurred between dawn and dusk during the periods of full dark. Tows only occurred in sea states less than a Beaufort 7.
+
+Two flow meters (MANF. \#) are attached such that they hang, without touching in the middle of the net opening. To achieve this flow meters were attached to caddy corners of the net opening and to each other. Additionally, two thermistors/TDRS were attached to the top and bottom of the net to record temperature and depth of the net during the deployment. Flowmeter readings were taken at the start and end of each tow and then the difference of these number was used to determine the volume of water sampled in cubic meters. Formula: ((difference in counts \* rotor constant)/999999) \* area of net opening, where rotor constant for Flowmeter manufacturer was given as 26873.
+
+## Sample Processing
+
+Once net was recovered, a seawater hose was used in a sweeping down motion to gently remove biological material caught on the panels of the net and funnel them into the cod end. The cod end was placed in a bucket, separated from the net, visually checked and then rinsed again for any final biological material clinging to the collar of the net, then brought into the lab. Cod-end contents were poured through a 500 micrometer mesh sieve. A non-quantitative subsample was placed onto a tray on top of ice to live sort while the rest of the contents were preserved in 95% ethanol. Ichtyoplankton or other specimens collected from the subsample at sea were stored in 95% ethanol in a 2 dram scintillation vial, the sorted contents were added back to the main sample.
+
+Back in the laboratory fish, squid paralarvae and other taxa of interest were pulled from the bulk sample under a microscope. Bulk sample was processed one marked petri dish at a time and each petri dish was checked twice before being considered “searched”. Once taxa of interest were removed from the bulk sample they were identified to the taxonomic level of interest for that particular taxa, measured and kept in a separate scintillation vial in 95% ethanol. For management unit species such as *Thunnus sp., Xiphias gladius, Coryphaena sp. and Katsuwonus pelamis,* larvae were identified to the lowest taxonomic level possible. For stations with ten or fewer individuals of a particular species of interest all were counted and had their standard length (SL) measured. For stations with more than ten individuals, all were counted but only twenty were measured. Ten of these measurements were of randomly selected fish, the other ten were a range of the smallest and largest larvae of that species of that station. Members of the families Istiophoridae, Lethrinidae, Gempylidae and Bramidae were only identified to family level but the measuring procedure was the same as for the aforementioned taxa. Reef fish of the families Mullidae, Acanthuridae and Labridae: Tribe Scarini were identified to the lowest taxonomic level possible but not measured. All other reef fish taxa were grouped together as “miscellaneous reef fish” and were not counted but the specimens were saved in 95% ethanol in their own scintillation vial. Non-target, non-reef taxa were grouped together as “miscellaneous fish” and stored separately but were not enumerated in the data sheet.
+
+Larval developmental stage was also noted for all fish taxa that were counted, but not for each measurement of a particular larva. The working definitions we used for these stages are as follows:
+
+- preflexion ~2-5mm: starts with absorption of the yolk-sac. caudal fin structures are beginning to form. stage ends when notochord begins to bend upwards
+- flexion ~5-10mm: starts with the upward bending of the notochord tip and ends with the development of rays and hypural bones in the formation of the caudal fin. Notochord will be bent at 45 degree angle
+- \*postflexion ~10-15mm: from the formation of the caudal fin to completed development of fin rays and scales
+- Juveniles: Transformed larvae usually larger than a centimeter and a half. Generally resemble small adults
+
+For samples with large numbers (500+) of *Encrascholina purpurea,* henceforth referred to as nehu, all other taxa were treated normally while only a quantitative split of the whole sample had nehu removed. Once sorting was started and there were than 50 nehu larvae in a single petri dish at a time, the dish was returned to sample and split quantitatively with a plankton splitter (manufacturer info here).
+
+Reef fish were enumerated separately and these data will be made available upon request/ will be publicly available within XXX time. See appendices for taxa/species list!!!
+
+## Data Analysis
+
+Conducted in R, used ggplot, tidyverse ect ect
+
+The data analysis was performed using
+##Results
+```
+fish_taxa="Aprion"
+metric=density
+df<-paste("se23_",fish_taxa)
+df<-se23%>%
+  filter(genus==fish_taxa)
+ggplot()+geom_point(data=df, mapping=aes(x=dec_date, y=density))+
+  labs(title =paste(fish_taxa,metric,"by Julian day"))+
+  geom_smooth(method="loess")
+anti_df<-se23%>%filter(genus!=fish_taxa)
+
+merp+geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density), shape=19)+
+  geom_point(data=anti_df,mapping=aes(y=lat_dd, x=lon_dd), shape=1)
+```

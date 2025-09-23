@@ -79,7 +79,11 @@ for(i in 1: length(genera)){
 Genus_count<-merge_data[merge_data$genus==genera[i],]
 
 png(paste0(genera[i],"_IKMT_Plots.png"), height=5, width=7, units="in", res=300)
-p<-ggplot() +geom_point( data=Genus_count,aes(x=Lon_West, y=Lat_DD, size = Abund_num_1000m3, color = Abund_num_1000m3))+ geom_sf(data = world)+coord_sf(xlim = c(-180, -152), ylim = c(18,32))+scale_color_viridis()+ylab("Latitude")+xlab("Longitude")+ggtitle(genera[i])
+p<-ggplot() +
+  geom_point( data=Genus_count,aes(x=Lon_West, y=Lat_DD, size = Abund_num_1000m3, color = Abund_num_1000m3))+
+  geom_sf(data = world)+
+  coord_sf(xlim = c(-180, -152), ylim = c(18,32))+scale_color_viridis()+
+  ylab("Latitude")+xlab("Longitude")+ggtitle(genera[i])
 print(p)
 dev.off()}
  

@@ -15,6 +15,8 @@ library(gpkg)
 library(TSP)
 library(readxl)
 library(patchwork)
+library(stringr)
+library(ggtext)
 ###base map#########
 library(sf)
 world<-ne_countries(scale="medium", returnclass = "sf")
@@ -49,6 +51,7 @@ re_ordered_EEZ <- EEZ_Plot[xytour, ]
 island_map+geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)
 
 #August SST###############
+legend_title<-"SST (°C)"
 #data extraction####
 junk <- GET('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/CRW_sst_v3_1_monthly.nc?sea_surface_temperature%5B(2023-08-01T12:00:00Z):1:(2023-08-31T12:00:00Z)%5D%5B(18):1:(32)%5D%5B(177):1:(206)%5D',
             write_disk("junk.nc", overwrite=TRUE))
@@ -75,26 +78,26 @@ dfreal<-dfreal%>%rename(y=Var1,x=Var2)
 
 
 ###sst# map#####
-sst_plot<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
+saug<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
   scale_fill_gradientn(colors=c("#00007F", "blue", "#007FFF", "cyan","#7FFF7F", 
                                 "yellow", "#FF7F00", "red", "#7F0000"),
-                       na.value="gray90",limits = c(24.5, 30))+
-  guides(fill = guide_colorbar(barwidth = unit(0.5, "cm"), barheight = unit(2.5, "cm"))) +
+                       na.value="gray90",limits = c(26, 29))+
+  guides(fill = guide_colorbar(title = NULL,barwidth = unit(0.5, "cm"), barheight = unit(2.5, "cm"))) +
   theme(legend.title=element_text(size=10),legend.text=element_text(size=10),
         axis.text = element_text(size=5), axis.title = element_text(size=10),
         legend.direction = "vertical", legend.box = "vertical",strip.text.x=element_text(size=10))+
-  labs(fill="SST (°C)")+
   theme_bw()+coord_sf(xlim = c(206, 177), ylim = c(18, 32), expand=FALSE)+
   geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)+
   theme(axis.ticks.length = unit(0.25, "cm")) +
   ylab("Latitude") +
-  xlab("Longitude")
-sst_plot+geom_raster(data = not_sea, aes(x = x, y = y))
+  xlab("Longitude")+
+  labs(fill=legend_title)
+  
+saug<-saug+geom_raster(data = not_sea, aes(x = x, y = y))
 #map august points##
 #load points form hiceas_sample_map.R
-august<-se23%>%
-  filter(month==8)
-saug<-sst_plot+geom_point(data=august, mapping=aes(x=lon_dd, y=lat_dd))+geom_raster(data = not_sea, aes(x = x, y = y))
+#august<-se23%>%filter(month==8)
+#saug<-sst_plot+geom_point(data=august, mapping=aes(x=lon_dd, y=lat_dd))+geom_raster(data = not_sea, aes(x = x, y = y))
 #ggsave(filename="Sampling Stations and Mean SST August 2023.png",plot=saug,height=5, width=8, units="in", dpi=300)
 #October SST###############
 #data extraction####
@@ -122,28 +125,27 @@ dfreal<-as.data.frame(as.table(df))
 dfreal<-dfreal%>%rename(y=Var1,x=Var2)
 
 ###sst# map#####
-sst_plot<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
+soct<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
   scale_fill_gradientn(colors=c("#00007F", "blue", "#007FFF", "cyan","#7FFF7F",
                                 "yellow", "#FF7F00", "red", "#7F0000"),
-                       na.value="gray90",limits = c(24.5, 30))+
-  guides(fill = guide_colorbar(barwidth = unit(0.5, "cm"), barheight = unit(2.5, "cm"))) +
+                       na.value="gray90",limits = c(26, 29))+
+  guides(fill = guide_colorbar(title = NULL,barwidth = unit(0.5, "cm"), barheight = unit(2.5, "cm"))) +
   theme(legend.title=element_text(size=10),legend.text=element_text(size=10),
         axis.text = element_text(size=5), axis.title = element_text(size=10),
         legend.direction = "vertical", legend.box = "vertical",strip.text.x=element_text(size=10))+
-  labs(fill="SST (°C)")+
   theme_bw()+coord_sf(xlim = c(206, 177), ylim = c(18, 32), expand=FALSE)+
   geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)+
   theme(axis.ticks.length = unit(0.25, "cm")) +
   ylab("Latitude") +
   xlab("Longitude")
 sst_plot+geom_raster(data = not_sea, aes(x = x, y = y))
-october<-se23%>%
-  filter(month==10)
-soct<-sst_plot+geom_point(data=october, mapping=aes(x=lon_dd, y=lat_dd))+geom_raster(data = not_sea, aes(x = x, y = y))
+#october<-se23%>%filter(month==10)
+#geom_point(data=october, mapping=aes(x=lon_dd, y=lat_dd))
+soct<-sst_plot+geom_raster(data = not_sea, aes(x = x, y = y))
 ggsave(filename="Sampling Stations and Mean SST October 2023.png",plot=soct,height=5, width=8, units="in", dpi=300)
 #bind sst######
 library(patchwork)
-saug+soct+plot_annotation(tag_levels=c("A","B"))
+#saug+soct+plot_annotation(tag_levels=c("A","B"))
 
 
 #August chla###########
@@ -171,20 +173,29 @@ colnames(df) <-lat
 dfreal<-as.data.frame(as.table(df))
 dfreal<-dfreal%>%rename(y=Var1,x=Var2)
 #mapping####
-chl_map<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
-  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90",limits = c(0.009, 0.1))+
-  guides(fill = guide_colorbar(barwidth = unit(0.5, "cm"), barheight = unit(2.5, "cm"))) +
+legend_title <-expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")")
+
+
+chlaug<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
+  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90",limits = c(0.01, 0.06))+
+  guides(
+    fill = guide_colorbar(
+      title = NULL, # <--- THIS IS THE KEY CHANGE
+      barwidth = unit(0.5, "cm"), 
+      barheight = unit(2.5, "cm")
+    )
+  ) +
   theme(legend.title=element_text(size=10),legend.text=element_text(size=10),
         axis.text = element_text(size=5), axis.title = element_text(size=10),
         legend.direction = "vertical", legend.box = "vertical",strip.text.x=element_text(size=10))+
-  labs(fill="Chlorophyll Concentration, mg/m-3")+
   theme_bw()+coord_sf(xlim = c(206, 177), ylim = c(18, 32), expand=FALSE)+
   geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)+
   theme(axis.ticks.length = unit(0.25, "cm")) +
   ylab("Latitude") +
   xlab("Longitude")
   
-chlaug<-chl_map+geom_point(data=august, mapping=aes(x=lon_dd, y=lat_dd))+geom_raster(data = not_sea, aes(x = x, y = y))
+  
+chlaug<-chlaug+geom_raster(data = not_sea, aes(x = x, y = y))
 #october chla###########
 #data extraction####
 junk <- GET('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/noaa_snpp_chla_monthly.nc?chlor_a%5B(2023-10-01T12:00:00Z):1:(2023-10-31T12:00:00Z)%5D%5B(18):1:(32)%5D%5B(177):1:(206)%5D',
@@ -210,25 +221,33 @@ colnames(df) <-lat
 dfreal<-as.data.frame(as.table(df))
 dfreal<-dfreal%>%rename(y=Var1,x=Var2)
 #mapping####
-chl_map<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
-  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90", limits = c(0.009, 0.1))+
-  guides(fill = guide_colorbar(barwidth = unit(0.5, "cm"), barheight = unit(2.5, "cm"))) +
+legend_title <-expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")")
+wrapped_legend_title <- str_wrap(legend_title, width = 15) # Adjust width as needed
+
+chloct<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
+  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90", limits = c(0.01, 0.06))+
+  guides(
+    fill = guide_colorbar(
+      title = NULL, # <--- THIS IS THE KEY CHANGE
+      barwidth = unit(0.5, "cm"), 
+      barheight = unit(2.5, "cm")
+    )
+  ) +
   theme(legend.title=element_text(size=10),legend.text=element_text(size=10),
         axis.text = element_text(size=5), axis.title = element_text(size=10),
         legend.direction = "vertical", legend.box = "vertical",strip.text.x=element_text(size=10))+
-  labs(fill="Chlorophyll Concentration, mg/m-3")+
   theme_bw()+coord_sf(xlim = c(206, 177), ylim = c(18, 32), expand=FALSE)+
   geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)+
   theme(axis.ticks.length = unit(0.25, "cm")) +
   ylab("Latitude") +
   xlab("Longitude")
 
-chloct<-chl_map+geom_point(data=october, mapping=aes(x=lon_dd, y=lat_dd))+geom_raster(data = not_sea, aes(x = x, y = y))
+chloct<-chloct+geom_raster(data = not_sea, aes(x = x, y = y))
 
 
 #to fit all plots together#####
 
-(saug+soct)/(chlaug+chloct)+plot_annotation(tag_levels=c("A","B","C","D"))
+#(saug+soct)/(chlaug+chloct)+plot_annotation(tag_levels=c("A","B","C","D"))
 
 #ssh#####
 
@@ -262,7 +281,8 @@ dfreal$x <- as.numeric(as.character(dfreal$x))
 dfreal$y <- as.numeric(as.character(dfreal$y))
 
 # Now, create the corrected plot
-ssh_plot <- ggplot() +
+legend_title <- "SSH Anomaly (m)"
+ssha<- ggplot() +
   # Add landmass layer first using geom_tile()
   geom_tile(data = not_sea, aes(x = x, y = y), fill = "grey50") +
   
@@ -278,7 +298,7 @@ ssh_plot <- ggplot() +
     na.value = "gray90",
     limits = c(-0.3, 0.3) 
   ) +
-  guides(fill = guide_colorbar(barwidth = unit(0.5, "cm"), barheight = unit(2.5, "cm"))) +
+  guides(fill = guide_colorbar(title = NULL,barwidth = unit(0.5, "cm"), barheight = unit(2.5, "cm"))) +
   # Set the plot coordinates
   coord_sf(
     xlim = c(177, 206),
@@ -292,14 +312,11 @@ ssh_plot <- ggplot() +
   theme(axis.ticks.length = unit(0.25, "cm")) +
   ylab("Latitude") +
   xlab("Longitude") +
-  labs(fill = "SSH Anomaly (m)")
+  labs(fill = legend_title)
 
-# Display the plot
-print(ssh_plot)
+ssha<-ssha+geom_raster(data = not_sea, aes(x = x, y = y))#+geom_point(data=august, mapping=aes(x=lon_dd, y=lat_dd))
 
-ssha<-ssh_plot+geom_raster(data = not_sea, aes(x = x, y = y))+geom_point(data=august, mapping=aes(x=lon_dd, y=lat_dd))
-ssha
-ggsave(filename="Sampling Stations and Mean SSH Aug 2023.png",plot=ssha,height=5, width=8, units="in", dpi=300)
+#ggsave(filename="Sampling Stations and Mean SSH Aug 2023.png",plot=ssha,height=5, width=8, units="in", dpi=300)
 
 
 junk <- GET('https://oceanwatch.pfeg.noaa.gov/noaa_wide/erddap/griddap/noaacwBLENDEDsshDaily.nc?sla%5B(2023-10-01T00:00:00Z):1:(2023-10-31T00:00:00Z)%5D%5B(18):1:(32)%5D%5B(-179.875):1:(-155)%5D',
@@ -332,7 +349,7 @@ dfreal$x <- as.numeric(as.character(dfreal$x))
 dfreal$y <- as.numeric(as.character(dfreal$y))
 
 # Now, create the corrected plot
-ssh_plot <- ggplot() +
+ssho<- ggplot() +
   # Add landmass layer first using geom_tile()
   geom_tile(data = not_sea, aes(x = x, y = y), fill = "grey50") +
   
@@ -348,8 +365,14 @@ ssh_plot <- ggplot() +
     na.value = "gray90",
     limits = c(-0.3, 0.3) 
   ) +
-  guides(fill = guide_colorbar(barwidth = unit(0.5, "cm"), barheight = unit(2.5, "cm"))) +
-  # Set the plot coordinates
+  guides(
+    fill = guide_colorbar(
+      title = NULL, # Use the wrapped title here
+      title.hjust = 0.5,
+      barwidth = unit(0.5, "cm"),
+      barheight = unit(2.5, "cm")
+    )
+  ) +  # Set the plot coordinates
   coord_sf(
     xlim = c(177, 206),
     ylim = c(18, 32),
@@ -361,22 +384,37 @@ ssh_plot <- ggplot() +
   theme_bw() +
   theme(axis.ticks.length = unit(0.25, "cm")) +
   ylab("Latitude") +
-  xlab("Longitude") +
-  labs(fill = "SSH Anomaly (m)")
-ssho<-ssh_plot+geom_point(data=october, mapping=aes(x=lon_dd, y=lat_dd))+geom_raster(data = not_sea, aes(x = x, y = y))
+  xlab("Longitude") 
+ssho<-ssho+geom_raster(data = not_sea, aes(x = x, y = y))
 
 library(patchwork)
 #all 6 layout##########
-layout <- (saug + soct) / (chlaug + chloct) / (ssha + ssho)
+ggsave("sst_aug_uniform.png", plot = saug , width = 6, height = 4)
+ggsave("sst_oct_uniform.png", plot = soct, width = 6, height = 4)
+ggsave("chla_aug_uniform.png", plot = chlaug, width = 6, height = 4)
+ggsave("chla_oct_uniform.png", plot = chloct, width = 6, height = 4)
+ggsave("ssh_august_uniform.png", plot = ssha, width = 6, height = 4)
+ggsave("ssh_october_uniform.png", plot = ssho, width = 6, height = 4)
+
+combined_plots <-(saug + soct) / (chlaug + chloct) / (ssha + ssho)
 
 # Add this line to shrink the margins on ALL plots
-layout_tight <- layout & theme(plot.margin = unit(c(0.001, 0.1, 0.1, 0.001), "cm"))
-
-# Add your final annotation
-final_plot <- layout + plot_annotation(tag_levels = 'A') &
+layout_tight <-  combined_plots&
   theme(
-    plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), "cm"),
+    plot.margin = unit(c(0.001, 0.1, 0.1, 0.001), "cm"),
     plot.tag.position = c(0, 1),
     plot.tag = element_text(size = 10, face = "bold")
   )
-print(final_plot)
+# Add your final annotation
+final_plot <- layout_tight +
+  plot_annotation(tag_levels = 'A')
+final_plot
+# Save the complete, combined plot
+ggsave(
+  filename = "final_combined_plot.png",
+  path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/",
+  plot = final_plot,
+  width = 8,  # Set the overall width for the entire figure
+  height = 10,  # Set the overall height
+  dpi = 300
+)

@@ -68,47 +68,7 @@ ik2<-left_join(ik, inventory, by="Station")
 #add in eDNA sites so far for funsies#
 edan<-read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/eDNA Log - Cast_info (1).csv")
 
-#cw's mapping codefor base map####
-world<-ne_countries(scale="medium", returnclass = "sf")
-oahu_raster <- raster(file.path("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/hi_eez_extract_grid.tiff"))
-#from here: https://www.ncei.noaa.gov/maps/bathymetry/
-#settings ETPO_2022(Bedrock, 15 arc seconds)
-df <- fortify(as.bathy(oahu_raster))
-#convert to 360
-oahu_df<-df%>%mutate(x=ifelse(df$x < 0, df$x + 360, df$x))
-load("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Hawaii.RData")
-oahu_df <- fortify(Hawaii)
-oahu_map <- ggplot(data = world) +
-  geom_raster(data = oahu_df, aes(x = x, y = y, fill = z)) +
-  labs(fill = "Depth (m)") +
-  scale_fill_gradient(high = "lightskyblue1", low = "cornflowerblue", limits = c(-10000, 1000)) +# scale_fill_continuous(labels = scales::label_number(scale = 1000, suffix = "k")) +
-  geom_sf() +
-  coord_sf(xlim = c(206, 177), ylim = c(18, 32), label_graticule = "SW") + #THE FIX
-  theme_bw() +
-  theme(axis.ticks.length = unit(0.25, "cm")) +
-  ylab("Latitude") +
-  xlab("Longitude")
-#http://127.0.0.1:19395/graphics/plot_zoom_png?width=1920&height=1027
-#WIP: add in monument boundary######
-library(sf)
-PMNM<-read_sf("Data/PMNM_Shp_File/hi_noaa_nwhi_papahanaumokuakea.shp")
-EEZ<-PMNM$geometry
-#for some reason it is split into east and west of dateline, so need to combine 
-EEZ_Plot1<-as.data.frame(EEZ[[1]][[1]])
-EEZ_Plot2<-as.data.frame(EEZ[[1]][[2]])
-EEZ_Plot<-rbind(EEZ_Plot1, EEZ_Plot2)
-EEZ_Plot$Lon<-NULL
-EEZ_Plot$Lon<-ifelse(EEZ_Plot$X1<0, EEZ_Plot$X1+360, EEZ_Plot$X1)
-
-#connecting the dots in an efficient manner
-xytsp <- ETSP(data.frame(EEZ_Plot$Lon, EEZ_Plot$X2))
-colnames(xytsp) <- c("Lon", "Lat")
-xytour <- solve_TSP(xytsp)
-re_ordered_EEZ <- EEZ_Plot[xytour, ]
-merp<-oahu_map+geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)
-
-#mapping######
-#FISH TIME#
+#FISH POINTS########
 
 #QCing tows and making a smaller, easier to work with data frame
 ik_lite<-ik2%>%
@@ -135,7 +95,107 @@ se23<-left_join(SE2303_ID, ik_lite, join_by("station"=="Station"))
 se23<-se23%>%
   mutate(density=(total/mean_flow))
 
+#old base map data####
+world<-ne_countries(scale="medium", returnclass = "sf")
+oahu_raster <- raster(file.path("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/hi_eez_extract_grid.tiff"))
+#from here: https://www.ncei.noaa.gov/maps/bathymetry/
+#settings ETPO_2022(Bedrock, 15 arc seconds)
+df <- fortify(as.bathy(oahu_raster))
+#convert to 360
+oahu_df<-df%>%mutate(x=ifelse(df$x < 0, df$x + 360, df$x))
+load("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Hawaii.RData")
+#oahu_df <- fortify(Hawaii)
+Hawaii_df <- fortify(Hawaii)
+#oahu_map <- ggplot(data = world) +geom_raster(data = oahu_df, aes(x = x, y = y, fill = z)) +labs(fill = "Depth (m)") +scale_fill_gradient(high = "lightskyblue1", low = "cornflowerblue", limits = c(-10000, 1000)) +geom_sf() +coord_sf(xlim = c(206, 177), ylim = c(18, 32), label_graticule = "SW") + theme_bw() +theme(axis.ticks.length = unit(0.25, "cm")) +ylab("Latitude") +xlab("Longitude")
+#http://127.0.0.1:19395/graphics/plot_zoom_png?width=1920&height=1027
+#jessie's Base map rendering/colors######
+#first download the bathymetry data for Hawaiʻi
+#getNOAA.bathy(lon1 = 177,lon2 = -154,lat1 = 18,lat2 =32,resolution = 1, antimeridian = TRUE) -> Hawaii
+
+# make similar to Marianas 2025 map #
+png("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/HICEAS_sampling_map.png", height=5, width=7, units="in", res=300)
+ggplot() +
+  geom_raster(data = Hawaii_df, aes(x = x, y = y, fill = z)) +labs(fill = "Depth (m)")+
+  scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4",limits=c(-10000,0), na.value="black",guide="none")+
+  #geom_sf(data = guam, size = 3, color = "black", fill = "gray") +
+  geom_point(data=se23,mapping=aes(y=lat_dd, x=lon_dd, color=factor(month)), size=2.2) +#,color="gray",fill="firebrick") +
+  scale_color_manual(values = c("chartreuse4","#800074","#c99b38"),labels = c("July","Aug","Oct"),name="") +
+  coord_sf(xlim=c(178.3,204.6), ylim=c(18.6, 31.4)) +
+  scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1)) +
+  theme_bw()+theme(axis.ticks.length = unit(0.25, "cm"),panel.grid = element_blank(),text = element_text(size=16))+
+  ylab("Latitude")+xlab("Longitude")+ggtitle("PIRIS 2023:\nHawaiʻi Pae ʻĀina") # title will just be taxa for taxa specific plots
+dev.off()
+
+
+#add in monument boundary######
+library(sf)
+PMNM<-read_sf("Data/PMNM_Shp_File/hi_noaa_nwhi_papahanaumokuakea.shp")
+EEZ<-PMNM$geometry
+#for some reason it is split into east and west of dateline, so need to combine 
+EEZ_Plot1<-as.data.frame(EEZ[[1]][[1]])
+EEZ_Plot2<-as.data.frame(EEZ[[1]][[2]])
+EEZ_Plot<-rbind(EEZ_Plot1, EEZ_Plot2)
+EEZ_Plot$Lon<-NULL
+EEZ_Plot$Lon<-ifelse(EEZ_Plot$X1<0, EEZ_Plot$X1+360, EEZ_Plot$X1)
+
+#connecting the dots in an efficient manner
+xytsp <- ETSP(data.frame(EEZ_Plot$Lon, EEZ_Plot$X2))
+colnames(xytsp) <- c("Lon", "Lat")
+xytour <- solve_TSP(xytsp)
+re_ordered_EEZ <- EEZ_Plot[xytour, ]
+merp<-oahu_map+geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)
+
+
 #plot fish####
+
+#uku##############
+
+fish_taxa="Aprion"
+df<-paste("se23_",fish_taxa)
+df<-se23%>%
+  filter(genus==fish_taxa)
+##plots
+metric=density
+yaxistitle="Larval density (larva/m^3 seawater)"
+ggplot()+geom_point(data=df, mapping=aes(x=datey, y=density))+
+  labs(title =paste(fish_taxa), x="Date", y=yaxistitle)+
+  geom_smooth(method="loess")
+
+anti_df<-se23%>%filter(genus!=fish_taxa)
+merp+geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density, color=(month)), shape=19)+
+  geom_point(data=anti_df,mapping=aes(y=lat_dd, x=lon_dd), shape=1)+labs(title =paste(fish_taxa,metric))
+#snappers generally######
+fish_taxa="Lutjanidae"
+df<-paste("se23_",fish_taxa)
+df<-se23%>%
+  filter(family==fish_taxa)
+
+##density
+metric<-"density"
+ggplot()+geom_point(data=df, mapping=aes(x=dec_date, y=density))+
+  labs(title =paste(fish_taxa,metric,"by Julian day"))+
+  geom_smooth(method="loess")
+
+plot<-ggplot()+geom_point(data=df, mapping=aes(x=datey, y=density))+
+  labs(title =paste(fish_taxa,metric,"by Date"))
+#ggsave("plot",filename=paste("Plot Figures/IKMT_Tows_Plot_HICEAS_",fish_taxa,"_",metric,".png"), height=5, width=8, units="in", res=300)
+
+#Etelinae
+fish_taxa="Etelinae"
+df<-paste("se23_",fish_taxa)
+df<-se23%>%
+  filter(subfamily==fish_taxa)
+ggplot()+geom_point(data=df, mapping=aes(x=dec_date, y=density))+
+  labs(title =paste(fish_taxa,metric,"by Julian day"))+
+  geom_smooth(method="loess")
+
+ggplot()+geom_density(data=df, aes(x=datey),alpha=0.3)+
+  labs(title =paste(fish_taxa,metric,"by Date"))
+
+ggplot()+geom_density(data=df, aes(x=datey, fill=genus),alpha=0.3)+
+  labs(title =paste(fish_taxa,metric,"by Date"))
+
+
 ##billfish####
 fish_taxa="Istiophoridae"
 df<-paste("se23_",fish_taxa)
@@ -228,51 +288,6 @@ plot<-ggplot()+geom_point(data=df, mapping=aes(x=datey, y=density))+
 
 ggplot()+geom_density(data=df, aes(x=datey),alpha=0.3)+
   labs(title =paste(fish_taxa,metric,"by Date"))
-#snappers######
-fish_taxa="Lutjanidae"
-df<-paste("se23_",fish_taxa)
-df<-se23%>%
-  filter(family==fish_taxa)
-
-##density
-metric<-"density"
-ggplot()+geom_point(data=df, mapping=aes(x=dec_date, y=density))+
-  labs(title =paste(fish_taxa,metric,"by Julian day"))+
-  geom_smooth(method="loess")
-
-plot<-ggplot()+geom_point(data=df, mapping=aes(x=datey, y=density))+
-  labs(title =paste(fish_taxa,metric,"by Date"))
-#ggsave("plot",filename=paste("Plot Figures/IKMT_Tows_Plot_HICEAS_",fish_taxa,"_",metric,".png"), height=5, width=8, units="in", res=300)
-
-#Etelinae
-fish_taxa="Etelinae"
-df<-paste("se23_",fish_taxa)
-df<-se23%>%
-  filter(subfamily==fish_taxa)
-ggplot()+geom_point(data=df, mapping=aes(x=dec_date, y=density))+
-  labs(title =paste(fish_taxa,metric,"by Julian day"))+
-  geom_smooth(method="loess")
-
-ggplot()+geom_density(data=df, aes(x=datey),alpha=0.3)+
-  labs(title =paste(fish_taxa,metric,"by Date"))
-
-ggplot()+geom_density(data=df, aes(x=datey, fill=genus),alpha=0.3)+
-  labs(title =paste(fish_taxa,metric,"by Date"))
-
-#uku##############
-
-fish_taxa="Aprion"
-metric=density
-df<-paste("se23_",fish_taxa)
-df<-se23%>%
-  filter(genus==fish_taxa)
-ggplot()+geom_point(data=df, mapping=aes(x=dec_date, y=density))+
-  labs(title =paste(fish_taxa,metric,"by Julian day"))+
-  geom_smooth(method="loess")
-anti_df<-se23%>%filter(genus!=fish_taxa)
-
-merp+geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density), shape=19)+
-  geom_point(data=anti_df,mapping=aes(y=lat_dd, x=lon_dd), shape=1)
 
 #Tunas##########
 fish_taxa="Scombridae"
