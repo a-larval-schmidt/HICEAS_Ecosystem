@@ -210,6 +210,25 @@ GLOBAL_MIN_DENSITY <- min(all_densities, na.rm = TRUE)
 MIN_POINT_SIZE <- 2
 MAX_POINT_SIZE <- 8
 
+#size histograms##########
+str(se23)
+se23<-se23%>%unite("taxa",sep="_", family:genus, remove=F)
+
+str(larv)
+mas_long<-larv%>%
+  unite("taxa",sep="_", family:genus)%>%
+  dplyr::select(c(station, taxa,count_1_mm:count_40_mm))%>%
+  pivot_longer(count_1_mm:count_40_mm,names_to="length",
+               values_to="length_occurence",values_drop_na = T) #pivot longer &coalesce both lengths and frequencies columns or #melt, shape, reshape
+
+mas_clean<-mas_long%>%
+  mutate("length"=gsub("mm","",length), .keep="unused")%>%
+  mutate("length"=gsub("count","",length))%>%
+  mutate("length"=gsub("_","",length))%>%
+  mutate("length"=as.numeric(length))
+mas_long_clean<-mas_clean%>%filter(length_occurence!=0)#distinct function eliminated vials where multiple size classes were counted
+se23<-left_join(mas_long_clean, se23,by=c(station="Station", taxa="taxa"),relationship = "many-to-many")
+
 #for loop####
 for (level in names(taxa_to_plot)) {
   for (fish_taxa in taxa_to_plot[[level]]) {
@@ -240,12 +259,16 @@ for (level in names(taxa_to_plot)) {
     }
     
     # --- Step 4: Create and save the plots ---
-    
-    p16 <- ggplot(data = df, aes(x = day_of_year, y = log(density))) +
+    hist<-ggplot(data=df, aes(x=length))+geom_histogram(stat="bin", binwidth = 1)+
+      labs(x= "Standard Length (mm)",y=paste("frequency of ", fish_taxa))+theme_bw()
+    ggsave(paste0(fish_taxa, "_length_histogram.png"), plot = hist, width = 6, height = 5,
+           path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
+  }}  
+     p16 <- ggplot(data = df, aes(x = day_of_year, y =density)) +
       geom_point(size = 3)+
       geom_boxplot(outliers = F, alpha = 0.8,aes(group=Leg), fill="pink", color="red")+
       labs(x = "Day of Year",
-           y = bquote(paste(.(fish_taxa)," Log (base e) Density (fish" ~ m^{-3} ~ ")")))+
+           y = bquote(paste(.(fish_taxa)," Density (fish" ~ m^{-3} ~ ")")))+
       #adds break every 5 days to x axis while keeping months
       #scale_x_continuous(breaks = c(july_doy, august_doy, october_doy),labels = c("July", "August", "October"),minor_breaks = doy_minor_breaks, limits = c(min_doy, max_doy)) +
       #version 3 combo labels      
@@ -253,7 +276,7 @@ for (level in names(taxa_to_plot)) {
       theme_bw()
     ggsave(paste0(fish_taxa, "_density_vs_doy_boxplot.png"), plot = p16, width = 6, height = 5,
            path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
-    
+   
     # Plot 2: Density vs SST
     p2 <- ggplot(data = df, aes(x = sst, y = density)) +
       geom_point() +
@@ -285,10 +308,12 @@ for (level in names(taxa_to_plot)) {
        scale_size_continuous(limits = c(GLOBAL_MIN_DENSITY, GLOBAL_MAX_DENSITY),
                              range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
                              breaks = seq(GLOBAL_MIN_DENSITY, GLOBAL_MAX_DENSITY,
-                                          length.out = 4),
+                                          length.out = 7),
                              name=bquote(paste(.(fish_taxa),"  Density (fish" ~ m^{-3} ~ ")")))+
        theme_bw()+theme(axis.ticks.length = unit(0.25, "cm"),panel.grid = element_blank(),text = element_text(size=16))+
       ylab("Latitude")+xlab("Longitude")
     ggsave(paste0(fish_taxa, "_map.png"), plot = map_plot, path = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/", width = 8, height = 6)
   }
 }
+
+
