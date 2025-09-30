@@ -8,6 +8,36 @@ library(viridis)
 library(dplyr)
 library(mgcv)
 library(lunar)
+library(sf)
+library(dplyr)
+library(tidyverse)
+library(stringr)
+library(kableExtra)
+library(ggOceanMaps)
+library(marmap)
+library(ggmap)
+library(shape)
+library(sf)
+library(gpkg)
+library(dplyr)
+library(tidyr)
+library(TSP)
+library(readxl)
+library(sp) #already in raster
+library(raster)# error
+library(ggplot2)
+library(scales)
+#library(rgdal)
+library(marmap)
+library(maps)
+library(rnaturalearth)
+library(rnaturalearthdata)
+#library(rgeos)
+library(viridis)
+library(raster)
+library(ggnewscale)
+library(tidyverse)
+library(ggrepel)
 #station data#####
 #coordinate conversion##
 ik<-read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/IKMT Log - Sheet1.csv")
@@ -46,8 +76,22 @@ chla_Match <- rxtracto(swchlInfo, parameter = 'chlor_a',
                       zName = "altitude",
                       xlen = .2, ylen = .2, progress_bar = TRUE)
 ik$chla_daily<-chla_Match$`mean chlor_a`
+#monument boundary####
+library(sf)
+PMNM<-read_sf("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/PMNM_Shp_File/hi_noaa_nwhi_papahanaumokuakea.shp")
+EEZ<-PMNM$geometry
+#for some reason it is split into east and west of dateline, so need to combine 
+EEZ_Plot1<-as.data.frame(EEZ[[1]][[1]])
+EEZ_Plot2<-as.data.frame(EEZ[[1]][[2]])
+EEZ_Plot<-rbind(EEZ_Plot1, EEZ_Plot2)
+EEZ_Plot$Lon<-NULL
+EEZ_Plot$Lon<-ifelse(EEZ_Plot$X1<0, EEZ_Plot$X1+360, EEZ_Plot$X1)
 
-
+#connecting the dots in an efficient manner
+xytsp <- ETSP(data.frame(EEZ_Plot$Lon, EEZ_Plot$X2))
+colnames(xytsp) <- c("Lon", "Lat")
+xytour <- solve_TSP(xytsp)
+re_ordered_EEZ <- EEZ_Plot[xytour, ]
 #add in fish info#####
 larv<-read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/SE2303 ID Log - ID&Length.csv")
 ik2<-left_join(ik, larv,by=join_by("Station"=="station"))
@@ -65,8 +109,9 @@ se23<-ik2%>%
   mutate(toyos=as.numeric(Tow.yo.Count))%>%
   mutate(total=as.numeric(total))%>%
   mutate(density=(total/mean_flow))%>%
-  dplyr::select(Station,lat_dd,lon_dd,mean_flow, month, depth_m,total, toyos,tow_duration,
+  dplyr::select(Leg, Station,lat_dd,lon_dd,mean_flow, month, depth_m,total, toyos,tow_duration,
                 sst,chla_daily,FLAG, family, subfamily,genus, species,density,day_of_year)
+#doy and month labeling for plots#####
 
 # Define the start of each survey month by Day of Year (DOY)
 # This assumes the survey starts on July 23rd for the sake of an example.
@@ -77,24 +122,94 @@ october_doy <- yday(as.Date("2023-10-01"))
 # Define the full range of the survey in DOY to ensure consistency
 min_doy <- yday(as.Date("2023-07-01"))
 max_doy <- yday(as.Date("2023-11-01"))
+doy_minor_breaks <- seq(from = min_doy, to = max_doy, by = 5)
+# Define the range for the major breaks (e.g., every 10 days)
+doy_major_breaks <- seq(from = min_doy, to = max_doy, by = 10)
+# Define the range for the minor breaks (e.g., every 5 days)
+doy_minor_breaks <- seq(from = min_doy, to = max_doy, by = 5)
+#combo plot#####
+# Assuming min_doy, max_doy, july_doy, august_doy, october_doy are defined
 
-# Load necessary data and define plot variables outside the loop
+# 1. Define the Major Break points using a regular 10-day interval
+doy_combined_breaks <- seq(from = min_doy, to = max_doy, by = 10)
+
+# 2. Define the exact Day of Year for month starts and their names
+month_start_doy <- c(july_doy, august_doy, october_doy)
+month_names <- c("July", "August", "October")
+
+# Keep track of which months have already been labeled
+months_labeled <- logical(length(month_start_doy)) 
+
+# 3. Create the Two-Line Combined Label Vector
+combined_labels_two_line <- character(length(doy_combined_breaks))
+
+for (i in 1:length(doy_combined_breaks)) {
+  doy <- doy_combined_breaks[i]
+  
+  # Day of Year number (always available)
+  doy_line <- as.character(doy)
+  
+  # Month name (default to empty)
+  month_line <- "" 
+  
+  # Check each month start to see if this break is the FIRST one to pass it
+  for (m in 1:length(month_start_doy)) {
+    if (!months_labeled[m] && doy >= month_start_doy[m]) {
+      # This is the first 10-day break ON or AFTER the month start date
+      month_line <- month_names[m]
+      months_labeled[m] <- TRUE # Mark this month as labeled
+      break # Exit the inner loop once a month is labeled for this break
+    }
+  }
+  
+  # Combine the lines: DOY on top, Month Name on the bottom (only if a month name exists)
+  if (month_line != "") {
+    combined_labels_two_line[i] <- paste(doy_line, month_line, sep = "\n")
+  } else {
+    # Only display the DOY number
+    combined_labels_two_line[i] <- doy_line
+  }
+}
+#load maps and taxa name list####
 load("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Hawaii.RData")
 Hawaii_df <- fortify(Hawaii)
 
+etelinae_expression <- list("Etelinae" = expression("'opakapaka or" * "\n" * "ehu or gindai or" * "\n" * "lehi or onaga or" * "\n" * "kalekale"))
+
 hawaiian_names <- c(
-  "Thunnus" = "ahi",
+  "Thunnus" = "'ahi",
   "Aprion" = "uku",
   "Acanthocybium" = "ono",
   "Coryphaena" = "mahi mahi",
   "Istiophoridae" = "a'u",
-  "Xiphiidae" = "a'u kū"
-)
+  "Xiphias" = "a'u kū",
+  "Katsuwonus"="aku",
+  "Scombridae"= "Tunas & ono",
+  "Etelinae"= "'opakapaka/onaga/gindai/ehu/lehi/kalekale")
 taxa_to_plot <- list(
-  family = c("Scombridae", "Istiophoridae","Xiphiidae"),
+  family = c("Scombridae", "Istiophoridae"),
   subfamily = c("Etelinae"),
-  genus = c("Coryphaena", "Aprion", "Katsuwonus", "Thunnus", "Acanthocybium")
+  genus = c("Coryphaena", "Aprion", "Katsuwonus", "Thunnus", "Acanthocybium", "Xiphias")
 )
+#map density values####
+tuna <- se23 %>% filter(family == "Scombridae")
+marlin<- se23 %>% filter(family == "Istiophiridae")
+jobfish<- se23 %>% filter(subfamily == "Etelinae")
+mahi<- se23 %>% filter(genus == "Coryphaena")
+uku<- se23 %>% filter(genus == "Aprion")
+aku<- se23 %>% filter(genus == "Kaysuwonus")
+ahi<- se23 %>% filter(genus == "Thunnus")
+ono<- se23 %>% filter(genus == "Acanthocybium")
+sword<- se23 %>% filter(genus == "Xiphias")
+
+all_density_data <- list(tuna, marlin,jobfish,mahi,uku, aku,ahi, ono, sword)
+
+all_densities <- unlist(lapply(all_density_data, function(df) df$density))
+GLOBAL_MAX_DENSITY <- max(all_densities, na.rm = TRUE)
+GLOBAL_MIN_DENSITY <- min(all_densities, na.rm = TRUE)
+MIN_POINT_SIZE <- 2
+MAX_POINT_SIZE <- 8
+
 #for loop####
 for (level in names(taxa_to_plot)) {
   for (fish_taxa in taxa_to_plot[[level]]) {
@@ -126,40 +241,15 @@ for (level in names(taxa_to_plot)) {
     
     # --- Step 4: Create and save the plots ---
     
-    # Plot 1: Boxplot of density by month
-    p1 <- ggplot(data = se23 %>% filter(!!sym(level) == fish_taxa), aes(x = month, y = density)) +
-      geom_boxplot(outliers = F) +
-      labs(title = paste(fish_taxa, "Density by Month"),
-           subtitle = "Outliers removed", y = "Density", x = "Month") +
-      theme_bw()
-    
-    ggsave(paste0(fish_taxa, "_monthly_density.png"), plot = p1, width = 6, height = 5,
-           path = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
-    
-    # Plot 1.5: Density vs Day of Year (no changes needed)
-    p15 <- ggplot(data = df, aes(x = day_of_year, y = density)) +
-      geom_point(size = 3) +
-      labs(title = paste(fish_taxa, "Density by Day of Year"),
-           y = "Density", x = "Month") +
-      scale_x_continuous(breaks = c(yday(as.Date("2023-07-01")), yday(as.Date("2023-08-01")), yday(as.Date("2023-10-01"))),
-                         labels = c("July", "August", "October")) +
-      theme_bw()
-    
-    ggsave(paste0(fish_taxa, "_density_vs_doy.png"), plot = p15, width = 6, height = 5,
-           path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
-    
-    p16 <- ggplot(data = df, aes(x = day_of_year, y = density)) +
-      geom_point(size = 3) +geom_boxplot(outliers = F, alpha = 0.8,aes(group=month))+
-      labs(
-        title = paste(fish_taxa, "Density by Day of Year"),
-        y = "Density", x = "Month"
-      ) +
-      # Set the x-axis to be continuous and define the breaks and labels
-      scale_x_continuous(
-        breaks = c(july_doy, august_doy, october_doy),
-        labels = c("July", "August", "October"),
-        limits = c(min_doy, max_doy)
-      ) +
+    p16 <- ggplot(data = df, aes(x = day_of_year, y = log(density))) +
+      geom_point(size = 3)+
+      geom_boxplot(outliers = F, alpha = 0.8,aes(group=Leg), fill="pink", color="red")+
+      labs(x = "Day of Year",
+           y = bquote(paste(.(fish_taxa)," Log (base e) Density (fish" ~ m^{-3} ~ ")")))+
+      #adds break every 5 days to x axis while keeping months
+      #scale_x_continuous(breaks = c(july_doy, august_doy, october_doy),labels = c("July", "August", "October"),minor_breaks = doy_minor_breaks, limits = c(min_doy, max_doy)) +
+      #version 3 combo labels      
+      scale_x_continuous(breaks = doy_combined_breaks,labels = combined_labels_two_line,limits = c(min_doy, max_doy)) +
       theme_bw()
     ggsave(paste0(fish_taxa, "_density_vs_doy_boxplot.png"), plot = p16, width = 6, height = 5,
            path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
@@ -167,8 +257,9 @@ for (level in names(taxa_to_plot)) {
     # Plot 2: Density vs SST
     p2 <- ggplot(data = df, aes(x = sst, y = density)) +
       geom_point() +
-      labs(title = paste(fish_taxa, "Density vs SST"),
-           y = "Density", x = "SST (°C)") +
+      labs(x =expression("SST (" * degree * "C)"),
+      y = bquote(paste(.(fish_taxa)," Density (fish" ~ m^{-3} ~ ")")))+
+  
       theme_bw()
     ggsave(paste0(fish_taxa, "_density_vs_sst.png"), plot = p2, width = 6, height = 5,
            path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
@@ -176,116 +267,28 @@ for (level in names(taxa_to_plot)) {
     # Plot 3: Density vs Chla
     p3 <- ggplot(data = df, aes(x = chla_daily, y = density)) +
       geom_point() +
-      labs(title = paste(fish_taxa, "Density vs Chla"),
-           y = "Density", x = expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")")) +
-      theme_bw()
+      labs(x = expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")"),
+           y = bquote(paste(.(fish_taxa),"  Density (fish" ~ m^{-3} ~ ")")))+
+             theme_bw()
     ggsave(paste0(fish_taxa, "_density_vs_chla.png"), plot = p3, width = 6, height = 5,
            path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
-    # --- Plot 5: Map of density locations with quantile sizes ---
+   
     
-    # 1. Inside your main for loop, get the data for the current taxon.
-    # We will use the 'se23' data frame and filter it within the loop.
-    
-    # Separate presence and absence data
-    df_pres <- df %>% filter(total > 0)
-    df_abs <- anti_df %>% filter(total == 0)
-    
-    # Check if there is presence data to calculate quantiles
-    if (nrow(df_pres) > 0) {
-      # Calculate quantiles for total counts
-      quant_levels <- quantile(df_pres$total, probs = seq(0, 1, by = 0.25), na.rm = TRUE)
-      
-      # Add a new column to the presence data for point sizes based on quantiles
-      df_pres$Number <- 1
-      df_pres$Number[df_pres$total > 0 & df_pres$total < quant_levels[2]] <- 1.5
-      df_pres$Number[df_pres$total >= quant_levels[2] & df_pres$total < quant_levels[3]] <- 2
-      df_pres$Number[df_pres$total >= quant_levels[3] & df_pres$total < quant_levels[4]] <- 2.5
-      df_pres$Number[df_pres$total >= quant_levels[4]] <- 3
-      
-      # Define the legend labels and sizes for both absence and presence
-      legend_labels <- c("0",
-                         paste0("<", quant_levels[2]),
-                         paste0(quant_levels[2], "-", quant_levels[3]),
-                         paste0(quant_levels[3], "-", quant_levels[4]),
-                         paste0(">", quant_levels[4]))
-      
-      cex_size_list <- c(1, 1.5, 2, 2.5, 3)
-      pch_list <- c(1, 19, 19, 19, 19)
-      
-    } else {
-      # If no presence data, all points are absence points.
-      df_pres <- data.frame() # Create an empty data frame to avoid errors
-      df_abs <- se23 %>% filter(total == 0) # All points are absence points
-      legend_labels <- "0"
-      cex_size_list <- 1
-      pch_list <- 1
-    }
-    
-    # Now, create the plot using Base R
-
-    # Now, create the plot using Base R
-    png(paste0("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/", fish_taxa, "_map.png"), height=5, width=8, units="in", res=300)
-    
-    par(mar = c(5, 5, 4, 2) + 0.1, cex = 1.5, bg = "white") 
-    # Sets margins, text size, and plot background
-    
-    # This is the Base R equivalent of geom_raster and scale_fill_gradient
-    # `xlim` and `ylim` are set here.
-    plot(Hawaii,
-         image = TRUE,
-         land = TRUE,
-         lwd = 0.1,
-         # Corrected bpal to ensure colors are applied to appropriate depth ranges
-         bpal = list(c(0, max(Hawaii), "lightskyblue1"), # For depths >= 0 (surface water)
-                     c(min(Hawaii), 0, "lightsteelblue4")), # For depths < 0 (deeper water)
-         xlim = c(178.3, 204.6),
-         ylim = c(18.6, 31.4),
-         xaxt = 'n', 
-         yaxt = 'n',
-         xlab = "Longitude", 
-         ylab = "Latitude",
-         main = paste(fish_taxa, "Density Locations"))
-    
-    # Add the white EEZ boundary line
-    graphics::lines(re_ordered_EEZ$Lon, re_ordered_EEZ$X2, lwd=3, col="white")
-    
-    # Plot the absence points
-    points(df_abs$lon_dd, df_abs$lat_dd, pch = 1, cex = 2.2, lwd = 1, col = "black")
-    
-    # Plot the presence points (only if there are any)
-    if (nrow(df_pres) > 0) {
-      points(df_pres$lon_dd, df_pres$lat_dd, pch = 19, cex = df_pres$Number, col = "black")
-    }
-    
-    # Add axes and tick marks
-    axis(1, at = round(seq(180, 205, by = 5), 1))
-    axis(2, at = round(seq(18, 32, by = 2), 1))
-    
-    # Add the legend
-    # Define the legend labels and sizes for both absence and presence
-    if (nrow(df_pres) > 0) {
-      legend_labels <- c("0",
-                         paste0("<", quant_levels[2]),
-                         paste0(quant_levels[2], "-", quant_levels[3]),
-                         paste0(quant_levels[3], "-", quant_levels[4]),
-                         paste0(">", quant_levels[4]))
-      
-      cex_size_list <- c(2.2, 1.5, 2, 2.5, 3)
-      pch_list <- c(1, 19, 19, 19, 19)
-      
-    } else {
-      legend_labels <- "0"
-      cex_size_list <- 2.2
-      pch_list <- 1
-    }
-    
-    legend("topright",
-           legend = legend_labels,
-           pch = pch_list,
-           pt.cex = cex_size_list,
-           title = "Density (Counts)")
-    
-    dev.off()
-    
+     map_plot<-ggplot() +
+      geom_raster(data = Hawaii_df, aes(x = x, y = y, fill = z)) +labs(fill = "Depth (m)")+
+      scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4",limits=c(-10000,0),
+                          na.value="black",guide="none")+
+      geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density),shape=19) +
+       geom_point(data=anti_df,mapping=aes(y=lat_dd, x=lon_dd), shape=1, size=2)+
+       coord_sf(xlim=c(178.3,204.6), ylim=c(18.6, 31.4)) +
+      scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1)) +
+       scale_size_continuous(limits = c(GLOBAL_MIN_DENSITY, GLOBAL_MAX_DENSITY),
+                             range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
+                             breaks = seq(GLOBAL_MIN_DENSITY, GLOBAL_MAX_DENSITY,
+                                          length.out = 4),
+                             name=bquote(paste(.(fish_taxa),"  Density (fish" ~ m^{-3} ~ ")")))+
+       theme_bw()+theme(axis.ticks.length = unit(0.25, "cm"),panel.grid = element_blank(),text = element_text(size=16))+
+      ylab("Latitude")+xlab("Longitude")
+    ggsave(paste0(fish_taxa, "_map.png"), plot = map_plot, path = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/", width = 8, height = 6)
   }
 }
