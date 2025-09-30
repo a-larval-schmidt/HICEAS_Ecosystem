@@ -38,6 +38,7 @@ library(raster)
 library(ggnewscale)
 library(tidyverse)
 library(ggrepel)
+library(patchwork)
 #station data#####
 #coordinate conversion##
 ik<-read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/IKMT Log - Sheet1.csv")
@@ -110,7 +111,8 @@ se23<-ik2%>%
   mutate(total=as.numeric(total))%>%
   mutate(density=(total/mean_flow))%>%
   dplyr::select(Leg, Station,lat_dd,lon_dd,mean_flow, month, depth_m,total, toyos,tow_duration,
-                sst,chla_daily,FLAG, family, subfamily,genus, species,density,day_of_year)
+                sst,chla_daily,
+                FLAG, family, subfamily,genus, species,density,day_of_year)
 #doy and month labeling for plots#####
 
 # Define the start of each survey month by Day of Year (DOY)
@@ -182,14 +184,13 @@ hawaiian_names <- c(
   "Acanthocybium" = "ono",
   "Coryphaena" = "mahi mahi",
   "Istiophoridae" = "a'u",
-  "Xiphias" = "a'u kū",
   "Katsuwonus"="aku",
   "Scombridae"= "Tunas & ono",
   "Etelinae"= "'opakapaka/onaga/gindai/ehu/lehi/kalekale")
 taxa_to_plot <- list(
   family = c("Scombridae", "Istiophoridae"),
   subfamily = c("Etelinae"),
-  genus = c("Coryphaena", "Aprion", "Katsuwonus", "Thunnus", "Acanthocybium", "Xiphias")
+  genus = c("Coryphaena", "Aprion", "Katsuwonus", "Thunnus", "Acanthocybium")
 )
 #map density values####
 tuna <- se23 %>% filter(family == "Scombridae")
@@ -208,8 +209,7 @@ all_densities <- unlist(lapply(all_density_data, function(df) df$density))
 GLOBAL_MAX_DENSITY <- max(all_densities, na.rm = TRUE)
 GLOBAL_MIN_DENSITY <- min(all_densities, na.rm = TRUE)
 MIN_POINT_SIZE <- 2
-MAX_POINT_SIZE <- 8
-
+MAX_POINT_SIZE <- 6
 #size histograms##########
 str(se23)
 se23<-se23%>%unite("taxa",sep="_", family:genus, remove=F)
@@ -251,6 +251,17 @@ for (level in names(taxa_to_plot)) {
       next # Skip to the next iteration if no data is found
     }
     
+    #find quantile min and max and 1,2,3,4 then make a column so each value that falls into a given quantile is in its own column
+    station_quantiles <- df %>%
+      reframe(quantile_values = quantile(density, na.rm = TRUE),
+              quantile_level = names(quantile(density, na.rm = TRUE))) %>%
+      rename(total_count = quantile_values)
+    fish_min_quant<-station_quantiles$total_count[1]
+    fish_max_quant<-station_quantiles$total_count[5]
+    quant_breaks<-c(station_quantiles$total_count[1],station_quantiles$total_count[2], station_quantiles$total_count[3],station_quantiles$total_count[4],station_quantiles$total_count[5])
+    DENSITY_BREAKS <- unique(quant_breaks)
+    
+    #progress bar
     hawaii_name <- hawaiian_names[fish_taxa]
     if (!is.na(hawaii_name)) {
       cat("Processing", fish_taxa, " (", hawaii_name, ")\n")
@@ -263,7 +274,7 @@ for (level in names(taxa_to_plot)) {
       labs(x= "Standard Length (mm)",y=paste("frequency of ", fish_taxa))+theme_bw()
     ggsave(paste0(fish_taxa, "_length_histogram.png"), plot = hist, width = 6, height = 5,
            path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
-  }}  
+
      p16 <- ggplot(data = df, aes(x = day_of_year, y =density)) +
       geom_point(size = 3)+
       geom_boxplot(outliers = F, alpha = 0.8,aes(group=Leg), fill="pink", color="red")+
@@ -278,25 +289,17 @@ for (level in names(taxa_to_plot)) {
            path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
    
     # Plot 2: Density vs SST
-    p2 <- ggplot(data = df, aes(x = sst, y = density)) +
-      geom_point() +
-      labs(x =expression("SST (" * degree * "C)"),
-      y = bquote(paste(.(fish_taxa)," Density (fish" ~ m^{-3} ~ ")")))+
-  
-      theme_bw()
-    ggsave(paste0(fish_taxa, "_density_vs_sst.png"), plot = p2, width = 6, height = 5,
-           path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
+    p2 <- ggplot(data = df, aes(x = sst, y = density)) +geom_point() +labs(x =expression("SST (" * degree * "C)"),y = bquote(paste(.(fish_taxa)," Density (fish" ~ m^{-3} ~ ")")))+theme_bw()
+    ggsave(paste0(fish_taxa, "_density_vs_sst.png"), plot = p2, width = 6, height = 5,path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
     
     # Plot 3: Density vs Chla
-    p3 <- ggplot(data = df, aes(x = chla_daily, y = density)) +
-      geom_point() +
-      labs(x = expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")"),
-           y = bquote(paste(.(fish_taxa),"  Density (fish" ~ m^{-3} ~ ")")))+
-             theme_bw()
-    ggsave(paste0(fish_taxa, "_density_vs_chla.png"), plot = p3, width = 6, height = 5,
-           path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
+    p3 <- ggplot(data = df, aes(x = chla_daily, y = density)) +geom_point() +labs(x = expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")"),y = bquote(paste(.(fish_taxa),"  Density (fish" ~ m^{-3} ~ ")")))+theme_bw()
+    ggsave(paste0(fish_taxa, "_density_vs_chla.png"), plot = p3, width = 6, height = 5,path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
    
-    
+    # Turn off scientific notation globally
+    options(scipen = 5)
+    options(digits = 6) 
+
      map_plot<-ggplot() +
       geom_raster(data = Hawaii_df, aes(x = x, y = y, fill = z)) +labs(fill = "Depth (m)")+
       scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4",limits=c(-10000,0),
@@ -305,15 +308,28 @@ for (level in names(taxa_to_plot)) {
        geom_point(data=anti_df,mapping=aes(y=lat_dd, x=lon_dd), shape=1, size=2)+
        coord_sf(xlim=c(178.3,204.6), ylim=c(18.6, 31.4)) +
       scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1)) +
-       scale_size_continuous(limits = c(GLOBAL_MIN_DENSITY, GLOBAL_MAX_DENSITY),
-                             range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
-                             breaks = seq(GLOBAL_MIN_DENSITY, GLOBAL_MAX_DENSITY,
-                                          length.out = 7),
-                             name=bquote(paste(.(fish_taxa),"  Density (fish" ~ m^{-3} ~ ")")))+
+       scale_size_continuous(limits = c(fish_min_quant,fish_max_quant),range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),breaks = DENSITY_BREAKS,name=bquote(paste(.(fish_taxa),"  Density (fish" ~ m^{-3} ~ ")")))+
        theme_bw()+theme(axis.ticks.length = unit(0.25, "cm"),panel.grid = element_blank(),text = element_text(size=16))+
       ylab("Latitude")+xlab("Longitude")
     ggsave(paste0(fish_taxa, "_map.png"), plot = map_plot, path = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/", width = 8, height = 6)
-  }
+ 
+    combined_plots<-map_plot/(p16+hist)/(p2+p3)
+    layout_tight <-  combined_plots&
+      theme(
+        plot.margin = unit(c(0.001, 0.01, 0.01, 0.001), "cm"),
+        plot.tag.position = c(0, 1),
+        plot.tag = element_text(size = 10, face = "bold")
+      )
+    # Add your final annotation
+    final_plot <- layout_tight +
+      plot_annotation(tag_levels = 'A')
+    final_plot
+    ggsave(plot = final_plot,width =8 ,height = 8,dpi = 300,
+    filename =paste0(fish_taxa,"_final_combined_plot.png"),path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
+     }
 }
 
 
+
+# To revert to R's default behavior:
+options(scipen = 0)
