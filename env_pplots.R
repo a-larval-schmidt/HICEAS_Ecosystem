@@ -41,7 +41,7 @@ library(ggrepel)
 library(patchwork)
 #station data#####
 #coordinate conversion##
-ik<-read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/IKMT Log - Sheet1.csv")
+ik<-read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/SE2303 ID Log - ikmt_metadata.csv")
 #convert ship coordinates into DMS then to DD
 ik<-ik %>% filter(Max.Depth>10) #eliminates neustons and s10s
 ik<-ik %>% mutate(lat_deg= as.numeric(substr(Lat.In,1,2)))#http://127.0.0.1:40641/graphics/4ee7ccc4-d91e-43e0-8b31-d427019a6d2c.png
@@ -57,6 +57,7 @@ ik<-ik %>% mutate(tow_duration= Time.Out.of.Water-Time.In..Local.)
 
 
 #sst data extraction####
+#read.csv(C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/env_pplots_data_w_sse.csv")
 legend_title<-"SST (°C)"
 swchlInfo <- as.info("noaacrwsstDaily", url="https://coastwatch.noaa.gov/erddap/")
 
@@ -64,10 +65,9 @@ SST_Match <- rxtracto(swchlInfo, parameter = 'analysed_sst',
                       xcoord = ik$lon_dd, ycoord = ik$lat_dd, tcoord =ik$date , 
                       xlen = .2, ylen = .2, progress_bar = TRUE)
 ik$sst<-SST_Match$`mean analysed_sst`
-
 #chla####
 legend_title <-expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")")
-
+#read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/env_pplots_data_w_chla.csv")
 swchlInfo <- as.info("noaacwN20VIIRSchlaDaily", url="https://coastwatch.noaa.gov/erddap/")
 #swchlInfo <- as.info("noaacwNPPN20S3ASCIDINEOF2kmDaily", url="https://coastwatch.noaa.gov/erddap/")
 #"Chlorophyll (Gap-filled DINEOF), NOAA S-NPP NOAA-20 VIIRS and Copernicus S-3AOLCI, Science Quality, Global 2km, 2018-recent, Daily"
@@ -77,6 +77,8 @@ chla_Match <- rxtracto(swchlInfo, parameter = 'chlor_a',
                       zName = "altitude",
                       xlen = .2, ylen = .2, progress_bar = TRUE)
 ik$chla_daily<-chla_Match$`mean chlor_a`
+#write.csv(ik, file="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/env_pplots_data_w_chla.csv")
+
 #monument boundary####
 library(sf)
 PMNM<-read_sf("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/PMNM_Shp_File/hi_noaa_nwhi_papahanaumokuakea.shp")
@@ -109,7 +111,7 @@ se23<-ik2%>%
   mutate(day_of_year=yday(date))%>%
   mutate(toyos=as.numeric(Tow.yo.Count))%>%
   mutate(total=as.numeric(total))%>%
-  mutate(density=(total/mean_flow))%>%
+  mutate(density=(total/(mean_flow/100)))%>%
   dplyr::select(Leg, Station,lat_dd,lon_dd,mean_flow, month, depth_m,total, toyos,tow_duration,
                 sst,chla_daily,
                 FLAG, family, subfamily,genus, species,density,day_of_year)
@@ -187,6 +189,9 @@ hawaiian_names <- c(
   "Katsuwonus"="aku",
   "Scombridae"= "Tunas & ono",
   "Etelinae"= "'opakapaka/onaga/gindai/ehu/lehi/kalekale")
+species_names<-c("Aprion"="virescens","Acanthocybium" = "solandri",
+                 "Coryphaena"="spp.", "Katsuwonus"="pelamis","Thunnus"="spp.")
+
 taxa_to_plot <- list(
   family = c("Scombridae", "Istiophoridae"),
   subfamily = c("Etelinae"),
@@ -229,11 +234,24 @@ mas_clean<-mas_long%>%
 mas_long_clean<-mas_clean%>%filter(length_occurence!=0)#distinct function eliminated vials where multiple size classes were counted
 se23<-left_join(mas_long_clean, se23,by=c(station="Station", taxa="taxa"),relationship = "many-to-many")
 
+#plot theme####
+plot_theme<-c(axis.title = element_text(size=10),axis.text=element_text(size=10))
+map_theme<-c(axis.title = element_text(size=11),axis.text=element_text(size=10),
+             axis.ticks.length = unit(0.25, "cm"),
+             plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "cm"),
+             panel.grid = element_blank(),text = element_text(size=10),
+             legend.position = "inside",legend.position.inside=c(0.22,0.03),
+             legend.justification = c(1, 0),legend.background = element_rect(fill = "transparent"),
+             legend.key = element_rect(fill = "transparent"))
 #for loop####
 for (level in names(taxa_to_plot)) {
   for (fish_taxa in taxa_to_plot[[level]]) {
     
     # --- Step 3: Filter the data for the current taxon ---
+    #allow for access to full scientific name
+    current_species <- species_names[fish_taxa]
+    current_species_name <- ifelse(is.na(current_species),"", paste0(current_species))
+    full_scientific_name <- paste(fish_taxa, current_species_name)
     # The filtering column changes based on the level.
     if (level == "family") {
       df <- se23 %>% filter(family == fish_taxa)
@@ -271,65 +289,151 @@ for (level in names(taxa_to_plot)) {
     
     # --- Step 4: Create and save the plots ---
     hist<-ggplot(data=df, aes(x=length))+geom_histogram(stat="bin", binwidth = 1)+
-      labs(x= "Standard Length (mm)",y=paste("frequency of ", fish_taxa))+theme_bw()
-    ggsave(paste0(fish_taxa, "_length_histogram.png"), plot = hist, width = 6, height = 5,
+      labs(x= "Standard Length (mm)",y=paste("frequency of ", fish_taxa))+theme_bw()+
+      theme(plot_theme)
+    
+    ggsave(paste0(fish_taxa, "_length_histogram.png"), plot = hist, width = 4, height = 4,
            path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
-
+#day of year with month box on top
      p16 <- ggplot(data = df, aes(x = day_of_year, y =density)) +
       geom_point(size = 3)+
       geom_boxplot(outliers = F, alpha = 0.8,aes(group=Leg), fill="pink", color="red")+
       labs(x = "Day of Year",
-           y = bquote(paste(.(fish_taxa)," Density (fish" ~ m^{-3} ~ ")")))+
-      #adds break every 5 days to x axis while keeping months
-      #scale_x_continuous(breaks = c(july_doy, august_doy, october_doy),labels = c("July", "August", "October"),minor_breaks = doy_minor_breaks, limits = c(min_doy, max_doy)) +
-      #version 3 combo labels      
+           y = bquote(paste(.(fish_taxa)," Density (fish 100" ~ m^{-3} ~ ")")))+
       scale_x_continuous(breaks = doy_combined_breaks,labels = combined_labels_two_line,limits = c(min_doy, max_doy)) +
-      theme_bw()
-    ggsave(paste0(fish_taxa, "_density_vs_doy_boxplot.png"), plot = p16, width = 6, height = 5,
+      theme_bw()+theme(plot_theme)
+
+
+    ggsave(paste0(fish_taxa, "_density_vs_doy_boxplot.png"), plot = p16, width = 4, height = 4,
            path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
-   
+ #day of year only
+    p17 <- ggplot(data = df, aes(x = day_of_year, y =density)) +
+      geom_point(size = 3)+
+      labs(x = "Day of Year",y = bquote(paste(.(fish_taxa)," Density (fish 100" ~ m^{-3} ~ ")")))+
+      scale_x_continuous(breaks = doy_combined_breaks,
+                         labels = combined_labels_two_line,limits = c(min_doy, max_doy)) +
+      theme_bw()+theme(plot_theme)
+    ggsave(paste0(fish_taxa, "_density_vs_doy.png"), plot = p17, width = 4, height = 4,
+           path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
+    
     # Plot 2: Density vs SST
-    p2 <- ggplot(data = df, aes(x = sst, y = density)) +geom_point() +labs(x =expression("SST (" * degree * "C)"),y = bquote(paste(.(fish_taxa)," Density (fish" ~ m^{-3} ~ ")")))+theme_bw()
-    ggsave(paste0(fish_taxa, "_density_vs_sst.png"), plot = p2, width = 6, height = 5,path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
+    p2 <- ggplot(data = df, aes(x = sst, y = density)) +geom_point(size=3) +
+      labs(x =expression("SST (" * degree * "C)"),
+           y = bquote(paste(.(fish_taxa)," Density (fish 100" ~ m^{-3} ~ ")")))+theme_bw()+
+      theme(plot_theme)
+    
+    ggsave(paste0(fish_taxa, "_density_vs_sst.png"), plot = p2, width = 4, height = 4,path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
     
     # Plot 3: Density vs Chla
-    p3 <- ggplot(data = df, aes(x = chla_daily, y = density)) +geom_point() +labs(x = expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")"),y = bquote(paste(.(fish_taxa),"  Density (fish" ~ m^{-3} ~ ")")))+theme_bw()
-    ggsave(paste0(fish_taxa, "_density_vs_chla.png"), plot = p3, width = 6, height = 5,path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
+    p3 <- ggplot(data = df, aes(x = log(chla_daily), y = density)) +geom_point(size=3)+
+      labs(x = expression("Log (e) Chlorophyll Concentration" * "\n" * "(mg" ~m^{-3}~")"),
+           y = bquote(paste(.(fish_taxa),"  Density (fish 100" ~ m^{-3} ~ ")")))+theme_bw()+
+      theme(plot_theme)
+    ggsave(paste0(fish_taxa, "_density_vs_chla.png"), plot = p3, width = 4, height = 4,path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
    
-    # Turn off scientific notation globally
-    options(scipen = 5)
-    options(digits = 6) 
-
+    
      map_plot<-ggplot() +
       geom_raster(data = Hawaii_df, aes(x = x, y = y, fill = z)) +labs(fill = "Depth (m)")+
       scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4",limits=c(-10000,0),
-                          na.value="black",guide="none")+
-      geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density),shape=19) +
+                          na.value=(color="#003300"),guide="none")+
+      geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density),shape=19,alpha=0.8) +
        geom_point(data=anti_df,mapping=aes(y=lat_dd, x=lon_dd), shape=1, size=2)+
-       coord_sf(xlim=c(178.3,204.6), ylim=c(18.6, 31.4)) +
+       coord_sf(xlim=c(178.4,204.9), ylim=c(18.6, 31.4)) +
       scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1)) +
-       scale_size_continuous(limits = c(fish_min_quant,fish_max_quant),range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),breaks = DENSITY_BREAKS,name=bquote(paste(.(fish_taxa),"  Density (fish" ~ m^{-3} ~ ")")))+
-       theme_bw()+theme(axis.ticks.length = unit(0.25, "cm"),panel.grid = element_blank(),text = element_text(size=16))+
-      ylab("Latitude")+xlab("Longitude")
-    ggsave(paste0(fish_taxa, "_map.png"), plot = map_plot, path = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/", width = 8, height = 6)
+       scale_size_continuous(limits = c(fish_min_quant,fish_max_quant),
+                             range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
+                             breaks = DENSITY_BREAKS,
+                             name=bquote("Density (fish 100" ~ m^{-3}~")"))+
+       theme_bw()+theme(axis.title = element_text(size=11),axis.text=element_text(size=10),
+                        axis.ticks.length = unit(0.25, "cm"),
+                        plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "cm"),
+                        panel.grid = element_blank(),text = element_text(size=10),
+                        legend.position = "inside",legend.position.inside=c(0.22,0.03),
+                        legend.justification = c(1, 0),legend.background = element_rect(fill = "transparent"),
+                        legend.key = element_rect(fill = "transparent"))+
+       geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)+
+      #antidf label
+        annotate("text", x=178.4, y=18.35,size=3, color="black", hjust=0,
+                label=paste("Stations where no",(fish_taxa),"were found"))+
+       #taxa name/label
+       annotate("text", x=197, y=31.5,size=4, color="black", hjust=0,
+                fontface = ifelse(level == "genus", "bold.italic", "plain"),
+                label=paste(full_scientific_name))+
+       annotate("point", x=177.8, y=18.35, color="black",shape=1, size=2)+
+      ylab(expression("Latitude (" * degree *"N)"))+xlab(expression("Longitude (" * degree * "W)"))
+     map_plot
+     ggsave(paste0(fish_taxa, "_map.png"),
+            plot = map_plot,
+            path = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/",
+            width = 8, height = 6)
  
-    combined_plots<-map_plot/(p16+hist)/(p2+p3)
-    layout_tight <-  combined_plots&
-      theme(
-        plot.margin = unit(c(0.001, 0.01, 0.01, 0.001), "cm"),
-        plot.tag.position = c(0, 1),
-        plot.tag = element_text(size = 10, face = "bold")
-      )
-    # Add your final annotation
-    final_plot <- layout_tight +
-      plot_annotation(tag_levels = 'A')
-    final_plot
-    ggsave(plot = final_plot,width =8 ,height = 8,dpi = 300,
-    filename =paste0(fish_taxa,"_final_combined_plot.png"),path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
+#legend.position c(0.95, 0.1),This moves the legend anchor point to the bottom-right area. 0.95 is near the right edge of the plot (1.0 is the far right), and 0.1 is just above the bottom edge (0.0 is the far bottom).
+#legend.justification	c(1, 0), 	This tells ggplot to use the bottom-right corner of the legend box as the anchor point. 1 is right-justified, and 0 is bottom-justified. This ensures the legend box expands up and to the left from the specified position
+#legend.background	element_rect(fill = "transparent"),	This is crucial for placing the legend over the map background without blocking it with a white or grey box, making it visually integrate better.    
+    
+  #Combining all 5 plots together  
+     # 1. Define the rows, setting widths inside the row definition
+     # The middle row contains the Boxplot (p17) and Histogram (hist)
+     p_middle_row <- p17 + hist + plot_layout(widths = c(1, 1)) # Use equal widths (1:1)
+     
+     # The bottom row contains the SST (p2) and Chla (p3) scatterplots
+     p_bottom_row <- p2 + p3 + plot_layout(widths = c(1, 1)) # Use equal widths (1:1)
+     
+     # 2. Combine all three rows vertically using the / operator
+     final_plot_combined <- map_plot / p_middle_row / p_bottom_row
+     
+     # 3. Apply the layout and styling to the combined plot object
+     final_plot_layout <- final_plot_combined +
+       # Set the relative heights for the three rows (Map, Middle Row, Bottom Row)
+       # Map is usually tallest (e.g., 3 units), the other rows are equal (e.g., 1 unit each)
+       plot_layout(heights = c(3, 1.5, 1.5)) +
+       
+       # Apply all consistent styling to all sub-plots using the & operator
+       # We will use your tight margin and tag settings here
+       theme(
+         plot.margin = unit(c(0.1, 0.01, 0.01, 0.001), "cm"),
+         plot.tag.position = c(0, 1),
+         plot.tag = element_text(size = 10, face = "bold")
+       )
+     
+     # 4. Add plot tags (A, B, C, etc.)
+     final_plot_tagged <- final_plot_layout +
+       plot_annotation(tag_levels = 'A')
+     
+     # 5. Save the final plot
+     ggsave(
+       plot = final_plot_tagged, # Use the object with tags and layout
+       width = 8,                 # Use a reasonable, often slightly smaller width
+       height = 10,               # Use a larger height to accommodate the three rows
+       dpi = 300,
+       filename = paste0(fish_taxa, "_final_combined_plot.png"),
+       path = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/combined figures/"
+     )
      }
 }
 
 
-
-# To revert to R's default behavior:
-options(scipen = 0)
+#hiceas sampling map#####
+fig1<-ggplot() +
+  geom_raster(data = Hawaii_df, aes(x = x, y = y, fill = z)) +labs(fill = "Depth (m)")+
+  scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4",limits=c(-10000,0),
+                      na.value=(color="#003300"),guide="none")+
+  geom_point(data=se23,mapping=aes(y=lat_dd, x=lon_dd,color=month),shape=19,size=3) +
+  scale_color_manual(values = c("chartreuse4","#800074","#c99b38","#996600"),labels = c("July","Aug","Oct","Nov"),name="Collection Month") +
+  coord_sf(xlim=c(178.4,204.9), ylim=c(18.6, 31.4)) +
+  scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1)) +
+  theme_bw()+theme(axis.title = element_text(size=11),axis.text=element_text(size=10),
+                   axis.ticks.length = unit(0.25, "cm"),
+                   plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "cm"),
+                   panel.grid = element_blank(),text = element_text(size=10),
+                   legend.position = "inside",legend.position.inside=c(1,0.59),
+                   legend.justification = c(1, 0),legend.background = element_rect(fill = "white"),
+                   legend.key = element_rect(fill = "white"))+
+  geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)+
+  labs(y=expression("Latitude (" * degree *"N)"),
+       x=(expression("Longitude (" * degree * "W)")))
+fig1
+ggsave("fig1.png",
+       plot = fig1,
+       path = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/",
+       width = 8, height = 6)
