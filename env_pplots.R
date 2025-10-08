@@ -199,11 +199,11 @@ taxa_to_plot <- list(
 )
 #map density values####
 tuna <- se23 %>% filter(family == "Scombridae")
-marlin<- se23 %>% filter(family == "Istiophiridae")
+marlin<- se23 %>% filter(family == "Istiophoridae")
 jobfish<- se23 %>% filter(subfamily == "Etelinae")
 mahi<- se23 %>% filter(genus == "Coryphaena")
 uku<- se23 %>% filter(genus == "Aprion")
-aku<- se23 %>% filter(genus == "Kaysuwonus")
+aku<- se23 %>% filter(genus == "Katsuwonus")
 ahi<- se23 %>% filter(genus == "Thunnus")
 ono<- se23 %>% filter(genus == "Acanthocybium")
 sword<- se23 %>% filter(genus == "Xiphias")
@@ -327,7 +327,7 @@ for (level in names(taxa_to_plot)) {
     # Plot 3: Density vs Chla
     p3 <- ggplot(data = df, aes(x = log(chla_daily), y = density)) +geom_point(size=3)+
       labs(x = expression("Log (e) Chlorophyll Concentration" * "\n" * "(mg" ~m^{-3}~")"),
-           y = bquote(paste(.(fish_taxa),"  Density (fish 100" ~ m^{-3} ~ ")")))+theme_bw()+
+           y = bquote(paste(.(fish_taxa),"  Density (fish 100" ~ m^{-3} ~")")))+theme_bw()+
       theme(plot_theme)
     ggsave(paste0(fish_taxa, "_density_vs_chla.png"), plot = p3, width = 4, height = 4,path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
    
@@ -343,7 +343,7 @@ for (level in names(taxa_to_plot)) {
        scale_size_continuous(limits = c(fish_min_quant,fish_max_quant),
                              range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
                              breaks = DENSITY_BREAKS,
-                             name=bquote("Density (fish 100" ~ m^{-3}~")"))+
+                             name=bquote("Density(fish 100" ~ m^{-3}~")"))+
        theme_bw()+theme(axis.title = element_text(size=11),axis.text=element_text(size=10),
                         axis.ticks.length = unit(0.25, "cm"),
                         plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "cm"),
@@ -356,8 +356,8 @@ for (level in names(taxa_to_plot)) {
         annotate("text", x=178.4, y=18.35,size=3, color="black", hjust=0,
                 label=paste("Stations where no",(fish_taxa),"were found"))+
        #taxa name/label
-       annotate("text", x=197, y=31.5,size=4, color="black", hjust=0,
-                fontface = ifelse(level == "genus", "bold.italic", "plain"),
+       annotate("text", x=200, y=31.5,size=4, color="black", hjust=0,
+                fontface = ifelse(level == "genus", "bold.italic", "bold"),
                 label=paste(full_scientific_name))+
        annotate("point", x=177.8, y=18.35, color="black",shape=1, size=2)+
       ylab(expression("Latitude (" * degree *"N)"))+xlab(expression("Longitude (" * degree * "W)"))
@@ -437,3 +437,115 @@ ggsave("fig1.png",
        plot = fig1,
        path = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/",
        width = 8, height = 6)
+
+#env in points###########
+for (level in names(taxa_to_plot)) {
+  for (fish_taxa in taxa_to_plot[[level]]) {
+    
+    # --- Step 3: Filter the data for the current taxon ---
+    #allow for access to full scientific name
+    current_species <- species_names[fish_taxa]
+    current_species_name <- ifelse(is.na(current_species),"", paste0(current_species))
+    full_scientific_name <- paste(fish_taxa, current_species_name)
+    # The filtering column changes based on the level.
+    if (level == "family") {
+      df <- se23 %>% filter(family == fish_taxa)
+      anti_df <- se23 %>% filter(family != fish_taxa)
+    } else if (level == "subfamily") {
+      df <- se23 %>% filter(subfamily == fish_taxa)
+      anti_df <- se23 %>% filter(subfamily != fish_taxa)
+    } else if (level == "genus") {
+      df <- se23 %>% filter(genus == fish_taxa)
+      anti_df <- se23 %>% filter(genus != fish_taxa)
+    }
+    
+    # Check if the filtered data frame is empty to avoid errors
+    if (nrow(df) == 0) {
+      next # Skip to the next iteration if no data is found
+    }
+    
+    #find quantile min and max and 1,2,3,4 then make a column so each value that falls into a given quantile is in its own column
+    station_quantiles <- df %>%
+      reframe(quantile_values = quantile(density, na.rm = TRUE),
+              quantile_level = names(quantile(density, na.rm = TRUE))) %>%
+      rename(total_count = quantile_values)
+    fish_min_quant<-station_quantiles$total_count[1]
+    fish_max_quant<-station_quantiles$total_count[5]
+    quant_breaks<-c(station_quantiles$total_count[1],station_quantiles$total_count[2], station_quantiles$total_count[3],station_quantiles$total_count[4],station_quantiles$total_count[5])
+    DENSITY_BREAKS <- unique(quant_breaks)
+    
+p1<-ggplot() +
+  geom_raster(data = Hawaii_df, aes(x = x, y = y, fill = z)) +labs(fill = "Depth (m)")+
+  scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4",limits=c(-10000,0),
+                      na.value=(color="#003300"),guide="none")+
+  geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density, color=chla_daily),shape=19,alpha=0.8) +
+  scale_color_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90",limits=c(0.01,0.2))+
+    coord_sf(xlim=c(178.4,204.9), ylim=c(18.6, 31.4)) +
+  scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1)) +
+  scale_size_continuous(limits = c(fish_min_quant,fish_max_quant),
+                        range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
+                        breaks = DENSITY_BREAKS,
+                        name=bquote("Density(fish 100" ~ m^{-3}~")"))+
+  theme_bw()+theme(axis.title = element_text(size=11),axis.text=element_text(size=10),
+                   axis.ticks.length = unit(0.25, "cm"),
+                   plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "cm"),
+                   panel.grid = element_blank(),text = element_text(size=10),
+                   legend.position = "inside",legend.position.inside=c(0.22,0.03),
+                   legend.justification = c(1, 0),legend.background = element_rect(fill = "transparent"),
+                   legend.key = element_rect(fill = "transparent"))+
+  geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)+
+  #antidf label
+  annotate("text", x=178.4, y=18.35,size=3, color="black", hjust=0,
+           label=paste("Stations where no",(fish_taxa),"were found"))+
+  #taxa name/label
+  annotate("text", x=200, y=31.5,size=4, color="black", hjust=0,
+           fontface = ifelse(level == "genus", "bold.italic", "bold"),
+           label=paste(full_scientific_name))+
+  annotate("point", x=177.8, y=18.35, color="black",shape=1, size=2)+
+  ylab(expression("Latitude (" * degree *"N)"))+xlab(expression("Longitude (" * degree * "W)"))
+
+p2<-ggplot() +
+  geom_raster(data = Hawaii_df, aes(x = x, y = y, fill = z)) +labs(fill = "Depth (m)")+
+  scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4",limits=c(-10000,0),
+                      na.value=(color="#003300"),guide="none")+
+  geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density, color=sst),shape=19,alpha=0.8) +
+  scale_color_gradientn(colors=c("#00007F", "blue", "#007FFF", "cyan","#7FFF7F", 
+                                "yellow", "#FF7F00", "red", "#7F0000"),
+                       na.value="gray90",limits = c(26, 29))+
+    coord_sf(xlim=c(178.4,204.9), ylim=c(18.6, 31.4)) +
+  scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1)) +
+  scale_size_continuous(limits = c(fish_min_quant,fish_max_quant),
+                        range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
+                        breaks = DENSITY_BREAKS,
+                        name=bquote("Density(fish 100" ~ m^{-3}~")"))+
+  theme_bw()+theme(axis.title = element_text(size=11),axis.text=element_text(size=10),
+                   axis.ticks.length = unit(0.25, "cm"),
+                   plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "cm"),
+                   panel.grid = element_blank(),text = element_text(size=10),
+                   legend.position = "inside",legend.position.inside=c(0.22,0.03),
+                   legend.justification = c(1, 0),legend.background = element_rect(fill = "transparent"),
+                   legend.key = element_rect(fill = "transparent"))+
+  geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)+
+  #antidf label
+  annotate("text", x=178.4, y=18.35,size=3, color="black", hjust=0,
+           label=paste("Stations where no",(fish_taxa),"were found"))+
+  #taxa name/label
+  annotate("text", x=200, y=31.5,size=4, color="black", hjust=0,
+           fontface = ifelse(level == "genus", "bold.italic", "bold"),
+           label=paste(full_scientific_name))+
+  annotate("point", x=177.8, y=18.35, color="black",shape=1, size=2)+
+  ylab(expression("Latitude (" * degree *"N)"))+xlab(expression("Longitude (" * degree * "W)"))
+  pp<-p1/p2
+  # 5. Save the final plot
+  ggsave(
+    plot =pp, # Use the object with tags and layout
+    width = 8,                 # Use a reasonable, often slightly smaller width
+    height = 10,               # Use a larger height to accommodate the three rows
+    dpi = 300,
+    filename = paste0(fish_taxa, "_sst_chla_map.png"),
+    path = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/"
+  )
+
+  }
+}
+

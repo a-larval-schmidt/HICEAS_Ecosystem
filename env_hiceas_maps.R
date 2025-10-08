@@ -17,6 +17,8 @@ library(readxl)
 library(patchwork)
 library(stringr)
 library(ggtext)
+library(raster)
+library(terra)
 ###base map#########
 library(sf)
 world<-ne_countries(scale="medium", returnclass = "sf")
@@ -138,11 +140,11 @@ soct<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
   theme(axis.ticks.length = unit(0.25, "cm")) +
   ylab("Latitude") +
   xlab("Longitude")
-sst_plot+geom_raster(data = not_sea, aes(x = x, y = y))
+soct+geom_raster(data = not_sea, aes(x = x, y = y))
 #october<-se23%>%filter(month==10)
 #geom_point(data=october, mapping=aes(x=lon_dd, y=lat_dd))
 soct<-sst_plot+geom_raster(data = not_sea, aes(x = x, y = y))
-ggsave(filename="Sampling Stations and Mean SST October 2023.png",plot=soct,height=5, width=8, units="in", dpi=300)
+#ggsave(filename="Sampling Stations and Mean SST October 2023.png",plot=soct,height=5, width=8, units="in", dpi=300)
 #bind sst######
 library(patchwork)
 #saug+soct+plot_annotation(tag_levels=c("A","B"))
@@ -150,13 +152,14 @@ library(patchwork)
 
 #August chla###########
 #data extraction####
-junk <- GET('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/noaa_snpp_chla_monthly.nc?chlor_a%5B(2023-08-01T12:00:00Z):1:(2023-08-31T12:00:00Z)%5D%5B(18):1:(32)%5D%5B(177):1:(206)%5D',
-            write_disk("junk.nc", overwrite=TRUE))
+#junk <- GET('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/noaa_snpp_chla_monthly.nc?chlor_a%5B(2023-08-01T12:00:00Z):1:(2023-08-31T12:00:00Z)%5D%5B(18):1:(32)%5D%5B(177):1:(206)%5D',write_disk("junk.nc", overwrite=TRUE))
+junk <- GET('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/noaa_snpp_chla_weekly_750m_v2023.nc?chlor_a%5B(2023-08-01T12:00:00Z):1:(2023-08-31T12:00:00Z)%5D%5B(0.0):1:(0.0)%5D%5B(32):1:(18)%5D%5B(177):1:(206)%5D',write_disk("junk.nc", overwrite=TRUE))
+
 nc <- nc_open('junk.nc')
 names(nc$var)
 v1 <- nc$var[[1]]
-sst<- ncvar_get(nc,v1) #Extract analysed_sst, reads data from the netCDF file, only works if you have already opened the file, shows as a multi-dimensional array
-dim(sst)
+chla<- ncvar_get(nc,v1) #Extract analysed_sst, reads data from the netCDF file, only works if you have already opened the file, shows as a multi-dimensional array
+dim(chla)
 dates <- as.POSIXlt(v1$dim[[3]]$vals,origin='1970-01-01',tz='GMT') #get the dates for each time step
 lon <- v1$dim[[1]]$vals #gives vector of longitude
 #lon=lon-360
@@ -165,7 +168,7 @@ nc_close(nc) #this step is important, otherwise you risk data loss
 rm(junk,v1)
 file.remove('junk.nc')
 
-df<-sst[,,1] #because it is already month mean for august no need to take mean of the whole month
+df=apply(chla[,,1:(dim(chla)[3])],c(1,2),mean,na.rm=TRUE) #calculates mean over all dates of the 3rd element of chla. In this case it is the avgerage value over X days
 rownames(df, do.NULL = TRUE, prefix = "row")
 rownames(df) <- lon
 colnames(df, do.NULL = TRUE, prefix = "col")
@@ -174,13 +177,14 @@ dfreal<-as.data.frame(as.table(df))
 dfreal<-dfreal%>%rename(y=Var1,x=Var2)
 #mapping####
 legend_title <-expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")")
-
+chla_min<-(quantile(dfreal$Freq, na.rm=T)[1])
+chla_max<-(quantile(dfreal$Freq, na.rm=T)[5])
 
 chlaug<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
-  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90",limits = c(0.01, 0.06))+
+  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90",limits=c(chla_min, chla_max))+
   guides(
     fill = guide_colorbar(
-      title = NULL, # <--- THIS IS THE KEY CHANGE
+      title = NULL, 
       barwidth = unit(0.5, "cm"), 
       barheight = unit(2.5, "cm")
     )
@@ -193,18 +197,19 @@ chlaug<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
   theme(axis.ticks.length = unit(0.25, "cm")) +
   ylab("Latitude") +
   xlab("Longitude")
-  
+chlaug  
   
 chlaug<-chlaug+geom_raster(data = not_sea, aes(x = x, y = y))
 #october chla###########
 #data extraction####
-junk <- GET('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/noaa_snpp_chla_monthly.nc?chlor_a%5B(2023-10-01T12:00:00Z):1:(2023-10-31T12:00:00Z)%5D%5B(18):1:(32)%5D%5B(177):1:(206)%5D',
-            write_disk("junk.nc", overwrite=TRUE))
+#junk <- GET('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/noaa_snpp_chla_monthly.nc?chlor_a%5B(2023-10-01T12:00:00Z):1:(2023-10-31T12:00:00Z)%5D%5B(18):1:(32)%5D%5B(177):1:(206)%5D',write_disk("junk.nc", overwrite=TRUE))
+junk <- GET('https://oceanwatch.pifsc.noaa.gov/erddap/griddap/noaa_snpp_chla_monthly.nc?chlor_a%5B(2023-10-01T12:00:00Z):1:(2023-10-31T12:00:00Z)%5D%5B(18):1:(32)%5D%5B(0.01875000000001137177):1:(206)%5D',write_disk("junk.nc", overwrite=TRUE))
+
 nc <- nc_open('junk.nc')
 names(nc$var)
 v1 <- nc$var[[1]]
-sst<- ncvar_get(nc,v1) #Extract analysed_sst, reads data from the netCDF file, only works if you have already opened the file, shows as a multi-dimensional array
-dim(sst)
+chla<- ncvar_get(nc,v1) #Extract analysed_sst, reads data from the netCDF file, only works if you have already opened the file, shows as a multi-dimensional array
+dim(chla)
 dates <- as.POSIXlt(v1$dim[[3]]$vals,origin='1970-01-01',tz='GMT') #get the dates for each time step
 lon <- v1$dim[[1]]$vals #gives vector of longitude
 #lon=lon-360
@@ -213,7 +218,7 @@ nc_close(nc) #this step is important, otherwise you risk data loss
 rm(junk,v1)
 file.remove('junk.nc')
 
-df<-sst[,,1] #because it is already month mean for august no need to take mean of the whole month
+df=apply(chla[,,1:31],c(1,2),mean,na.rm=TRUE) #calculates mean ssh over the 31 vlaues of the 3rd element of ssh. In this case it is the avgerage sst over 31 days
 rownames(df, do.NULL = TRUE, prefix = "row")
 rownames(df) <- lon
 colnames(df, do.NULL = TRUE, prefix = "col")
@@ -225,7 +230,7 @@ legend_title <-expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ 
 wrapped_legend_title <- str_wrap(legend_title, width = 15) # Adjust width as needed
 
 chloct<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
-  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90", limits = c(0.01, 0.06))+
+  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90")+
   guides(
     fill = guide_colorbar(
       title = NULL, # <--- THIS IS THE KEY CHANGE
@@ -410,11 +415,86 @@ final_plot <- layout_tight +
   plot_annotation(tag_levels = 'A')
 final_plot
 # Save the complete, combined plot
-ggsave(
-  filename = "final_combined_plot.png",
-  path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/",
-  plot = final_plot,
-  width = 8,  # Set the overall width for the entire figure
-  height = 10,  # Set the overall height
-  dpi = 300
-)
+#ggsave(filename = "final_combined_plot.png",path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/",plot = final_plot,
+ #width = 8,  # Set the overall width for the entire figure
+#  height = 10,  # Set the overall height
+ # dpi = 300)
+
+
+#MODELLLED ENV DATA###########
+#add chla from Jessie!!!!!####
+library(raster)
+library(tidyverse)
+library(sp)
+library(sf)
+library(reshape2)
+#August####
+#read in monthly 4km ocean color data (.nc file)
+data = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/20230801-20230831_cmems_obs-oc_glo_bgc-plankton_myint_l4-olci-4km_P1M.nc"
+chlor <-stack(data, varname = "CHL")
+# # use buffered bathymetry file to mask shallow waters around MHI
+load("C:/Users/Andrea.Schmidt/Documents/billfish_not_github/bathy_HI_30m_buffered_poly_1km.RData")
+chlor_masked <- raster::mask(chlor, bathy_buffered_poly_1km, inverse = TRUE)
+
+dfreal <- terra::as.data.frame(chlor_masked, xy = TRUE, na.rm = TRUE)
+names(dfreal) <- c("x", "y", "Freq")
+dfreal<-dfreal%>%
+  mutate(x=ifelse(x<0, x+360, x))
+print(paste("Data frame dimensions:", dim(dfreal)[1], "rows and", dim(dfreal)[2], "columns"))
+
+#map
+legend_title <-expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")")
+wrapped_legend_title <- str_wrap(legend_title, width = 15) # Adjust width as needed
+chlaug<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
+  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90",limits=c(0,0.1))+
+  guides(
+    fill = guide_colorbar(
+      title = NULL, # <--- THIS IS THE KEY CHANGE
+      barwidth = unit(0.5, "cm"), 
+      barheight = unit(2.5, "cm")
+    )
+  ) +
+  theme(legend.title=element_text(size=10),legend.text=element_text(size=10),
+        axis.text = element_text(size=5), axis.title = element_text(size=10),
+        legend.direction = "vertical", legend.box = "vertical",strip.text.x=element_text(size=10))+
+  theme_bw()+coord_sf(xlim = c(206, 177), ylim = c(18, 32), expand=FALSE)+
+  geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)+
+  theme(axis.ticks.length = unit(0.25, "cm")) +
+  ylab("Latitude") +
+  xlab("Longitude")
+
+chlaug
+
+##October
+data = "C:/Users/Andrea.Schmidt/Desktop/Cruises/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/20231001-20231031_cmems_obs-oc_glo_bgc-plankton_myint_l4-olci-4km_P1M.nc"
+chlor <-stack(data, varname = "CHL")
+# # use buffered bathymetry file to mask shallow waters around MHI
+load("C:/Users/Andrea.Schmidt/Documents/billfish_not_github/bathy_HI_30m_buffered_poly_1km.RData")
+chlor_masked <- raster::mask(chlor, bathy_buffered_poly_1km, inverse = TRUE)
+
+dfreal <- terra::as.data.frame(chlor_masked, xy = TRUE, na.rm = TRUE)
+names(dfreal) <- c("x", "y", "Freq")
+
+print(paste("Data frame dimensions:", dim(dfreal)[1], "rows and", dim(dfreal)[2], "columns"))
+
+#map
+legend_title <-expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")")
+wrapped_legend_title <- str_wrap(legend_title, width = 15) # Adjust width as needed
+chlaug<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
+  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90")+
+  guides(
+    fill = guide_colorbar(
+      title = NULL, # <--- THIS IS THE KEY CHANGE
+      barwidth = unit(0.5, "cm"), 
+      barheight = unit(2.5, "cm")
+    )
+  ) +
+  theme(legend.title=element_text(size=10),legend.text=element_text(size=10),
+        axis.text = element_text(size=5), axis.title = element_text(size=10),
+        legend.direction = "vertical", legend.box = "vertical",strip.text.x=element_text(size=10))+
+  theme_bw()+coord_sf(xlim = c(206, 177), ylim = c(18, 32), expand=FALSE)+
+  geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)+
+  theme(axis.ticks.length = unit(0.25, "cm")) +
+  ylab("Latitude") +
+  xlab("Longitude")
+chloct
