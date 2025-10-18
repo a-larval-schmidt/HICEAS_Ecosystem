@@ -549,3 +549,219 @@ p2<-ggplot() +
   }
 }
 
+
+
+#stats#####
+output_dir <- "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Stat Figures"
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir)
+}
+# 1. Load Necessary Libraries
+library(mgcv)
+library(mgcViz)
+library(visreg)# For getViz and enhanced plots
+for (level in names(taxa_to_plot)) {
+  for (fish_taxa in taxa_to_plot[[level]]) {
+    
+    # 3. Create Clean Names for Files
+    # Replace spaces and special characters for a safe file name
+    clean_taxa_name <- gsub(" ", "_", fish_taxa) 
+    
+    current_species <- species_names[fish_taxa]
+    current_species_name <- ifelse(is.na(current_species), "", paste0(current_species))
+    full_scientific_name <- paste(fish_taxa, current_species_name)
+    
+    # The filtering column changes based on the level.
+    if (level == "family") {
+      df <- se23 %>% filter(family == fish_taxa)
+      # anti_df is not used in the rest of the loop, so it's commented out for simplicity.
+      # anti_df <- se23 %>% filter(family != fish_taxa) 
+    } else if (level == "subfamily") {
+      df <- se23 %>% filter(subfamily == fish_taxa)
+    } else if (level == "genus") {
+      df <- se23 %>% filter(genus == fish_taxa)
+    }
+    
+    # Check if the filtered data frame is empty to avoid errors
+    if (nrow(df) == 0) {
+      cat(paste("Skipping", full_scientific_name, "- No data found.\n"))
+      next # Skip to the next iteration if no data is found
+    }
+    #Count non-zero density observations
+    non_zero_density <- sum(df$density > 0, na.rm = TRUE)
+    min_observations <- 5 # Set a threshold for minimum non-zero observations
+    
+    if (non_zero_density < min_observations) {
+      cat(paste("Skipping", full_scientific_name, 
+                "- Only", non_zero_density, 
+                "non-zero density observations. Need at least", min_observations, ".\n"))
+      # Save a brief note in the summary file to document the skip
+      summary_file <- file.path(output_dir, paste0(clean_taxa_name, "_Model_Summary.txt"))
+      sink(summary_file)
+      cat(paste("Skipped analysis: Insufficient non-zero density observations (n=", non_zero_density, ") for GAM.\n"))
+      sink()
+      next # Skip to the next taxa
+    }
+    
+    cat(paste("--- Analyzing:", full_scientific_name, "---\n"))
+    
+    # 7. Open the PDF graphics device BEFORE tryCatch
+    # If this fails (rare), the tryCatch won't even run.
+    pdf_file <- file.path(output_dir, paste0(clean_taxa_name, "_Diagnostic_Plots.pdf"))
+    pdf(pdf_file, width = 10, height = 7) # Opens the PDF device
+    
+    tryCatch({
+      
+      # 4. Fit the Gaussian GAM Model
+      model <- gam(density ~ s(sst, k=4) + s(log(chla_daily), k=4) +
+                     factor(month) + te(lon_dd, lat_dd, k=4), 
+                   family = gaussian(link="identity"), data = df)
+    
+    # 5. Save Model Summary and ANOVA to a Text File using sink()
+    summary_file <- file.path(output_dir, paste0(clean_taxa_name, "_Model_Summary.txt"))
+    sink(summary_file) # Redirects R output to the specified file
+    cat(paste("GAM Analysis for:", full_scientific_name, "\n\n"))
+    cat("---------- MODEL SUMMARY ----------\n")
+    print(summary(model))
+    cat("\n\n---------- ANOVA TABLE ----------\n")
+    print(anova(model))
+    cat("\n\n---------- CORRELATION SST vs DENSITY ----------\n")
+    print(cor.test(df$sst, df$density, method="pearson"))
+    sink() # Closes the redirection, sending output back to the console
+    cat(paste("Saved statistical summary to:", summary_file, "\n"))
+    
+    
+    # 6. Create mgcViz object and assign dynamically
+    viz_object_name <- paste0(clean_taxa_name, "_fig")
+    # This creates a variable named e.g., 'Hemiurus_fig' and assigns the getViz result to it
+    assign(viz_object_name, getViz(model)) 
+    
+    
+    # 7. Save Plots to a PDF File
+    pdf_file <- file.path(output_dir, paste0(clean_taxa_name, "_Diagnostic_Plots.pdf"))
+    pdf(pdf_file, width = 10, height = 7) # Opens a PDF graphics device
+    
+    # mgcViz plots (using the dynamically created object)
+    # Get the viz object from the dynamically assigned name
+    mahifig <- get(viz_object_name) 
+    print(plot(mahifig, allTerms=TRUE), pages = 1)
+    
+    # Standard GAM Checks
+    gam.check(model)
+    
+    # Standard R Diagnostic Plots (Model 1-4)
+    plot(model) 
+    
+    # Residual Plots
+    qqnorm(resid(model), main = paste("Q-Q Plot of Residuals -", full_scientific_name)) 
+    qqline(resid(model))
+    plot(resid(model) ~ fitted(model), main = paste("Residuals vs. Fitted -", full_scientific_name), 
+         xlab = "Fitted Values", ylab = "Residuals")
+    hist(resid(model), main = paste("Histogram of Residuals -", full_scientific_name))
+    
+    # Influence/Outlier Plots
+    plot(cooks.distance(model), type="h", main = paste("Cook's Distance -", full_scientific_name)) 
+    
+    # Visualization of SST effect
+    visreg(model, "sst", scale = "response", ylab = "Density (Response Scale)", 
+           xlab = "SST (deg.C)", alpha=0.01, rug=1, 
+           main = paste("Partial Effect of SST -", full_scientific_name))
+    
+    #Diagnostic Plots for the Tweedie Model (tw_model)
+    cat("--- Running gam.check for Tweedie Model ---\n")
+    tw_model <- gam(density ~ s(sst, k=4) + s(log(chla_daily), k=4) +
+                      factor(month) + te(lon_dd, lat_dd, k=4), 
+                    family = tw(link="log"), data = df)
+    # Run gam.check for the Tweedie model (prints to console/log)
+    gam.check(tw_model) 
+    
+    # Standard GAM Diagnostic Plots (Model 1-4 for Deviance Residuals)
+    plot(tw_model, main=paste("Tweedie GAM Diagnostics -", full_scientific_name))
+    
+    # Visualization of SST effect for the Tweedie Model
+    visreg(tw_model, "sst", scale = "response", ylab = "Density (Tweedie Response Scale)",
+           xlab = "SST (deg.C)", alpha=0.01, rug=1,
+           main = paste("Tweedie Partial Effect of SST -", full_scientific_name))
+    }, error = function(e) {
+      # This code runs if an error occurs anywhere in the 'try' block above
+      cat(paste("--- ERROR DURING ANALYSIS for", full_scientific_name, ":", conditionMessage(e), "---\n"))
+      
+      # Append the error message to the summary file
+      summary_file <- file.path(output_dir, paste0(clean_taxa_name, "_Model_Summary.txt"))
+      sink(summary_file, append = TRUE)
+      cat(paste("\n\n*** ERROR STOPPED MODELING ***\n", conditionMessage(e), "\n"))
+      sink()
+      
+      # The 'finally' block handles closing the device, so we don't need dev.off() here.
+      
+    }, finally = {
+      # This block ALWAYS executes, whether an error occurred or not.
+      
+      # Check if the PDF device is the current device and close it.
+      if (!is.null(dev.list()) && names(dev.cur()) == "pdf") {
+        # dev.cur() returns the number/name of the ACTIVE device.
+        dev.off() 
+      }
+      
+      cat(paste("Saved output files to:", pdf_file, "\n"))
+    })
+  }}
+#code to overlap legend with white space in facet wraPPED PLTOS###############
+shift_legend <- function(p){
+  
+  # check if p is a valid object
+  if(!"gtable" %in% class(p)){
+    if("ggplot" %in% class(p)){
+      gp <- ggplotGrob(p) # convert to grob
+    } else {
+      message("This is neither a ggplot object nor a grob generated from ggplotGrob. Returning original plot.")
+      return(p)
+    }
+  } else {
+    gp <- p
+  }
+  
+  # check for unfilled facet panels
+  facet.panels <- grep("^panel", gp[["layout"]][["name"]])
+  empty.facet.panels <- sapply(facet.panels, function(i) "zeroGrob" %in% class(gp[["grobs"]][[i]]))
+  empty.facet.panels <- facet.panels[empty.facet.panels]
+  if(length(empty.facet.panels) == 0){
+    message("There are no unfilled facet panels to shift legend into. Returning original plot.")
+    return(p)
+  }
+  
+  # establish extent of unfilled facet panels (including any axis cells in between)
+  empty.facet.panels <- gp[["layout"]][empty.facet.panels, ]
+  empty.facet.panels <- list(min(empty.facet.panels[["t"]]), min(empty.facet.panels[["l"]]),
+                             max(empty.facet.panels[["b"]]), max(empty.facet.panels[["r"]]))
+  names(empty.facet.panels) <- c("t", "l", "b", "r")
+  
+  # extract legend & copy over to location of unfilled facet panels
+  guide.grob <- which(gp[["layout"]][["name"]] == "guide-box")
+  if(length(guide.grob) == 0){
+    message("There is no legend present. Returning original plot.")
+    return(p)
+  }
+  gp <- gtable_add_grob(x = gp,
+                        grobs = gp[["grobs"]][[guide.grob]],
+                        t = empty.facet.panels[["t"]],
+                        l = empty.facet.panels[["l"]],
+                        b = empty.facet.panels[["b"]],
+                        r = empty.facet.panels[["r"]],
+                        name = "new-guide-box")
+  
+  # squash the original guide box's row / column (whichever applicable)
+  # & empty its cell
+  guide.grob <- gp[["layout"]][guide.grob, ]
+  if(guide.grob[["l"]] == guide.grob[["r"]]){
+    gp <- gtable_squash_cols(gp, cols = guide.grob[["l"]])
+  }
+  if(guide.grob[["t"]] == guide.grob[["b"]]){
+    gp <- gtable_squash_rows(gp, rows = guide.grob[["t"]])
+  }
+  gp <- gtable_remove_grobs(gp, "guide-box")
+  
+  return(gp)
+}
+plot_grid(shift_legend(p1))
+
