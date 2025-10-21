@@ -80,10 +80,10 @@ dfreal<-dfreal%>%rename(y=Var1,x=Var2)
 
 
 ###sst# map#####
-saug<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
+saug<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq),limits=c(25.5,28))+
   scale_fill_gradientn(colors=c("#00007F", "blue", "#007FFF", "cyan","#7FFF7F", 
                                 "yellow", "#FF7F00", "red", "#7F0000"),
-                       na.value="gray90",limits = c(26, 29))+
+                       na.value="gray90",limits = c(25.5, 28))+
   guides(fill = guide_colorbar(title = NULL,barwidth = unit(0.5, "cm"), barheight = unit(2.5, "cm"))) +
   theme(legend.title=element_text(size=10),legend.text=element_text(size=10),
         axis.text = element_text(size=5), axis.title = element_text(size=10),
@@ -127,10 +127,10 @@ dfreal<-as.data.frame(as.table(df))
 dfreal<-dfreal%>%rename(y=Var1,x=Var2)
 
 ###sst# map#####
-soct<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
+soct<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq),limits=c(25.5,28))+
   scale_fill_gradientn(colors=c("#00007F", "blue", "#007FFF", "cyan","#7FFF7F",
                                 "yellow", "#FF7F00", "red", "#7F0000"),
-                       na.value="gray90",limits = c(26, 29))+
+                       na.value="gray90",limits = c(25.5, 28))+
   guides(fill = guide_colorbar(title = NULL,barwidth = unit(0.5, "cm"), barheight = unit(2.5, "cm"))) +
   theme(legend.title=element_text(size=10),legend.text=element_text(size=10),
         axis.text = element_text(size=5), axis.title = element_text(size=10),
@@ -181,7 +181,7 @@ chla_min<-(quantile(dfreal$Freq, na.rm=T)[1])
 chla_max<-(quantile(dfreal$Freq, na.rm=T)[5])
 
 chlaug<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
-  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90",limits=c(chla_min, chla_max))+
+  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90",limits=c(0,10))+
   guides(
     fill = guide_colorbar(
       title = NULL, 
@@ -230,7 +230,8 @@ legend_title <-expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ 
 wrapped_legend_title <- str_wrap(legend_title, width = 15) # Adjust width as needed
 
 chloct<-ggplot()+ geom_tile(data=dfreal,aes(x=x,y=y, fill=Freq))+
-  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90")+
+  scale_fill_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90",
+                       limits=c(0,10))+
   guides(
     fill = guide_colorbar(
       title = NULL, # <--- THIS IS THE KEY CHANGE
