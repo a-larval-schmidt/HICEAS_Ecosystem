@@ -1,44 +1,17 @@
 ###chla, sst, ssh per station###
 # libraries####
+library(tidyverse)      # Includes dplyr, tidyr, ggplot2, stringr (and is sufficient for most of your code)
 library(lubridate)
 library(rerddap)
 library(rerddapXtracto)
-library(ggplot2)
-library(viridis)
-library(dplyr)
-library(mgcv)
-library(lunar)
 library(sf)
-library(dplyr)
-library(tidyverse)
-library(stringr)
-library(kableExtra)
-library(ggOceanMaps)
-library(marmap)
-library(ggmap)
-library(shape)
-library(sf)
-library(gpkg)
-library(dplyr)
-library(tidyr)
 library(TSP)
-library(readxl)
-library(sp) #already in raster
-library(raster)# error
-library(ggplot2)
-library(scales)
-#library(rgdal)
-library(marmap)
-library(maps)
-library(rnaturalearth)
-library(rnaturalearthdata)
-#library(rgeos)
-library(viridis)
-library(raster)
-library(ggnewscale)
-library(tidyverse)
-library(ggrepel)
+library(mgcv)
+library(mgcViz)
+library(visreg)
 library(patchwork)
+library(ncdf4)
+library(httr)
 #station data#####
 #coordinate conversion##
 ik<-read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/SE2303 ID Log - ikmt_metadata.csv")
@@ -57,7 +30,8 @@ ik<-ik %>% mutate(tow_duration= Time.Out.of.Water-Time.In..Local.)
 
 
 #sst data extraction####
-#read.csv(C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/env_pplots_data_w_sse.csv")
+#ik<-read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/env_pplots_data_w_sse.csv")
+#ik[,1]<-NULL
 legend_title<-"SST (°C)"
 swchlInfo <- as.info("noaacrwsstDaily", url="https://coastwatch.noaa.gov/erddap/")
 
@@ -67,18 +41,32 @@ SST_Match <- rxtracto(swchlInfo, parameter = 'analysed_sst',
 ik$sst<-SST_Match$`mean analysed_sst`
 #chla####
 legend_title <-expression("Chlorophyll Concentration" * "\n" * "(mg" ~ m^{-3} ~ ")")
-#read.csv("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/env_pplots_data_w_chla.csv")
-swchlInfo <- as.info("noaacwN20VIIRSchlaDaily", url="https://coastwatch.noaa.gov/erddap/")
-#swchlInfo <- as.info("noaacwNPPN20S3ASCIDINEOF2kmDaily", url="https://coastwatch.noaa.gov/erddap/")
-#"Chlorophyll (Gap-filled DINEOF), NOAA S-NPP NOAA-20 VIIRS and Copernicus S-3AOLCI, Science Quality, Global 2km, 2018-recent, Daily"
-chla_Match <- rxtracto(swchlInfo, parameter = 'chlor_a', 
-                      xcoord = ik$lon_dd, ycoord = ik$lat_dd, tcoord =ik$date, 
-                      zcoord = rep(0, length(ik$lon_dd)),
-                      zName = "altitude",
-                      xlen = .2, ylen = .2, progress_bar = TRUE)
-ik$chla_daily<-chla_Match$`mean chlor_a`
-#write.csv(ik, file="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/env_pplots_data_w_chla.csv")
-
+nc<-nc_open("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/noaacwNPPN20VIIRSDINEOFDaily_8dda_a0f6_7347.nc")
+#swchlInfo <- as.info("noaacwNPPN20VIIRSDINEOFDaily", url="https://coastwatch.noaa.gov/erddap/")
+#chla_Match <- rxtracto(swchlInfo, parameter = 'chlor_a', xcoord = ik$lon_dd, ycoord = ik$lat_dd, tcoord =ik$date,zcoord = rep(0, length(ik$lat_dd)),zName = "altitude",xlen = .2, ylen = .2, progress_bar = TRUE)
+#ik$chla_daily<-chla_Match$`mean chlor_a`
+names(nc$var)
+v1 <- nc$var[[1]]
+chlor <- ncvar_get(nc,v1)
+dim(chlor)
+dates <- as.POSIXlt(v1$dim[[4]]$vals,origin='1970-01-01',tz='GMT')
+dates<-substr(as.character(dates),start = 1, stop = 10)
+lon <- v1$dim[[1]]$vals #gives vector of longitude
+lat <- v1$dim[[2]]$vals #gives vector of latitude
+nc_close(nc) #this step is important, otherwise you risk data loss
+rm(nc,v1)
+chla_values <- as.vector(chlor)
+grid_coords <- expand.grid(lon=lon,lat=lat,date = dates)
+chla_df <- data.frame(grid_coords,chla_daily = chla_values)
+chla_df <-chla_df%>%mutate(date=as.character(date))
+#Create new rounded coordinate columns in both dataframes
+#ik_rounded <- ik %>%dplyr::mutate(date = lubridate::ymd(Date)) %>%dplyr::mutate(lon_rnd = round(lon_dd, 3),lat_rnd = round(lat_dd, 3))
+#chla_df_rounded <- chla_df %>%dplyr::mutate(lon_rnd = round(lon, 3),lat_rnd = round(lat, 3))
+#ik2 <- ik_rounded %>%dplyr::left_join(chla_df_rounded,by = dplyr::join_by("lon_rnd" == "lon_rnd", "lat_rnd" == "lat_rnd"))
+#ik2 <- ik2 %>%dplyr::select(-lon_rnd, -lat_rnd)
+ik2<-ik%>%dplyr::mutate(date=as.character(lubridate::ymd(date)))
+ik<-left_join(ik2, chla_df, by=join_by("date"=="date"))
+ik<-ik%>%distinct(as.character(Station),.keep_all = TRUE)
 #monument boundary####
 library(sf)
 PMNM<-read_sf("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/PMNM_Shp_File/hi_noaa_nwhi_papahanaumokuakea.shp")
@@ -113,7 +101,8 @@ se23<-ik2%>%
   mutate(total=as.numeric(total))%>%
   mutate(density=(total/(mean_flow/100)))%>%
   dplyr::select(Leg, Station,lat_dd,lon_dd,mean_flow, month, depth_m,total, toyos,tow_duration,
-                sst,chla_daily,
+                sst,
+                chla_daily,
                 FLAG, family, subfamily,genus, species,density,day_of_year)
 #doy and month labeling for plots#####
 
@@ -176,7 +165,9 @@ for (i in 1:length(doy_combined_breaks)) {
 }
 #load maps and taxa name list####
 load("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Hawaii.RData")
-Hawaii_df <- fortify(Hawaii)
+tryCatch(
+Hawaii_df <-fortify(Hawaii))
+print("despite the above error message Hawaii_df still loads as needed")
 
 etelinae_expression <- list("Etelinae" = expression("'opakapaka or" * "\n" * "ehu or gindai or" * "\n" * "lehi or onaga or" * "\n" * "kalekale"))
 
@@ -231,8 +222,11 @@ mas_clean<-mas_long%>%
   mutate("length"=gsub("count","",length))%>%
   mutate("length"=gsub("_","",length))%>%
   mutate("length"=as.numeric(length))
-mas_long_clean<-mas_clean%>%filter(length_occurence!=0)#distinct function eliminated vials where multiple size classes were counted
-se23<-left_join(mas_long_clean, se23,by=c(station="Station", taxa="taxa"),relationship = "many-to-many")
+mas_long_clean<-mas_clean%>%filter(length_occurence!=0)%>%#distinct function eliminated vials where multiple size classes were counted
+  mutate(station=as.factor(station))
+se23<-se23%>%mutate(Station=as.factor(Station))
+#FIX ME! merge df fo lengths########
+se2<-left_join(mas_long_clean, se23,by=join_by("station"=="Station"),relationship = "many-to-many")#missing values here, but also df is WAYYY too long
 
 #plot theme####
 plot_theme<-c(axis.title = element_text(size=10),axis.text=element_text(size=10))
@@ -317,7 +311,7 @@ for (level in names(taxa_to_plot)) {
            path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
     
     # Plot 2: Density vs SST
-    p2 <- ggplot(data = df, aes(x = sst, y = density)) +geom_point(size=3) +
+    p2 <- ggplot(data = df, aes(x = sst, y = density)) +geom_point(size=3, limits=c(25.5,28))+
       labs(x =expression("SST (" * degree * "C)"),
            y = bquote(paste(.(fish_taxa)," Density (fish 100" ~ m^{-3} ~ ")")))+theme_bw()+
       theme(plot_theme)
@@ -325,10 +319,9 @@ for (level in names(taxa_to_plot)) {
     ggsave(paste0(fish_taxa, "_density_vs_sst.png"), plot = p2, width = 4, height = 4,path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
     
     # Plot 3: Density vs Chla
-    p3 <- ggplot(data = df, aes(x = log(chla_daily), y = density)) +geom_point(size=3)+
-      labs(x = expression("Log (e) Chlorophyll Concentration" * "\n" * "(mg" ~m^{-3}~")"),
-           y = bquote(paste(.(fish_taxa),"  Density (fish 100" ~ m^{-3} ~")")))+theme_bw()+
-      theme(plot_theme)
+    p3 <- ggplot(data = df, aes(x = log(chla_daily), y = density)) +
+      geom_point(size=3,limits=c(log(0.07949),log(0.02385)))+
+      labs(x = expression("Log (e) Chlorophyll Concentration" * "\n" * "(mg" ~m^{-3}~")"),y = bquote(paste(.(fish_taxa),"  Density (fish 100" ~ m^{-3} ~")")))+theme_bw()+theme(plot_theme)
     ggsave(paste0(fish_taxa, "_density_vs_chla.png"), plot = p3, width = 4, height = 4,path="C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Plot Figures/")
    
     
@@ -339,7 +332,8 @@ for (level in names(taxa_to_plot)) {
       geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density),shape=19,alpha=0.8) +
        geom_point(data=anti_df,mapping=aes(y=lat_dd, x=lon_dd), shape=1, size=2)+
        coord_sf(xlim=c(178.4,204.9), ylim=c(18.6, 31.4)) +
-      scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1)) +
+      scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1),
+                         labels = function(x) { x - 360 })+
        scale_size_continuous(limits = c(fish_min_quant,fish_max_quant),
                              range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
                              breaks = DENSITY_BREAKS,
@@ -356,7 +350,7 @@ for (level in names(taxa_to_plot)) {
         annotate("text", x=178.4, y=18.35,size=3, color="black", hjust=0,
                 label=paste("Stations where no",(fish_taxa),"were found"))+
        #taxa name/label
-       annotate("text", x=200, y=31.5,size=4, color="black", hjust=0,
+       annotate("text", x=190, y=31.5,size=4, color="black", hjust=0,
                 fontface = ifelse(level == "genus", "bold.italic", "bold"),
                 label=paste(full_scientific_name))+
        annotate("point", x=177.8, y=18.35, color="black",shape=1, size=2)+
@@ -421,7 +415,8 @@ fig1<-ggplot() +
   geom_point(data=se23,mapping=aes(y=lat_dd, x=lon_dd,color=month),shape=19,size=3) +
   scale_color_manual(values = c("chartreuse4","#800074","#c99b38","#996600"),labels = c("July","Aug","Oct","Nov"),name="Collection Month") +
   coord_sf(xlim=c(178.4,204.9), ylim=c(18.6, 31.4)) +
-  scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1)) +
+  scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1),
+                     labels = function(x) { x - 360 }) +
   theme_bw()+theme(axis.title = element_text(size=11),axis.text=element_text(size=10),
                    axis.ticks.length = unit(0.25, "cm"),
                    plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "cm"),
@@ -479,9 +474,10 @@ p1<-ggplot() +
   scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4",limits=c(-10000,0),
                       na.value=(color="#003300"),guide="none")+
   geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density, color=chla_daily),shape=19,alpha=0.8) +
-  scale_color_gradientn(colors=c("gray90","darkseagreen1","aquamarine4"),na.value="gray 90",limits=c(0.01,0.2))+
+  scale_color_gradientn(colors=c("darkseagreen3","darkseagreen2","darkseagreen1","lightgreen","green4","forestgreen","darkgreen"),na.value="gray50",limits=c(0.01,10))+
     coord_sf(xlim=c(178.4,204.9), ylim=c(18.6, 31.4)) +
-  scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1)) +
+  scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1),
+                     labels = function(x) { x - 360 }) +
   scale_size_continuous(limits = c(fish_min_quant,fish_max_quant),
                         range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
                         breaks = DENSITY_BREAKS,
@@ -498,7 +494,7 @@ p1<-ggplot() +
   annotate("text", x=178.4, y=18.35,size=3, color="black", hjust=0,
            label=paste("Stations where no",(fish_taxa),"were found"))+
   #taxa name/label
-  annotate("text", x=200, y=31.5,size=4, color="black", hjust=0,
+  annotate("text", x=190, y=31.5,size=4, color="black", hjust=0,
            fontface = ifelse(level == "genus", "bold.italic", "bold"),
            label=paste(full_scientific_name))+
   annotate("point", x=177.8, y=18.35, color="black",shape=1, size=2)+
@@ -511,9 +507,10 @@ p2<-ggplot() +
   geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density, color=sst),shape=19,alpha=0.8) +
   scale_color_gradientn(colors=c("#00007F", "blue", "#007FFF", "cyan","#7FFF7F", 
                                 "yellow", "#FF7F00", "red", "#7F0000"),
-                       na.value="gray90",limits = c(26, 29))+
+                       na.value="gray90",limits = c(25.5, 28))+
     coord_sf(xlim=c(178.4,204.9), ylim=c(18.6, 31.4)) +
-  scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1)) +
+  scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1),
+                     labels = function(x) { x - 360 }) +
   scale_size_continuous(limits = c(fish_min_quant,fish_max_quant),
                         range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
                         breaks = DENSITY_BREAKS,
@@ -530,7 +527,7 @@ p2<-ggplot() +
   annotate("text", x=178.4, y=18.35,size=3, color="black", hjust=0,
            label=paste("Stations where no",(fish_taxa),"were found"))+
   #taxa name/label
-  annotate("text", x=200, y=31.5,size=4, color="black", hjust=0,
+  annotate("text", x=190, y=31.5,size=4, color="black", hjust=0,
            fontface = ifelse(level == "genus", "bold.italic", "bold"),
            label=paste(full_scientific_name))+
   annotate("point", x=177.8, y=18.35, color="black",shape=1, size=2)+
@@ -549,17 +546,93 @@ p2<-ggplot() +
   }
 }
 
-
-
+#doy/ density##########
+for (level in names(taxa_to_plot)) {
+  for (fish_taxa in taxa_to_plot[[level]]) {
+    
+    # --- Step 3: Filter the data for the current taxon ---
+    #allow for access to full scientific name
+    current_species <- species_names[fish_taxa]
+    current_species_name <- ifelse(is.na(current_species),"", paste0(current_species))
+    full_scientific_name <- paste(fish_taxa, current_species_name)
+    # The filtering column changes based on the level.
+    if (level == "family") {
+      df <- se23 %>% filter(family == fish_taxa)
+      anti_df <- se23 %>% filter(family != fish_taxa)
+    } else if (level == "subfamily") {
+      df <- se23 %>% filter(subfamily == fish_taxa)
+      anti_df <- se23 %>% filter(subfamily != fish_taxa)
+    } else if (level == "genus") {
+      df <- se23 %>% filter(genus == fish_taxa)
+      anti_df <- se23 %>% filter(genus != fish_taxa)
+    }
+    
+    # Check if the filtered data frame is empty to avoid errors
+    if (nrow(df) == 0) {
+      next # Skip to the next iteration if no data is found
+    }
+    
+    #find quantile min and max and 1,2,3,4 then make a column so each value that falls into a given quantile is in its own column
+    station_quantiles <- df %>%
+      reframe(quantile_values = quantile(density, na.rm = TRUE),
+              quantile_level = names(quantile(density, na.rm = TRUE))) %>%
+      rename(total_count = quantile_values)
+    fish_min_quant<-station_quantiles$total_count[1]
+    fish_max_quant<-station_quantiles$total_count[5]
+    quant_breaks<-c(station_quantiles$total_count[1],station_quantiles$total_count[2], station_quantiles$total_count[3],station_quantiles$total_count[4],station_quantiles$total_count[5])
+    DENSITY_BREAKS <- unique(quant_breaks)
+    
+    pp<-ggplot() +
+      geom_raster(data = Hawaii_df, aes(x = x, y = y, fill = z)) +labs(fill = "Depth (m)")+
+      scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4",limits=c(-10000,0),
+                          na.value=(color="#003300"),guide="none")+
+      geom_point(data=df,mapping=aes(y=lat_dd, x=lon_dd, size=density, color=day_of_year),shape=19,alpha=0.8) +
+      scale_color_gradientn(colors=c("pink","hotpink","orchid","orchid3","orchid4","purple"),
+                            na.value="gray 90",limits=c(206,305))+
+      coord_sf(xlim=c(178.4,204.9), ylim=c(18.6, 31.4)) +
+      scale_x_continuous(breaks = round(seq(min(Hawaii_df$x), max(Hawaii_df$x), by = 5),1),
+                         labels = function(x) { x - 360 }) +
+      scale_size_continuous(limits = c(fish_min_quant,fish_max_quant),
+                            range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
+                            breaks = DENSITY_BREAKS,
+                            name=bquote("Density(fish 100" ~ m^{-3}~")"))+
+      theme_bw()+theme(axis.title = element_text(size=11),axis.text=element_text(size=10),
+                       axis.ticks.length = unit(0.25, "cm"),
+                       plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "cm"),
+                       panel.grid = element_blank(),text = element_text(size=10),
+                       legend.position = "inside",legend.position.inside=c(0.22,0.03),
+                       legend.justification = c(1, 0),legend.background = element_rect(fill = "transparent"),
+                       legend.key = element_rect(fill = "transparent"))+
+      geom_path(data = re_ordered_EEZ,aes(x = Lon, y = X2), color = "white",linewidth = 1)+
+      #antidf label
+      annotate("text", x=178.4, y=18.35,size=3, color="black", hjust=0,
+               label=paste("Stations where no",(fish_taxa),"were found"))+
+      #taxa name/label
+      annotate("text", x=190, y=31.5,size=4, color="black", hjust=0,
+               fontface = ifelse(level == "genus", "bold.italic", "bold"),
+               label=paste(full_scientific_name))+
+      annotate("point", x=177.8, y=18.35, color="black",shape=1, size=2)+
+      ylab(expression("Latitude (" * degree *"N)"))+xlab(expression("Longitude (" * degree * "W)"))
+    ggsave(
+      plot =pp, # Use the object with tags and layout
+      width = 8,                 # Use a reasonable, often slightly smaller width
+      height = 10,               # Use a larger height to accommodate the three rows
+      dpi = 300,
+      filename = paste0(fish_taxa, "_doy_color_map.png"),
+      path = "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/"
+    )
+    
+  }
+}
 #stats#####
+# 1. Load Necessary Libraries
+library(mgcv)
+library(mgcViz)
+library(visreg)
 output_dir <- "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Stat Figures"
 if (!dir.exists(output_dir)) {
   dir.create(output_dir)
 }
-# 1. Load Necessary Libraries
-library(mgcv)
-library(mgcViz)
-library(visreg)# For getViz and enhanced plots
 for (level in names(taxa_to_plot)) {
   for (fish_taxa in taxa_to_plot[[level]]) {
     
@@ -570,16 +643,24 @@ for (level in names(taxa_to_plot)) {
     current_species <- species_names[fish_taxa]
     current_species_name <- ifelse(is.na(current_species), "", paste0(current_species))
     full_scientific_name <- paste(fish_taxa, current_species_name)
-    
     # The filtering column changes based on the level.
     if (level == "family") {
       df <- se23 %>% filter(family == fish_taxa)
-      # anti_df is not used in the rest of the loop, so it's commented out for simplicity.
-      # anti_df <- se23 %>% filter(family != fish_taxa) 
+      anti_df <- se23 %>% filter(family != fish_taxa)
     } else if (level == "subfamily") {
       df <- se23 %>% filter(subfamily == fish_taxa)
+      anti_df <- se23 %>% filter(subfamily != fish_taxa)
     } else if (level == "genus") {
       df <- se23 %>% filter(genus == fish_taxa)
+      anti_df <- se23 %>% filter(genus != fish_taxa)
+    }
+    df$pa<-"present"
+    anti_df$pa<-"absent"
+    anti_df$density<-0
+    df<-rbind(df,anti_df)
+    # Check if the filtered data frame is empty to avoid errors
+    if (nrow(df) == 0) {
+      next # Skip to the next iteration if no data is found
     }
     
     # Check if the filtered data frame is empty to avoid errors
@@ -603,13 +684,13 @@ for (level in names(taxa_to_plot)) {
       next # Skip to the next taxa
     }
     
+    
     cat(paste("--- Analyzing:", full_scientific_name, "---\n"))
     
     # 7. Open the PDF graphics device BEFORE tryCatch
     # If this fails (rare), the tryCatch won't even run.
     pdf_file <- file.path(output_dir, paste0(clean_taxa_name, "_Diagnostic_Plots.pdf"))
-    pdf(pdf_file, width = 10, height = 7) # Opens the PDF device
-    
+    pdf(pdf_file, width = 10, height = 7)
     tryCatch({
       
       # 4. Fit the Gaussian GAM Model
@@ -630,20 +711,13 @@ for (level in names(taxa_to_plot)) {
     sink() # Closes the redirection, sending output back to the console
     cat(paste("Saved statistical summary to:", summary_file, "\n"))
     
-    
     # 6. Create mgcViz object and assign dynamically
     viz_object_name <- paste0(clean_taxa_name, "_fig")
-    # This creates a variable named e.g., 'Hemiurus_fig' and assigns the getViz result to it
     assign(viz_object_name, getViz(model)) 
-    
-    
-    # 7. Save Plots to a PDF File
-    pdf_file <- file.path(output_dir, paste0(clean_taxa_name, "_Diagnostic_Plots.pdf"))
-    pdf(pdf_file, width = 10, height = 7) # Opens a PDF graphics device
-    
+    mahifig <- get(viz_object_name)
+    dummy_plot_output <- print(plot(mahifig, allTerms=TRUE), pages = 1)
+  
     # mgcViz plots (using the dynamically created object)
-    # Get the viz object from the dynamically assigned name
-    mahifig <- get(viz_object_name) 
     print(plot(mahifig, allTerms=TRUE), pages = 1)
     
     # Standard GAM Checks
@@ -666,24 +740,8 @@ for (level in names(taxa_to_plot)) {
     visreg(model, "sst", scale = "response", ylab = "Density (Response Scale)", 
            xlab = "SST (deg.C)", alpha=0.01, rug=1, 
            main = paste("Partial Effect of SST -", full_scientific_name))
-    
-    #Diagnostic Plots for the Tweedie Model (tw_model)
-    cat("--- Running gam.check for Tweedie Model ---\n")
-    tw_model <- gam(density ~ s(sst, k=4) + s(log(chla_daily), k=4) +
-                      factor(month) + te(lon_dd, lat_dd, k=4), 
-                    family = tw(link="log"), data = df)
-    # Run gam.check for the Tweedie model (prints to console/log)
-    gam.check(tw_model) 
-    
-    # Standard GAM Diagnostic Plots (Model 1-4 for Deviance Residuals)
-    plot(tw_model, main=paste("Tweedie GAM Diagnostics -", full_scientific_name))
-    
-    # Visualization of SST effect for the Tweedie Model
-    visreg(tw_model, "sst", scale = "response", ylab = "Density (Tweedie Response Scale)",
-           xlab = "SST (deg.C)", alpha=0.01, rug=1,
-           main = paste("Tweedie Partial Effect of SST -", full_scientific_name))
     }, error = function(e) {
-      # This code runs if an error occurs anywhere in the 'try' block above
+      # This runs if an error occurs. 
       cat(paste("--- ERROR DURING ANALYSIS for", full_scientific_name, ":", conditionMessage(e), "---\n"))
       
       # Append the error message to the summary file
@@ -692,76 +750,270 @@ for (level in names(taxa_to_plot)) {
       cat(paste("\n\n*** ERROR STOPPED MODELING ***\n", conditionMessage(e), "\n"))
       sink()
       
-      # The 'finally' block handles closing the device, so we don't need dev.off() here.
+      # We do NOT use dev.off() here. The 'finally' block handles it.
+      
+      # We must explicitly return to ensure the loop moves on gracefully
+      return(NULL) 
       
     }, finally = {
-      # This block ALWAYS executes, whether an error occurred or not.
-      
-      # Check if the PDF device is the current device and close it.
-      if (!is.null(dev.list()) && names(dev.cur()) == "pdf") {
-        # dev.cur() returns the number/name of the ACTIVE device.
-        dev.off() 
+      if (dev.cur() != 1) { # Close the active device, but only if one is open (dev.cur() != 1)
+        Sys.sleep(0.1) # Add a tiny sleep to allow I/O operations to complete
+        dev.off() # Close the currently active device (should be the PDF)
+        cat(paste("Successfully closed graphics device.\n"))
+      } else {
+        cat("No active device to close.\n")
       }
       
       cat(paste("Saved output files to:", pdf_file, "\n"))
-    })
-  }}
-#code to overlap legend with white space in facet wraPPED PLTOS###############
-shift_legend <- function(p){
-  
-  # check if p is a valid object
-  if(!"gtable" %in% class(p)){
-    if("ggplot" %in% class(p)){
-      gp <- ggplotGrob(p) # convert to grob
-    } else {
-      message("This is neither a ggplot object nor a grob generated from ggplotGrob. Returning original plot.")
-      return(p)
-    }
-  } else {
-    gp <- p
-  }
-  
-  # check for unfilled facet panels
-  facet.panels <- grep("^panel", gp[["layout"]][["name"]])
-  empty.facet.panels <- sapply(facet.panels, function(i) "zeroGrob" %in% class(gp[["grobs"]][[i]]))
-  empty.facet.panels <- facet.panels[empty.facet.panels]
-  if(length(empty.facet.panels) == 0){
-    message("There are no unfilled facet panels to shift legend into. Returning original plot.")
-    return(p)
-  }
-  
-  # establish extent of unfilled facet panels (including any axis cells in between)
-  empty.facet.panels <- gp[["layout"]][empty.facet.panels, ]
-  empty.facet.panels <- list(min(empty.facet.panels[["t"]]), min(empty.facet.panels[["l"]]),
-                             max(empty.facet.panels[["b"]]), max(empty.facet.panels[["r"]]))
-  names(empty.facet.panels) <- c("t", "l", "b", "r")
-  
-  # extract legend & copy over to location of unfilled facet panels
-  guide.grob <- which(gp[["layout"]][["name"]] == "guide-box")
-  if(length(guide.grob) == 0){
-    message("There is no legend present. Returning original plot.")
-    return(p)
-  }
-  gp <- gtable_add_grob(x = gp,
-                        grobs = gp[["grobs"]][[guide.grob]],
-                        t = empty.facet.panels[["t"]],
-                        l = empty.facet.panels[["l"]],
-                        b = empty.facet.panels[["b"]],
-                        r = empty.facet.panels[["r"]],
-                        name = "new-guide-box")
-  
-  # squash the original guide box's row / column (whichever applicable)
-  # & empty its cell
-  guide.grob <- gp[["layout"]][guide.grob, ]
-  if(guide.grob[["l"]] == guide.grob[["r"]]){
-    gp <- gtable_squash_cols(gp, cols = guide.grob[["l"]])
-  }
-  if(guide.grob[["t"]] == guide.grob[["b"]]){
-    gp <- gtable_squash_rows(gp, rows = guide.grob[["t"]])
-  }
-  gp <- gtable_remove_grobs(gp, "guide-box")
-  
-  return(gp)
+    })}}
+
+
+
+output_dir <- "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Stat Figures"
+#binomial#####
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir)
 }
-plot_grid(shift_legend(p1))
+for (level in names(taxa_to_plot)) {
+  for (fish_taxa in taxa_to_plot[[level]]) {
+    
+    # 3. Create Clean Names for Files
+    # Replace spaces and special characters for a safe file name
+    clean_taxa_name <- gsub(" ", "_", fish_taxa) 
+    
+    current_species <- species_names[fish_taxa]
+    current_species_name <- ifelse(is.na(current_species), "", paste0(current_species))
+    full_scientific_name <- paste(fish_taxa, current_species_name)
+    # The filtering column changes based on the level.
+    if (level == "family") {
+      df <- se23 %>% filter(family == fish_taxa)
+      anti_df <- se23 %>% filter(family != fish_taxa)
+    } else if (level == "subfamily") {
+      df <- se23 %>% filter(subfamily == fish_taxa)
+      anti_df <- se23 %>% filter(subfamily != fish_taxa)
+    } else if (level == "genus") {
+      df <- se23 %>% filter(genus == fish_taxa)
+      anti_df <- se23 %>% filter(genus != fish_taxa)
+    }
+    df$pa<-1#present
+    anti_df$pa<-0#absent
+    df<-rbind(df,anti_df)
+    # Check if the filtered data frame is empty to avoid errors
+    if (nrow(df) == 0) {
+      next # Skip to the next iteration if no data is found
+    }
+    
+    # Check if the filtered data frame is empty to avoid errors
+    if (nrow(df) == 0) {
+      cat(paste("Skipping", full_scientific_name, "- No data found.\n"))
+      next # Skip to the next iteration if no data is found
+    }
+    cat(paste("--- Analyzing:", full_scientific_name, "---\n"))
+    pdf_file <- file.path(output_dir, paste0(clean_taxa_name, "_Binomial_Diagnostic_Plots.pdf"))
+    pdf(pdf_file, width = 10, height = 7)
+    tryCatch({
+#4.5 Fit binomial model
+model <- gam(pa ~ s(sst, k=4) + s(log(chla_daily), k=4) +
+               factor(month) + te(lon_dd, lat_dd, k=4), 
+             family = binomial(link="logit"), data = df)
+
+# 5. Save Model Summary and ANOVA to a Text File using sink()
+summary_file <- file.path(output_dir, paste0(clean_taxa_name, "_Binomial Model_Summary.txt"))
+sink(summary_file) # Redirects R output to the specified file
+cat(paste("binomial GAM Analysis for:", full_scientific_name, "\n\n"))
+cat("---------- MODEL SUMMARY ----------\n")
+print(summary(model))
+cat("\n\n---------- ANOVA TABLE ----------\n")
+print(anova(model))
+cat("\n\n---------- CORRELATION SST vs pa ----------\n")
+print(cor.test(df$sst, df$pa, method="pearson"))
+cat("\n\n---------- CORRELATION CHLA vs pa ----------\n")
+print(cor.test(df$chla_daily, df$pa, method="pearson"))
+cat("\n\n---------- GAM CHECK ----------\n")
+print(gam.check(model))
+sink() # Closes the redirection, sending output back to the console
+cat(paste("Saved statistical summary to:", summary_file, "\n"))
+
+# 6. Create mgcViz object and assign dynamically
+viz_object_name <- paste0(clean_taxa_name, "_fig")
+assign(viz_object_name, getViz(model)) 
+mahifig <- get(viz_object_name)
+dummy_plot_output <- print(plot(mahifig, allTerms=TRUE), pages = 1)
+
+# mgcViz plots (using the dynamically created object)
+print(plot(mahifig, allTerms=TRUE), pages = 1)
+
+# Standard GAM Checks
+gam.check(model)
+
+# Standard R Diagnostic Plots (Model 1-4)
+plot(model) 
+
+# Residual Plots
+qqnorm(resid(model), main = paste("Q-Q Plot of Residuals -", full_scientific_name)) 
+qqline(resid(model))
+plot(resid(model) ~ fitted(model), main = paste("Residuals vs. Fitted -", full_scientific_name), 
+     xlab = "Fitted Values", ylab = "Residuals")
+hist(resid(model), main = paste("Histogram of Residuals -", full_scientific_name))
+
+# Influence/Outlier Plots
+plot(cooks.distance(model), type="h", main = paste("Cook's Distance -", full_scientific_name)) 
+
+# Visualization of SST effect
+visreg(model, "sst", scale = "response", ylab = "presence/absence (Response Scale)", 
+       xlab = "SST (deg.C)", alpha=0.01, rug=1, 
+       main = paste("Partial Effect of SST -", full_scientific_name))
+
+# Visualization of chla effect
+visreg(model, "daily chla", scale = "response", ylab = "presence/absence (Response Scale)", 
+       xlab = "chla mg/-m3)", alpha=0.01, rug=1, 
+       main = paste("Partial Effect of chla -", full_scientific_name))
+
+  }, error = function(e) {
+    # This runs if an error occurs. 
+    cat(paste("--- ERROR DURING ANALYSIS for", full_scientific_name, ":", conditionMessage(e), "---\n"))
+    
+    # Append the error message to the summary file
+    summary_file <- file.path(output_dir, paste0(clean_taxa_name, "_Model_Summary.txt"))
+    sink(summary_file, append = TRUE)
+    cat(paste("\n\n*** ERROR STOPPED MODELING ***\n", conditionMessage(e), "\n"))
+    sink()
+    
+    # We do NOT use dev.off() here. The 'finally' block handles it.
+    
+    # We must explicitly return to ensure the loop moves on gracefully
+    return(NULL) 
+    
+  }, finally = {
+    if (dev.cur() != 1) { # Close the active device, but only if one is open (dev.cur() != 1)
+      Sys.sleep(0.1) # Add a tiny sleep to allow I/O operations to complete
+      dev.off() # Close the currently active device (should be the PDF)
+      cat(paste("Successfully closed graphics device.\n"))
+    } else {
+      cat("No active device to close.\n")
+    }
+    
+    cat(paste("Saved output files to:", pdf_file, "\n"))
+  })}}
+
+
+
+#tweedie####
+#Diagnostic Plots for the Tweedie Model (tw_model)
+if (!dir.exists(output_dir)) {
+  dir.create(output_dir)
+}
+for (level in names(taxa_to_plot)) {
+  for (fish_taxa in taxa_to_plot[[level]]) {
+    
+    # 3. Create Clean Names for Files
+    # Replace spaces and special characters for a safe file name
+    clean_taxa_name <- gsub(" ", "_", fish_taxa) 
+    
+    current_species <- species_names[fish_taxa]
+    current_species_name <- ifelse(is.na(current_species), "", paste0(current_species))
+    full_scientific_name <- paste(fish_taxa, current_species_name)
+    # The filtering column changes based on the level.
+    if (level == "family") {
+      df <- se23 %>% filter(family == fish_taxa)
+      anti_df <- se23 %>% filter(family != fish_taxa)
+    } else if (level == "subfamily") {
+      df <- se23 %>% filter(subfamily == fish_taxa)
+      anti_df <- se23 %>% filter(subfamily != fish_taxa)
+    } else if (level == "genus") {
+      df <- se23 %>% filter(genus == fish_taxa)
+      anti_df <- se23 %>% filter(genus != fish_taxa)
+    }
+    df$pa<-"present"
+    anti_df$pa<-"absent"
+    df<-rbind(df,anti_df)
+    # Check if the filtered data frame is empty to avoid errors
+    if (nrow(df) == 0) {
+      next # Skip to the next iteration if no data is found
+    }
+    
+    # Check if the filtered data frame is empty to avoid errors
+    if (nrow(df) == 0) {
+      cat(paste("Skipping", full_scientific_name, "- No data found.\n"))
+      next # Skip to the next iteration if no data is found
+    }
+    #Count non-zero density observations
+    non_zero_density <- sum(df$density > 0, na.rm = TRUE)
+    min_observations <- 5 # Set a threshold for minimum non-zero observations
+    
+    if (non_zero_density < min_observations) {
+      cat(paste("Skipping", full_scientific_name, 
+                "- Only", non_zero_density, 
+                "non-zero density observations. Need at least", min_observations, ".\n"))
+      # Save a brief note in the summary file to document the skip
+      summary_file <- file.path(output_dir, paste0(clean_taxa_name, "_Model_Summary.txt"))
+      sink(summary_file)
+      cat(paste("Skipped analysis: Insufficient non-zero density observations (n=", non_zero_density, ") for GAM.\n"))
+      sink()
+      next # Skip to the next taxa
+    }
+    
+    
+cat(paste("--- Running gam.check for Tweedie Model ---\n"))
+# 7. Open the PDF graphics device BEFORE tryCatch
+# If this fails (rare), the tryCatch won't even run.
+pdf_file <- file.path(output_dir, paste0(clean_taxa_name, "_Tweedie_Diagnostic_Plots.pdf"))
+pdf(pdf_file, width = 10, height = 7)
+tryCatch({
+  
+model <- gam(density ~ s(sst, k=4) + s(log(chla_daily), k=4) +
+                  factor(month) + te(lon_dd, lat_dd, k=4), 
+                family = tw(link="log"), data = df)
+
+# 5. Save Model Summary and ANOVA to a Text File using sink()
+summary_file <- file.path(output_dir, paste0(clean_taxa_name, "_Tweedie_Model_Summary.txt"))
+sink(summary_file) # Redirects R output to the specified file
+cat(paste("GAM Analysis for:", full_scientific_name, "\n\n"))
+cat("---------- MODEL SUMMARY ----------\n")
+print(summary(model))
+cat("\n\n---------- ANOVA TABLE ----------\n")
+print(anova(model))
+cat("\n\n---------- CORRELATION SST vs DENSITY ----------\n")
+print(cor.test(df$sst, df$density, method="pearson"))
+cat("\n\n---------- GAM CHECK ----------\n")
+print(gam.check(model))
+sink() # Closes the redirection, sending output back to the console
+cat(paste("Saved statistical summary to:", summary_file, "\n"))
+
+
+
+# Standard GAM Diagnostic Plots (Model 1-4 for Deviance Residuals)
+plot(model, main=paste("Tweedie GAM Diagnostics -", full_scientific_name))
+
+# Visualization of SST effect for the Tweedie Model
+visreg(model, "sst", scale = "response", ylab = "Density (Tweedie Response Scale)",
+       xlab = "SST (deg.C)", alpha=0.01, rug=1,
+       main = paste("Tweedie Partial Effect of SST -", full_scientific_name))
+}, error = function(e) {
+  # This runs if an error occurs. 
+  cat(paste("--- ERROR DURING ANALYSIS for", full_scientific_name, ":", conditionMessage(e), "---\n"))
+  
+  # Append the error message to the summary file
+  summary_file <- file.path(output_dir, paste0(clean_taxa_name, "_Model_Summary.txt"))
+  sink(summary_file, append = TRUE)
+  cat(paste("\n\n*** ERROR STOPPED MODELING ***\n", conditionMessage(e), "\n"))
+  sink()
+  
+  # We do NOT use dev.off() here. The 'finally' block handles it.
+  
+  # We must explicitly return to ensure the loop moves on gracefully
+  return(NULL) 
+  
+}, finally = {
+  if (dev.cur() != 1) { # Close the active device, but only if one is open (dev.cur() != 1)
+    Sys.sleep(0.1) # Add a tiny sleep to allow I/O operations to complete
+    dev.off() # Close the currently active device (should be the PDF)
+    cat(paste("Successfully closed graphics device.\n"))
+  } else {
+    cat("No active device to close.\n")
+  }
+  
+  cat(paste("Saved output files to:", pdf_file, "\n"))
+})}}
+
 
