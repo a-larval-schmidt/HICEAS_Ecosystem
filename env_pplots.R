@@ -1018,3 +1018,81 @@ visreg(model, "sst", scale = "response", ylab = "Density (Tweedie Response Scale
 })}}
 
 
+#NON-fish###########
+load("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Hawaii.RData")
+Hawaii_df <-marmap::fortify.bathy(Hawaii)
+
+not_fish<-read.csv("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/SE2303 ID Log - Non-fish counts.csv")
+library(tidyverse)
+library(ggrepel)
+ik<-read.csv("A:/My Drive/crusies/HICEAS_23/IKMT Log - Sheet1.csv")
+#convert ship coordinates into DMS then to DD
+ik<-ik %>% mutate(lat_deg= as.numeric(substr(Lat.In,1,2)))#http://127.0.0.1:40641/graphics/4ee7ccc4-d91e-43e0-8b31-d427019a6d2c.png
+ik<-ik %>% mutate(lon_deg= as.numeric(substr(Lon.In,1,4)))
+ik<-ik %>% mutate(lat_minsec= as.numeric(substr(Lat.In,3,10)))
+ik<-ik %>% mutate(long_minsec= as.numeric(substr(Lon.In,5,10)))
+ik<-ik %>% mutate(lat_dd= lat_deg+(lat_minsec/60))
+ik<-ik %>% mutate(lon_dd= lon_deg+(long_minsec/60))
+ik<-ik%>%filter(lon_dd<1000)
+ik<-ik%>%mutate(lon_dd=ifelse(lon_dd<0, lon_dd+360,lon_dd))
+
+ik2<-ik%>%dplyr::select(Station, lat_dd, lon_dd)%>%
+  rename(station="Station")
+ik3<-ik2%>%left_join(not_fish, ik2, by="station")
+
+ik3 <- ik3 %>%mutate(halo = ifelse(is.na(halobates_count) | as.character(halobates_count) %in% c("0", ""),
+      "absent","present"),
+    phyl = ifelse(is.na(phyllosome_count) | as.character(phyllosome_count) %in% c("0", ""),
+      "absent","present"),
+    phys = ifelse(is.na(physallia_count) | as.character(physallia_count) %in% c("0", ""),
+      "absent","present"),
+    squid = ifelse(is.na(cephalopods_YN) | cephalopods_YN %in% c("N", ""),
+      "absent","present"))
+
+
+ik3_clean_coords <- ik3 %>%
+  select(station, lat_dd, lon_dd, halo, phyl, phys, squid) %>%
+  distinct(station, .keep_all = TRUE)
+
+ik4 <- ik3_clean_coords %>%
+  pivot_longer(cols = c(halo, phyl, phys, squid),
+               names_to = "taxa",values_to = "presence_absence")
+
+larv2<-ik3_clean_coords%>%
+  group_by(station)%>%
+  summarize(halo, phyl, phys, squid)
+
+kable(larv2,col.names =c("Station Number", "Halobates sp.", "Phyllosomes (Palinuridae or Scyllaridae)","Physalia sp.","Cephalopoda"),
+      caption = "Presence or absence of non-fish from all stations")%>%
+  kable_styling(latex_options = "striped",table.env='table*')#%>%
+  save_kable("nonfish.png")
+
+taxa_names<- c("halo"= "Halobates sp.","phyl"="Phyllosomes (Palinuridae or Scyllaridae)",
+                      "phys"="Physalia sp.","squid"="Cephalopoda")
+
+map_theme <- theme(axis.title = element_text(size = 11), 
+  axis.text = element_text(size = 10),axis.ticks.length = unit(0.25, "cm"),
+  plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "cm"),strip.text.x = element_text(size = 10),
+  panel.grid = element_blank(), text = element_text(size = 10),#legend.position = "inside", 
+  #legend.position.inside = c(0.22, 0.03),legend.justification = c(1, 0), 
+  legend.background = element_rect(fill = "transparent"),legend.key = element_rect(fill = "transparent"))
+
+map_plot <- ggplot() +
+  geom_raster(data = Hawaii_df, aes(x = x, y = y, fill = z)) +
+  labs(fill = "Depth (m)") +
+  scale_fill_gradient(high = "lightskyblue1", low = "lightsteelblue4", limits = c(-10000, 0),na.value = (color = "#003300"), guide = "none") +
+  geom_point(data = ik4, mapping = aes(y = lat_dd, x = lon_dd, shape = presence_absence)) +
+  facet_wrap(~taxa, labeller = ggplot2::as_labeller(taxa_names))+
+  scale_shape_manual(values = c("absent" = 1, "present" = 19), name = "Observation")+
+  coord_sf(xlim = c(178.4, 204.9), ylim = c(18.6, 31.4)) +
+    scale_x_continuous(breaks = round(seq(min(Hawaii_df$x, na.rm=T), max(Hawaii_df$x,na.rm=T), by = 5),1),
+                       labels = function(x) { x - 360 })+
+  theme_bw() + map_theme +ylab(expression("Latitude (" * degree * "N)")) +
+  xlab(expression("Longitude (" * degree * "W)"))
+ggsave(
+  plot =map_plot, # Use the object with tags and layout
+  width = 8,                 # Use a reasonable, often slightly smaller width
+  height = 10,               # Use a larger height to accommodate the three rows
+  dpi = 300,
+  filename = "nonfish.png",
+  path = "A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/")
