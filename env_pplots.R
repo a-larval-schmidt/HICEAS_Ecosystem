@@ -1096,3 +1096,73 @@ ggsave(
   dpi = 300,
   filename = "nonfish.png",
   path = "A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/")
+
+
+                               #in/out of monument box plot#####
+library(sf)
+PMNM<-read_sf("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/PMNM_Shp_File/hi_noaa_nwhi_papahanaumokuakea.shp")
+target_crs <- st_crs(4326)
+PMNM_sf_full <- st_set_crs(PMNM, target_crs)
+EEZ <- st_geometry(PMNM_sf_full)
+EEZ_Plot1 <- as.data.frame(EEZ[[1]][[1]])
+EEZ_Plot2 <- as.data.frame(EEZ[[1]][[2]])
+EEZ_Plot <- rbind(EEZ_Plot1, EEZ_Plot2)
+EEZ_Plot$Lon_WGS84 <- EEZ_Plot$X1 # Store original X1 (Longitude)
+EEZ_Plot$Lat_WGS84 <- EEZ_Plot$X2 # Store original X2 (Latitude)
+EEZ_Plot$X1 <- NULL # Remove original X1
+EEZ_Plot$Lon_360 <- ifelse(EEZ_Plot$Lon_WGS84 < 0, EEZ_Plot$Lon_WGS84 + 360, EEZ_Plot$Lon_WGS84)
+xytsp <- ETSP(data.frame(EEZ_Plot$Lon_360, EEZ_Plot$Lat_WGS84))
+xytour <- solve_TSP(xytsp)
+re_ordered_EEZ <- EEZ_Plot[as.integer(xytour), ]
+
+# Convert the re-ordered dataframe back to a single 'sf' polygon object
+# A matrix of coordinates (Lon_360, Lat_WGS84) is required
+polygon_coords <- as.matrix(re_ordered_EEZ[, c("Lon_360", "Lat_WGS84")])
+
+# Close the polygon (first point = last point)
+polygon_coords <- rbind(polygon_coords, polygon_coords[1, ])
+
+# Create the single polygon geometry and sf object
+poly_geom <- st_polygon(list(polygon_coords))
+poly_sfc <- st_sfc(poly_geom, crs = target_crs) 
+PMNM_360 <- st_sf(data.frame(id = 1), geometry = poly_sfc)
+str(se23)#run only up to line 104
+
+aku<- se23 %>%
+  mutate(Lon.360 = ifelse(lon_dd< 0,lon_dd + 360, lon_dd))%>%
+  filter(!is.na(Lon.360))%>%
+  filter(!is.na(lat_dd))
+aku_sf <- st_as_sf(aku, coords = c("Lon.360", "lat_dd"),crs = target_crs )
+intersection_result <- st_within(aku_sf, PMNM_360, sparse = FALSE)
+aku<-aku%>%mutate(Location_Assessment=ifelse(rowSums(intersection_result) > 0, "in", "out"))
+se23<-aku%>%
+  mutate(mean_flow=((Flowmeter.1.End-Flowmeter.1.Start)+
+                      (Flowmeter.2.End-Flowmeter.2.Start))/2,na.rm=T)%>%
+  mutate(total=as.numeric(total))%>%
+  mutate(density=total/(mean_flow/100), na.rm=T)
+
+tuna <- se23 %>% filter(family == "Scombridae")
+ggplot()+geom_boxplot(data=tuna, aes(x=Location_Assessment, y=density))+labs(title="Scombridae")
+marlin<- se23 %>% filter(family == "Istiophoridae")
+ggplot()+geom_boxplot(data=marlin, aes(x=Location_Assessment, y=density))+labs(title="Istiophoridae")
+                      
+jobfish<- se23 %>% filter(subfamily == "Etelinae")
+ggplot()+geom_boxplot(data=jobfish, aes(x=Location_Assessment, y=density))+labs(title="Etelinae")
+
+mahi<- se23 %>% filter(genus == "Coryphaena")
+ggplot()+geom_boxplot(data=mahi, aes(x=Location_Assessment, y=density))+labs(title="mahi")
+
+uku<- se23 %>% filter(genus == "Aprion")
+ggplot()+geom_boxplot(data=uku, aes(x=Location_Assessment, y=density))+labs(title="uku")
+
+aku<- se23 %>% filter(genus == "Katsuwonus")
+ggplot()+geom_boxplot(data=aku, aes(x=Location_Assessment, y=density))+labs(title="aku")
+
+ahi<- se23 %>% filter(genus == "Thunnus")
+ggplot()+geom_boxplot(data=ahi, aes(x=Location_Assessment, y=density))+labs(title="'ahi")
+
+ono<- se23 %>% filter(genus == "Acanthocybium")
+ggplot()+geom_boxplot(data=ono, aes(x=Location_Assessment, y=density))+labs(title="ono")
+
+
+
