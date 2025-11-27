@@ -367,7 +367,8 @@ for (level in names(taxa_to_plot)) {
        scale_size_continuous(limits = c(fish_min_quant,fish_max_quant),
                              range = c(MIN_POINT_SIZE, MAX_POINT_SIZE),
                              breaks = DENSITY_BREAKS,
-                             name=bquote("Density(fish 100" ~ m^{-3}~")"))+
+                             name=bquote("Density(fish 1000" ~ m^{-3}~")"),
+                            labels = function(x) { round(x, digits = 4) })+
        theme_bw()+theme(axis.title = element_text(size=11),axis.text=element_text(size=10),
                         axis.ticks.length = unit(0.25, "cm"),
                         plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "cm"),
