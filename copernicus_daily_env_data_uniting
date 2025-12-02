@@ -1,0 +1,50 @@
+#unite daily coperinicus var. values
+# 1. Load necessary libraries
+library(raster)
+library(tidyverse)
+library(lubridate)
+library(terra)
+# Define the folder where your daily Chla files are stored
+data_folder <-("C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/chla_reanalysis_daily")
+#my fish data (or otherwise) that I am matching the environmental variable to
+df<-ik
+# Define the date range (e.g., for a specific year or season)
+start_date <- as.Date("2023-07-26") 
+end_date <- as.Date("2023-11-01") 
+all_files <- list.files(data_folder, full.names = TRUE, pattern = "\\.(nc|tif|grd)$")
+
+get_file_date <- function(file_path) {
+  filename <- basename(file_path)
+  date_str <- str_extract(filename, "\\d{8}")
+  date <- as.Date(date_str, format="%Y%m%d")
+  # If your date is YYYYDDD (Day of Year):
+  #date_str <- str_extract(filename, "\\d{7}") # e.g., 2018240
+  #date <- as.Date(date_str, format="%Y%j")
+  return(date)}
+# Create a dataframe of files and their dates
+file_df <- tibble(file_path = all_files,file_date = map_vec(all_files, get_file_date, .ptype = as.Date(NA)))
+# Filter files to include only those within the specified date range
+files_to_process <- file_df %>%filter(file_date >= start_date & file_date <= end_date) %>%pull(file_path)
+min_lat <- 17
+max_lat <- 33 
+
+daily_data_list <- list()
+
+for (i in seq_along(files_to_process)) {
+  file <- files_to_process[i]
+  current_date <- file_df$file_date[file_df$file_path == file] 
+    r <- rast(file, subds = "CHL")
+    data_df <- as.data.frame(r, xy = TRUE) %>% 
+    rename(lon = x, lat = y, chla_value = CHL) %>%
+        filter(lat > min_lat, lat < max_lat) %>%
+      filter(lon >= -180, lon <= -150 | lon >= 170, lon <= 180) %>%     # Note: I expanded the West filter just to ensure we capture all data around -180and included the 170-180 range to catch your positive longitude values.
+      mutate(date = current_date, day_of_year = yday(current_date)) %>%
+    drop_na(chla_value)
+  
+  daily_data_list[[i]] <- data_df
+  
+  print(paste("Completed",i,"of",nrow(files_to_process),"files"))
+}
+final_chla_dataframe <- bind_rows(daily_data_list)
+head(final_chla_dataframe)
+#write_csv(final_chla_dataframe, "C:/Users/Andrea.Schmidt/Desktop/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Data/chla_extraction_glorys_4km.csv")
