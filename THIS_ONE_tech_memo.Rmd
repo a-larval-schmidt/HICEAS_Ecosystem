@@ -1,0 +1,809 @@
+---
+title: "Inaugural report of the Pacific Islands Region Ichthyoplankton Survey (PIRIS): Hawaiʻi Pae ʻĀina, 2023"
+author: "Schmidt AL^1^,^2^, Perelman JN^1^,^2^, Kobayashi DR^1^, Morishige K ^3^,^4^ Lorenzo-Elarco JH ^3^,^5^, Pihana H^3^, Whitney JL^1^, Zapata L^2^, Contreras E^2^, Weyl OKY^2^, Dicksion D^2^, Scullion K^2^, Boncales J^2^, Suca JJ^6^"
+date: "March 3rd 2026"
+always_allow_html: true
+csl: "https://raw.githubusercontent.com/citation-style-language/styles/master/apa.csl"
+#"apa.csl"                     
+output:
+  word_document: 
+    reference_docx: "A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/OFFICIAL_PIFSC Tech Memo Template_Apr 2025.docx"
+Knit: (function(inputFile, encoding) {
+  rmarkdown::render(
+    inputFile,
+    encoding = encoding,
+    output_dir = "C:/Users/andrea.schmidt/Documents/")})
+---
+^1^ **Pacific Islands Fisheries Science Center** National Marine Fisheries Service
+1845 Wasp BoulevardHonolulu, HI 96818
+
+^2^**CIMAR** Cooperative Institute for Marine and Atmospheric Research; SOEST School of Ocean and Earth Science and Technology
+University of Hawaiʻi at Mānoa1000 Pope Rd, Honolulu, HI 96822
+
+^3^ **Papahānaumokuākea Native Hawaiian Cultural Working Group (CWG)** 
+[https://www.alohacwg.com/about][CWG]
+
+^4^ **University of Hawaiʻi at Mānoa** 2500 Campus Rd, Honolulu, HI 96822
+Kamakakūokalani Center for Hawaiian Studies & Sustainable Fisheries Graduate Program
+
+^5^ **University of Hawaiʻi Honolulu Community College** 874 Dillingham Blvd, Honolulu, HI 96817
+
+^6^6 **University of Hawaiʻi at Mānoa** 1000 Pope Rd, Honolulu, HI 96822
+Department of Oceanography
+
+
+\n\n
+\n\n
+\n\n
+NOAA Technical Memorandum TM-PIFSC-###
+March 2026
+
+\n\n
+\n\n
+\n\n
+\n\n
+\n\n
+\n\n
+\n\n
+```{r doc-logo, echo=FALSE, out.width="1in"}
+# "out.width" controls the size in the Word document.
+knitr::include_graphics("A:/My Drive/github/900px-Seal_of_the_US_DoC.png")
+```
+
+
+
+
+
+U.S. Department of Commerce  
+National Oceanic and Atmospheric Administration  
+National Marine Fisheries Service  
+Pacific Islands Fisheries Science Center
+\newpage
+
+# Acknowledgements
+We extend our sincere gratitude to the following individuals and entities for their invaluable contributions to this research: The Cetacean Research Program for sharing their ship time with us, The HICEAS 2023 Chief Scientist was Erin Oleson, and the Survey Coordinator was Kym Yano. The Sette Cruise Leaders were Erin Oleson, Marie Hill, Amanda Bradford, Yvonne Barkley, and Brittany Hancock-Hanse. Cetacean, seabird, and ecosystem survey data were collected within the Papahānaumokuākea National Marine Sanctuary (PNMS). under permit PMNM–2023–01, Kym Yano for sharing her CruzPlot Data with us, Yvonne Barkley for moral and scientific support. The students at Leeward Community College provided essential support to sorting these samples in a timely manner. We particularly acknowledge Dr. Donn Viviani, Cassie Kapuʻu-Lyons for their insights and assistance, and Bruce Mundy for his larval taxonomic identification expertise. Our thanks also go to the NOAA ship *Oscar Elton Sette* staff for their dedicated efforts. We hope these samples will continue to inspire and benefit the people of Hawaiʻi. Finally, we are grateful to Dr. Joy Smith and Revere Wood whose feedback helped improve this manuscript.
+
+# Recommended citation
+Schmidt AL, Perelman JN, Kobayashi DR, Morishige K, Lorenzo-Elarco JH, Pihana H,Whitney JL, Zapata L, Contreras E, Weyl OK, Dicksion D, Scullion K, Boncales J, Suca JJ. (2026). Inaugural report of the Pacific Islands Region Ichthyoplankton Survey (PIRIS): Hawaiʻi Pae ʻĀina, 2023 (Technical Memorandum Series, publication number). Pacific Islands Fisheries Science Center. doi: hyperlink
+
+Any trade names or commercial companies identified in this document are for identification purposes only and does not imply endorsement by the National Marine Fisheries Service, NOAA.
+
+
+Copies of this report are available from
+Pacific Islands Fisheries Science Center
+National Marine Fisheries Service
+National Oceanic and Atmospheric Administration 
+1845 Wasp Boulevard, Building #176
+Honolulu, Hawaiʻi 96818
+**Or online at**
+[https://repository.library.noaa.gov/]
+
+
+# Executive Summary {.unnumbered}
+
+This inaugural report details the findings of the 2023 Pacific Islands Region Ichthyoplankton Survey (PIRIS), the most geographically expansive survey of its kind in the Hawaiian Archipelago to date. The study was conducted in collaboration with NOAA’s Pelagic Research Program, the Hawaiian Islands Cetacean and Ecosystem Assessment Survey (HICEAS), and members of the Papahānaumokuākea Native Hawaiian Cultural Working Group (CWG), with the goal of characterizing larval distributions for managed coastal and pelagic fish species. The research integrates both Kānaka ʻŌiwi and Western science practices through identifying fish larvae, examining traditional ʻŌiwi names for these larval species, and in some cases, developing new Hawaiian names. Working with CWG members is part of building a long-term ethical and equitable partnership with Kānaka ʻŌiwi through reciprocity of knowledge exchange. Ichthyoplankton collections were conducted during nighttime hours of the HICEAS expedition aboard the NOAA Ship *Oscar Elton Sette* between July and November 2023, utilizing a 6-foot Isaacs-Kidd Midwater Trawl (IKMT) down to 50m depth. A total of 78 high-quality samples were collected across the Hawaiʻi Exclusive Economic Zone (EEZ) and the Papahānaumokuākea National Marine Sanctuary (PNMS). The findings establish a baseline for a region-wide fishery-independent ichthyoplankton survey and will be helpful for developing tools, such as Species Distribution Models (SDMs), to predict spawning locations and recruitment potential, enhancing the effectiveness of modern fisheries management in Hawaiʻi.
+
+# Introduction
+Historically, fisheries management rules in Hawaiʻi nei, from juveniles through adults, were set by konohiki in accordance with the customs and observations of the fishers within their jurisdiction (Maly, 2003a; Lucas, 1995). This place-based and adaptive structure resulted in highly effective and sustainable fisheries management. However, a shift from traditional ahupuaʻa management, with konohiki enforcing kapu (restrictions), to largely Western practices since the illegal overthrow of the Hawaiian Kingdom (1993; 2024\) necessitates documenting the life history of exploited fishes to understand their sensitivity to intensive fishing pressure.One of the earliest life history stages of fish that grow into commercially, ecologically, and culturally important species are known in ʻōlelo Hawaiʻi (the Hawaiian language) as pua iʻa (Pukui & Elbert 1896, p.345). Some pua iʻa were historically eaten in Hawaiʻi, such as ʻōhua liko (juvenile *Acanthurus triostegus*) on Hawaiʻi Island (Kauhi, 1996\) and moi liʻi (juvenile *Polydactylus sexfilis*) on Kauaʻi (Maly, 2003a). Today, it is largely adult fishes that are harvested for food and thus our interaction and understanding of the early life stages has become limited. A better understanding of the earliest larval stages of fish (ichthyoplankton) can provide insights into recruitment processes, productivity of important fish stocks, and spawning habitat (Auth and Brodeur 2013). Ichthyoplankton surveys have been in existence for decades across NMFS-managed regions, including the California Current (CalCOFI; Auth & Brodeur 2013, Chen et al.,2025; Brodeur et al., 2008), Gulf of Alaska (Eco-FOCI; Marshall et al.,2019), the Southeast US (SEAMAP; Lyczkowski-Shultz et al.,2004, SEFS 2022\) and the Northeastern US (EcoMon; Walsh et al.,2015; Morse et al.,2017). However, existing long-term ichthyoplankton surveys within the US Pacific Islands Region (PIR) are spatially limited. These early life stages are vital for the replenishment and health of fish stocks (Panprommin et al., 2020, 2021; Huang et al., 2022). Many larval fish species rely on dynamic ocean currents as an important dispersal mechanism (e.g. Suca et al., 2025; Wren & Kobayashi 2016), and thus timing and location of spawning can greatly influence their settlement and recruitment locations.
+
+Given the dynamic nature of pelagic ecosystems and the broad geographic ranges of many fish species, sampling across wide areas—including beyond historical ranges—allows us to better understand how taxa respond to environmental variation (Thompson et al., 2014). One prominent example is the California Cooperative Oceanic Fisheries Investigations (CalCOFI) program, a long-term NMFS-supported effort that has sampled the southern California Current almost continuously since 1949 and has been instrumental in revealing the physical and biological drivers of fish production. In contrast, ichthyoplankton surveys in Hawaiʻi have been comparatively sparse and geographically limited, with most sampling concentrated around Oʻahu and West Hawaiʻi (e.g., Boehlert & Mundy 1996; Kobayashi 1989; Lobel et al. 1988; Whitney et al. 2021). These ichthyoplankton surveys are filling a unique gap in understanding fisheries biology in Hawaiʻ’i. Instead of upwelling systems such as along the U.S. west coast, the main Hawaiian Islands are characterized by oligotrophic waters within the North Pacific Subtropical Gyre. The islands and atolls themselves can contribute to localized increases in productivity through run-off, tidal flushing, and complex mesoscale dynamics caused by the abrupt bathymetry of the region (Gove et al., 2016).   Biophysical modelling of larval fish shows that wind patterns strongly affect where larvae end up, which in turn influences recruitment (Suca et al., 2025); furthermore, prevailing currents carry taxa from the Main Hawaiian Islands (MHI) to the Northwestern Hawaiian Islands (NWHI), highlighting the importance of directional flow (Wren et al., 2016), and oceanic features such as eddies can also entrain larvae (Lindo-Atichati et al., 2016\) although some studies still find this idea in question (Fox et al., 2012). Furthermore, highly migratory species such as ʻahi, mahimahi, and aʻu seasonally occupy the waters of Hawaiʻi and the extent to which these taxa use the region for spawning remains poorly understood despite their commercial and cultural importance.
+
+Characterizing species–environment relationships, and their spatial and temporal components, is essential for understanding marine stock fluctuations (Tzanatos et al., 2014). Pairing ike Hawaiʻi about the changes of the environment and the correlations to the the timing of growth and reproduction and presence/absence of species with western science will build a more holistic approach to managing these species. Kanaka ʻŌiwi possess the longest record of environmental changes passed down through oral histories and living cultural practices that deepen relationships to our oceans. These practices are part of a living knowledge system driven by kilo (keen environmental observations) over time (Winter et al., 2020). For example, Huli ʻia is a kilo process documenting seasonal changes and shifts across entire landscapes, mauka (upland) to makai (sea) (Morishige et al., 2018; Andrade & Morishige 2022). Developed by the non-profit organization Nā Maka Onaona, Huli ‘ia is a Kanaka ‘Ōiwi (Native Hawaiian) observational process documenting natural changes over time, identifies dominant cycles within certain species or occurrences (flowering, fruiting, presence/absence of flora/fauna, cloud formations, spawning, or recruiting of fish species, etc.) and assists in identifying correlations between species and/or occurrences as indicators of the other. This process guides best management practices that support a productive and thriving community, ‘Āina Momona, allowing the flexibility needed to ensure the best times to rest areas or species from cultivation and harvest—or vice versa. Huli ‘ia stems from traditional management systems driven by an intimate understanding of the natural environment and the ability of communities to adjust and adapt their activities as best management practices to support these systems of nature (Andrade & Morishige 2022\) Ecological metrics such as water temperature, flow and ocean productivity that can be measured broadly by satellites and uncrewed systems (amongst other methods) can be correlated with certain species spawning events (Contreras et al., 2023), abundances  (Smith et al., 2021\) and predictors of recruitment success  (Woodworth-Jefcoats & Wren, 2020), we seek, long term,  to generate sufficient larval fish data to uncover statistically meaningful correlations. Larval fish ecology, as a combination of multiple knowledge systems, is therefore central to sustaining Hawaiʻi’s diverse fisheries today. By identifying the ecological relationships that influence larval success, we can develop tools such as species distribution models (SDMs) to predict spawning locations and recruitment potential—key components of effective management for today's modern, commercialized fisheries.
+
+In order to move towards a future where Indigenous and Western science are both meaningfully integrated in research and decision-making, it is first critical to acknowledge that Kānaka ʻŌiwi (Native Hawaiians) have long stewarded these oceans, cultivating sophisticated resource management systems living in sync and sustainably with the island and ocean ecosystems for centuries. This is exemplified by traditional Hawaiian fishing practices where lawaiʻa would only be permitted to fish after a fish species had a chance to reproduce for the year (Titcomb & Pukui, 1972; Wyban, 1992). In a recent publication, renowned Master lawaiʻa and konohiki, Mac Poepoe, observed shifts in moi spawning seasons linked to habitat degradation and environmental stressors, suggesting that existing bans are insufficient to protect extended spawning periods. In response, he established Nā Kai ʻEwalu, a collective of lawaiʻa, to document and study these changes across islands (Poepoe et al., 2025).
+
+In an effort to describe important fisheries taxa and environmental patterns across broader scales, the Pacific Islands Region Ichthyoplankton Survey (PIRIS) was established in 2023 to aid in better understanding the distribution, habitat, and early life history of Hawaiʻi’s larval fish populations.By partnering with core Pacific Islands Fisheries Science Center (PIFSC) cruises, the survey has an expansive reach and strives to map larval fish distributions across the Pacific islands under NOAA Fisheries’ jurisdiction. The first PIRIS expedition took place when NOAA’s Pelagic Research Program worked in collaboration with the Hawaiian Islands Cetacean and Ecosystem Assessment Survey (HICEAS) and members of the Papahānaumokuākea Native Hawaiian Cultural Working Group (CWG) to conduct the most geographically expansive ichthyoplankton survey across Hawaiʻi Pae ʻĀina (Hawaiian Archipelago) to date, spanning both the Main Hawaiian Islands and Papahānaumokuākea National Marine Sanctuary. This work represents a continuation of long-term engagement with Native Hawaiian partners to co-mentor Native Hawaiian interns through multiple knowledge systems. Central to this effort is an ongoing commitment to building pilina (relationships) and engaging in an ethical, reciprocal, and respectful process of collaboration. Through this partnership, Kānaka ʻŌiwi knowledge, values, and practices are intentionally woven with institutional science to foster a more holistic understanding of ocean systems. [Kūlana Noiʻi](https://seagrant.soest.hawaii.edu/wp-content/uploads/2021/09/Kulana-Noii-2.0_LowRes.pdf)  has provided crucial guidance to those involved in this partnership (Alegado et al., 2023). The goal of this research is to characterize larval habitat for management unit species (MUS) of coastal and pelagic fish (such as ʻahi (Thunnus spp.), mahimahi (Coryphaena spp.), aku (Katsuwonus pelamis), ono (Acanthocybium solandri), uku (Aprion virescens) and aʻu (family Istiophoridae)) across Hawaiʻi and to establish a fishery-independent ichthyoplankton survey for the Pacific Islands Region. In this report, we present the first results of the 2023 sampling effort. We hope that the resulting data will support both stock assessment efforts and the development of forecasting tools, such as Species Distribution Models (SDMs), to predict spawning locations and recruitment potential.
+
+
+
+# Methods
+Ichthyoplankton collections were conducted along transect lines during the nighttime hours of the 2023 Hawaiian Islands Cetacean and Ecosystem Assessment Survey (HICEAS) expedition aboard the *NOAA Ship Oscar Elton Sette* in between daytime visual and acoustic cetacean surveys (Yano et al., 2025). Sampling was conducted across Hawaiʻi Pae ʻĀina between July and November, 2023 using a 6-foot Isaacs-Kidd Midwater Trawl (IKMT; Friedl, 1971\) with 505µm mesh. This marks the first sampling effort of the Pacific Islands Region Ichthyoplankton Survey (PIRIS), which is designed to be flexibly coupled with daytime oceanographic and ecosystem surveys across NOAA programs. In its inaugural year, PIRIS was implemented in coordination with HICEAS, establishing a flexible framework intended for broader integration across a range of future survey efforts (including NOAA's NCRMP coral reef monitoring program).The HICEAS survey follows set, parallel transect lines (spaced 42.5 nmi (85 km) apart) that encompass the entirety of the Hawaiʻi Exclusive Economic Zone (EEZ) in WNW to ESE direction (Yano et al., 2025). This standardized survey area allows for quantitative statistics of cetacean observations (Yano et al., 2025\) and provided an ideal opportunity to sample ichthyoplankton in a standardized approach across the archipelago.
+```{r fig-1, echo=FALSE, results='asis', fig.cap="A map of the Hawaiian Islands and the surrounding Pacific Ocean. A black line delineates the Hawaiian Exclusive Economic Zone (EEZ). Sampling stations, where IKMT tows were conducted, are marked by colored circles, with the color indicating the month of sampling: July (Green), August (Purple), October (Gold), and November (Grey). The stations are distributed across the entire EEZ, following the HICEAS cetacean survey transect lines (blue)."}
+
+# 1. Render the image (The hidden text above in fig.cap will be embedded here)
+knitr::include_graphics("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/Figure1_cruzplot.png")
+
+# 2. Manually print the visible caption text immediately after the image
+# We use \n\n to ensure it starts on a new line and renders as Markdown
+cat("\n\n**Figure 1.** Map of the PIRIS ichthyoplankton sampling locations during the 2023 HICEAS effort across Hawaiʻi Pae ʻĀina. PIRIS participated in HICEAS cruises took place between July and November 2023, encompassing a wide geographical area across the Hawaiian Islands.")
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "A table showing the Date Ranges, number of tows and geographic extent of each leg of the survey.For leg 1 these values are: 23-26 July, 4 tows and 18.9°N,−155.9°W to 19.0°N,−159.3°W. FOr leg 2 these values are 8-29 August, 38 tows 24.0°N,−160.0°W to 31.6°N,−178.8°W. For Leg 4 these values are Oct 13- November 1, 39 tows (36 tows to 50m depth, 3 neuston tows, 3 tows down to 10 m only), and 20.5°N,−162.2°W to 26.9°N,−171.7°W"
+legs<-(c(1,2,4))
+dat<-(c("23-26 July","8-29 August","13 October- 1 November"))
+noTows<-(c("4", "38", "39 (36 tows to 50m depth, 3 neuston tows, 3 tows to 10m only))"))
+geoext<-(c("18.9°N,−155.9°W to 19.0°N,−159.3°W","24.0°N,−160.0°W to 31.6°N,−178.8°W","20.5°N,−162.2°W to 26.9°N,−171.7°W"))
+x<-data.frame(legs, dat,noTows,geoext)
+library(flextable)
+library(magrittr)
+flextable(x)%>%
+  set_caption(caption = as_paragraph(
+    as_chunk(
+      "Table 1: Summary of Ichthyoplankton Cruise Legs and Sampling Effort",props=fp_text_default(color = "black", font.size = 16, bold = TRUE))))%>%
+  set_header_labels(
+    legs = "Cruise Leg",
+    dat = "Date Range, in 2023",
+    noTows = "Number of Tows",
+    geoext = "Geographical Extent (Approximate Lat/Lon)"
+  ) %>%
+  align(align = "center", part = "all") %>%
+  font(fontname = "Arial", part = "all") %>%
+  fontsize(size = 14, part = "all") %>%
+  theme_zebra()%>%
+  bold(part="header") %>%
+  width(j = 1, width = 0.75) %>% # Leg
+  width(j = 2, width = 1.5) %>%  # Dates
+  width(j = 3, width = 3.5) %>%  # Tows
+  width(j = 4, width = 2.5)      # Geographic Extent
+
+```
+
+
+
+
+
+
+
+## Field Effort
+
+We began each sampling night on the ship's bow with the oli (chant) “E hō mai” (E. Kanakaʻole, 2017). This oli was selected as a way to ask to be granted wisdom and knowledge before we collected marine organisms for research (Office of Hawaiian Affairs et al., 2021; Kealiikanakaoleohaililani et al., 2018; Alegado et al. 2023) within and outside of the Sanctuary which encompasses land and ocean is sacred to Kānaka ʻŌiwi (Kikiloi et al., 2017). 
+IKMT tows were conducted as three oscillations of the net (henceforth, tow-yos)between the surface and 50 m depth (lasting approximately 45 minutes) at a ship speed of 2.5 kts and were spaced as evenly as possible within the allotted time for sampling (Habtes et al., 2014). Sampling occurred between dawn and dusk during the periods of full dark. Tows only occurred in sea states less than a Beaufort 7. Due to operational constraints on the August and October legs, the sampling window was often only four hours, limiting the spacing between tows to only ~5 nmi and a maximum of four tows per night. Additionally, each night we engaged in the practice of kilo (Morishige et al., 2018, Winter et al., 2020, Andrade & Morishige 2022) where we observed (and recorded) moon phase, weather and ocean conditions, clouds and other environmental occurrences. Two flow meters were attached to the mouth of the net with the propellor facing the net in order to calculate an average water volume filtered (in m^3^) per tow to standardize ichthyoplankton densities (See Appendix for equation). Two Temperature Depth Recorders (TDRs) were attached to the headrope and footrope of the net’s mouth opening to continuously record temperature and depth throughout the deployments.
+
+
+
+## Sample Processing
+After recovery of the net, a seawater hose was used to rinse biological material caught on the panels of the net into the cod end. The cod end was placed in a bucket, then brought into the ship's wet lab. Cod-end contents were poured through a 500 µm mesh sieve and preserved in 95% ethanol.
+
+In the laboratory, fish larvae and other taxa of interest were pulled from the bulk sample under a microscope. Taxa of interest (see below) were removed from the bulk sample, identified to the designated level of interest, and kept in separate scintillation vials in 95% ethanol. For management unit species (MUS) such as ʻahi *(Thunnus spp.),* mahimahi *(Coryphaena spp.),* aku *(Katsuwonus pelamis),* ono (*Acanthocybium solandri),* uku *(Aprion virescens)* and aʻu (family Istiophoridae), larvae were identified to the lowest taxonomic level possible. Amongst the snappers in the subfamily etelinae, *Pristipomoides sp.* and *Aphareus sp.* are nearly morphologically indistinguishable at the larval stage in the sizes observed, while *A. virescens is* distinct from all other etelines. For this reason, all non-*Aprion* etelinae larvae were grouped at the subfamily level for consistency. Non-MUS fish are discussed briefly in the Appendix but will be the subject of their own publication(s) in the future. Larval Thunnus albacares and Istiophoridae were also examined through a biocultural lens and names for the early life history stages were developed after the process described in Pihana & Lorenzo-Elarco (2022). One example is the ʻahi hune (tiny ʻahi), which is the name subsequently used in this paper. For stations with ten or fewer individuals of a particular species of interest, all were counted and measured to standard length (SL). For stations with more than ten individual MUS, all were counted and of these up to ten were randomly selected to be measured for SL. For stations where more than 10 individuals of a given taxon were collected, we randomly selected and measured 10 individuals, then measured an additional 10 individuals spanning the full size range from the smallest to the largest collected.Members of the family Istiophoridae, were only identified to family level but the measuring procedure was the same as for the aforementioned taxa. Larval developmental stage was noted for each taxa identified. The working definitions we used for these stages (preflexion, flexion, postflexion) were interpreted from Kendall et al.1984, acknowledging that sizes associated with a particular stage vary across taxonomic groups.
+
+
+## Data
+Data summaries and visualizations were created using the R programming language (Version 4.5.1, "Great Square Root", R Core Team, 2025) within the tidyverse package (Wickham et al., 2019). Bathymetric data was obtained from the marmap package (Pante et al. 2025), Hawaiʻi Pae ʻĀina maps were generated using the rnaturalearth (Massicotte & South, 2025) and TSP packages (Hahsler & Hornik 2025), and the sampling map with the Cetacean survey efforts was created using CruzPlot v1.4.9 (Woodman & Gerrodette 2024).  Simple environmental relationships with the presence or absence of taxa are also explored. Environmental variables were pulled from multiple publicly available sources and paired with larval data. Daily sea surface temperature (SST) were obtained from NOAA Coastwatch using the rerdapp (Chamberlain 2017) and rerddapXtracto (Mendelssohn 2025) packages in R fromCoral Reef Watch (v3) and daily gap-filled chlorophyll-α concentration (chl-a) was obtained from Copernicus-GlobColour (BGC L4)).
+
+
+---
+# Results
+A total of 82 IKMT samples were successfully collected down to 50m depth; 5, 38 and 39 on each leg respectively. Of the 82 IKMT tows conducted, 80 of these were deemed appropriate for further statistical analysis (after filtering for quality control factors such as maximum depth reached (deeper than 30m), tow time, number of to-yos).
+
+```{r fig-2, echo=FALSE, results='asis', fig.cap="A figure containing four heatmap panels (A through D) displaying environmental data over the map of the Hawaiian Islands region. Panels A & B: Heatmaps representing Sea Surface Temperature (SST) scale (25°C to 29°C) in August and October 2023, respectively. Both show a gradient of warmer temperatures in the southwest and cooler temperatures in the northeast. Panels C & D: Green on a natural log scale shows chlorophyll \u03B1 concentration with a legend ranging from -2to 4(log values). The values are generally low and increase in concentration as one goes further east."}
+#source("A:/My Drive/github/HICEAS_Ecosystem/env_hiceas_maps.R")
+#final_plot
+knitr::include_graphics("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/fig2_final_combined_plot.png")
+cat("\n\n***Figure 2** Spatial distribution of mean environmental variables across the Hawaiʻi Pae ʻĀina during the HICEAS 2023 Ichthyoplankton Survey. Lower sea surface temperatures were observed in the same areas as higher chlorophyll-α concentrations over the course of the study period. **A)** Mean Sea Surface Temperature (SST) for August and October 2023 **B)** Mean chlorophyll-α concentration for August and October 2023")
+```
+
+```{r load-data, include=FALSE}
+source("A:/My Drive/github/HICEAS_Ecosystem/env_pplots_post_rev_additions.R")
+```
+
+```{r tab-2, echo=FALSE, results='asis', fig.cap="Table showing the range of Sea Surface Temperature (SST) in degrees Celsius and chlorophyll \u03B1lpha concentration in milligrams per cubic meter for various marine taxa. Mahimahi, Aku, and Ahi share the same SST range of 25.61–27.97 °C. Mahimahi and Aku share a chlorophyll \u03B1lpha concentration range of 0.024–0.078 mg/m³, while Ahi's range is slightly wider at 0.024–0.079 mg/m³. Ono has an SST range of 25.61–27.62 °C and a chlorophyll \u03B1lpha concentration range of 0.053–0.063 mg/m³. Eteline snappers and Uku share an SST range of 25.61–27.60 °C and a chlorophyll \u03B1lpha concentration range of 0.033–0.070 mg/m³. Marlin has an SST range of 25.61–27.77 °C and a chlorophyll \u03B1lpha concentration range of 0.029–0.078 mg/m³."}
+library(flextable)
+library(magrittr)
+flextable(table2_df,col_keys = c("Hawaiian_Name_Col", "Taxa_Col", "Occurrences_Col","Total_larv", "Size_Col", "SST_Col", "Chla_Col")) %>%
+  set_caption(caption = as_paragraph(
+    as_chunk(
+      "Table 2: Summary table of observed ranges of standard length, SST and chlorophyll-α for taxa of interest",
+      props = fp_text_default(color = "black", font.size = 16, bold = TRUE)
+    )
+  )) %>%
+  set_header_labels(
+    Hawaiian_Name_Col="  Taxa  ",
+    Taxa_Col        = " ",
+    Occurrences_Col = "N stations where taxa were found",
+    Total_larv      = "N larvae found across survey",
+    Size_Col        = "Size Range (mm)",
+    SST_Col         = "SST Range (°C)",
+    Chla_Col        = "Chlorophyll α"
+  ) %>%
+  compose(part = "header",j = "Chla_Col", 
+    value = as_paragraph(
+      "Chlorophyll α (mg/m", as_sup("3"), ")")) %>%
+  align(align = "center", part = "all") %>%
+  align(j = c("Hawaiian_Name_Col", "Taxa_Col"), align = "left", part="body") %>%
+  flextable::font(fontname = "Arial", part = "all") %>%
+  flextable::fontsize(size = 14, part = "all") %>%
+  bold(part = "header") %>%
+  italic(i = ~ Taxa_Level == "genus", j = "Taxa_Col", part = "body") %>%
+  theme_zebra() %>%
+  align(j = "Occurrences_Col", align = "center", part = "all") %>%
+  align(j = "Total_larv", align = "center", part = "all") %>%
+  autofit()
+
+```
+
+## Taxon specific density distributions
+Spatial and temporal summary statistics are provided below for priority fish taxa collected during the 2023 expeditions. Below we describe taxon-specific distributions of larval occurrence, density, size-structure, phenology, and environmental associations. 
+
+### Mahimahi, Coryphaenidae, *Coryphaena spp.*
+Larval mahimahi were observed across the entirety of Hawaiʻi Pae ’Āina but exhibited higher densities to the north of the main Hawaiian islands and around the central PNMS (Figure 3A). The furthest north mahimahi larvae were found was 31.07°N and the furthest south was 18.73°N. The maximum number of individual mahimahi larvae observed across the 51 stations where present was 17 ( with a mean of 
+```{r, echo=F} 
+m<-intext_df%>%filter(Taxa_Col=="Coryphaena spp.")
+print(cat(m$mean_density))
+```
+fish per 1000 m^3^). Mahimahi were observed at greater densities in October than in August (Figure 3B). The first occurrence was in late July (July 24th, DOY 205) and the latest was in late October (Oct. 31st DOY 304) with a mean on
+```{r} 
+cat(m$mean_doy)
+```
+.The mean length of mahimahi caught was
+```{r} 
+cat(m$mean_length)
+```
+mm SL (range: 2-19mm SL; Figure 3C). The mean SST and chla where mahimahi were collected were
+```{r} 
+cat(m$mean_sst)
+```
+°C and 
+```{r} 
+cat(m$mean_chla)
+```
+mg/m^3^ respectively (Table 2, Figure 3D, E).
+
+```{r fig-3, echo=FALSE, results='asis', fig.cap="A five-panel scientific figure summarizing data for Coryphaena spp. (Dolphinfish) larvae.Panel A:A map of the Hawaiian Islands and surrounding ocean showing larval density at various sampling stations. The dots are sized by density (fish per 100 cubic meters) and colored by day of the year (yellow for summer/day 225 to dark red for autumn/day 300). Larger, darker dots indicate higher densities occurred later in the year in the central and western study areas.Panel B:A scatter plot of Density vs. Day of Year. It shows low density in August (days 202-242) and a significant increase in density and variability in October (days 282-302).Panel C: A histogram of Standard Length (mm) showing the frequency of Coryphaena larvae. The distribution skews right, with a peak frequency at lengths between 4 and 6 mm. Panel D: A scatter plot of Density vs. daily Sea Surface Temperature (SST) in °C. Higher densities cluster between 26.6°C and 27.6°C.Panel E:A scatter plot of Density vs. Chlorophyll Concentration (mg per cubic meter). High-density events are scattered across concentrations ranging from 0.04 to 0.07 mg per cubic meter."}
+
+knitr::include_graphics("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Combined Figures/coryphaena_final_combined_plot.png")
+
+cat("**Figure 3** **A)** Map showing the spatial distribution and density (fish per 1000 m^3^) of mahimahi, *Coryphaena* spp. larvae across Hawaiʻi Pae ʻĀina. **B)** Density (fish per 1000 m^3^) of *Coryphaena* spp. larvae plotted against Day of Year (DOY), indicating higher densities in October compared to August. **C)** Histogram of standard length (mm) measurements. **D)** Larval density plotted against daily sea surface temperature (SST, °C). **E)** Larval density plotted against chlorophyll-α concentration (mg/m^3^).*")
+
+```
+
+### Scombridae
+Co-occurrence of multiple Scombrid taxa were frequently observed in the same tow. Larvae belonging to the family Scombridae were identified in 84% of all sampled stations (67 out of 80 stations).
+
+#### Aku; *Katsuwonus pelamis*
+Aku were observed throughout the majority of Hawaiʻi Pae ’Āina, with the highest densities recorded on the southern sides of the islands and atolls of Papahānaumokuākea compared to other areas (Figure 4A). The furthest north aku larvae were found was 30.07 °N and the furthest south was 18.73°N The maximum number of individual larval aku observed at any given station ranged was 213 individuals (
+```{r} 
+m<-intext_df%>%filter(Taxa_Col=="Katsuwonus pelamis")
+cat(m$mean_density)
+```
+fish per 1000 m^3^; with a range of
+```{r} 
+m<-intext_df%>%filter(Taxa_Col=="Katsuwonus pelamis")
+cat(m$density_range)
+```
+ fish per 1000 m^3^ ).The greatest densities of aku were observed in October (Figure 4B). The earliest occurrence was in late July (July 25th, DOY 206), and the latest was in early November (Nov. 1st, DOY 305, mean DOY
+```{r}
+cat(m$mean_doy)
+```
+). The average aku length was 
+```{r} 
+m<-intext_df%>%filter(Taxa_Col=="Katsuwonus pelamis")
+cat(m$mean_length)
+```
+mm SL (range: 2-18 mm SL; Figure 4C). The mean SST and chlorophyll-\u03B1 concentration where aku were collected were 
+```{r} 
+m<-intext_df%>%filter(Taxa_Col=="Katsuwonus pelamis")
+cat(m$mean_sst)
+```
+°C and 
+```{r} 
+m<-intext_df%>%filter(Taxa_Col=="Katsuwonus pelamis")
+cat(m$mean_chla)
+```
+mg/m^3^ respectively (Table 2, Figure 4D, E).
+
+```{r fig-4, echo=FALSE,results='asis',fig.cap="A five-panel scientific figure for Katsuwonus pelamis (Skipjack Tuna) larvae.Panel A: A map showing distribution. High-density points (large red dots) are scattered in the central and western portions of the sampling grid.Panel B: A scatter plot of Density vs. Day of Year. Density is negligible in August and peaks significantly in late October (around Day 292).Panel C: A histogram of Standard Length (mm). The distribution is centered around 4 to 6 mm.Panel D: A scatter plot of Density vs. SST (°C). High density is correlated with warmer waters, specifically above 27°C.Panel E: A scatter plot of Density vs. Chlorophyll Concentration,showing variable density across the observed chlorophyll range."}
+
+knitr::include_graphics("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Combined Figures/Katsuwonus_final_combined_plot.png") 
+
+cat("\n\n**Figure 4** **A)** Map showing the spatial distribution and density (fish per 1000 m^3^) of *Katsuwonus pelamis* larvae across Hawaiʻi Pae ʻĀina. **B)** Density (fish per 1000 m^3^) of *Katsuwonus pelamis* larvae plotted against Day of Year (DOY), indicating higher densities in October compared to August. **C)** Histogram of standard length (mm) measurements. **D)** Scatterplot of larval density against daily sea surface temperature (SST, °C). **E)** Larval density plotted against chlorophyll-α concentration (mg/m^3^).")
+
+```
+
+#### #### ’Ahi (yellowfin), ʻahi poʻonui (bigeye), ʻahi pālaha (albacore) tunas *,Thunnus spp.*
+*Thunnus* larvae were distinguished to species level where possible. Those that were identified morphologically were *T. albacares* (at 23 stations), *T. alalunga* (at 26 stations) and suspected *T. obesus* (at 12 stations; pending genetic confirmation) while some larvae were only identified to genus. All *Thunnus* larvae were grouped at the genus level for consistency in this analysis, though species level data is presented in the Appendix. *Thunnus spp.* larvae were observed throughout the Hawaiian Archipelago. The furthest north *Thunnus spp.* larvae were found was 31.7 °N and the furthest south was 18.73 °N (figure 5A). Higher densities of larvae were collected in October compared to August or July (figure 5B). *Thunnus spp.* larvae were found in 55 stations with a maximum of 177 individuals (
+```{r} 
+m<-intext_df%>%filter(Taxa_Col=="Thunnus spp.")
+cat(m$mean_density)
+```
+fish per 1000 m^3^; with a range of
+```{r} 
+cat(m$density_range)
+```
+).The earliest occurrence was in late July (July 24th, DOY 205), and the latest was in early November (Nov. 1st DOY 305; mean DOY
+```{r}
+cat(m$mean_doy)
+```
+). The mean length of *Thunnus spp.* was 
+```{r} 
+cat(m$mean_length)
+```
+mm SL (range 1-13 mm SL, Figure 5C). The mean SST and  chlorophyll-α where Thunnus larvae were collected were 
+```{r} 
+cat(m$mean_sst)
+```
+°C and 
+```{r}
+cat(m$mean_chla)
+```
+mg/m^3^, respectively.
+
+
+```{r fig-5, echo=FALSE,results='asis',fig.cap="Composite Figure 5 showing data for Thunnus spp. larvae, including A) a map of spatial distribution and density (fish per 1000 m³) across Hawaiʻi Pae ʻĀina, B) density (fish per 1000 m³) plotted against Day of Year (DOY) indicating higher densities in October compared to August, C) a Histogram of standard length (mm) measurements, D) Larval density plotted against daily sea surface temperature (SST, °C), and E) larval density plotted against Chlorophyll-α concentration (mg/m³)."}
+
+knitr::include_graphics("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Combined Figures/Thunnus_final_combined_plot.png")
+
+cat("\n\n**Figure 5** **A)** Map showing the spatial distribution and density (fish per 1000 m^3^) of *Thunnus* spp. larvae across Hawaiʻi Pae ʻĀina. **B)** Density (fish per 1000 m^3^) of *Thunnus* spp. larvae plotted against Day of Year (DOY), indicating higher densities in October compared to August. **C)** histogram of standard length (mm) measurements. **D)** Larval density plotted against daily sea surface temperature (SST, °C). **E)** Larval density plotted against chlorophyll-α concentration (mg/m^3^).")
+```
+
+#### Ono, *Acanthocybium solandri*
+Ono larvae were predominantly observed windward (N/NE) of the archipelago (Figure 6A). The furthest north ono larvae were found was 30.36°N and the furthest south was 18.73°N. Ono were collected at 17 stations with a maximum of 13 individuals (
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Acanthocybium solandri")
+cat(m$mean_density)
+```
+fish per 1000 m^3^; with a range of
+```{r} 
+cat(m$density_range)
+```
+).Ono larvae were most frequently captured in August, although the highest density catch occurred in October, north of O’ahu (Figure 6A-B). The earliest for capture was in late July (July 24th, DOY 205), the latest was in late October (Oct. 31st, DOY 304), with a mean of mid-August (DOY
+```{r}
+cat(m$mean_doy)
+```
+,Figure 6B). The mean standard length (SL) was 
+```{r} 
+cat(m$mean_length)
+```
+mm SL (range 1-13 mm SL (Figure 6C). The mean SST and  chlorophyll-α where ono were collected were 
+```{r} 
+cat(m$mean_sst)
+```
+°C and 
+```{r}
+cat(m$mean_chla)
+```
+mg/m^3^, respectively.
+
+```{r fig-6, echo=FALSE,results='asis',fig.cap="A five-panel scientific figure for Acanthocybium solandri (Wahoo) larvae.Panel A: A map showing very sparse detection. Only a few stations show presence, with one large density marker in the southeast.Panel B: A scatter plot of Density vs. Day of Yearshowing generally low density with a single high outlier in late October.Panel C: A histogram of Standard Length (mm). The sample size is small (y-axis max is ~45), with lengths ranging widely from 2 to 12 mm.Panel D: A scatter plot of Density vs. SST (°C) showing scattered low-density points and one high-density point around 26.6°C.Panel E: A scatter plot of Density vs. ChlorophyllConcentration showing a similar pattern of sparse data."}
+knitr::include_graphics("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Combined Figures/Acanthocybium_final_combined_plot.png")
+
+cat("\n\n**Figure 6** **A)** Map showing the spatial distribution and density (fish per 1000 m^3^) of *Acanthocybium solandri* larvae across Hawaiʻi Pae ʻĀina. **B)** Density (fish per 1000 m^3^) of *Acanthocybium solandri* larvae plotted against Day of Year (DOY), indicating higher densities in October compared to August. **C)** Histogram of standard length (mm) measurements. **D)** Larval density plotted against daily sea surface temperature (SST, °C). **E)** Larval density plotted against chlorophyll-α concentration (mg/m^3^)..")
+```
+
+### Lutjanidae
+Non-etelinae Lutjanids were also identified. These are of particular interest due to the prevalence of to’ao, an invasive species in Hawaiʻi (see appendix). For reporting purposes, only a subset of genera within the subfamily Etelinae, which are relevant to active fisheries, will be reported on here.
+
+#### Etelinae
+Larvae were predominantly observed on the northern side of the archipelago with higher densities nearer to shore (figure 7A). The furthest north Eteline snapper larvae were found was 30.63 °N and the furthest south was 18.95°N. Although the subfamily Etelinae includes several genera, the only two identified here were the genera, *Pristipomoides sp.* and *Aphareus sp.*. These two represent a suite of species including  ʻōpakapaka, onaga, gindai, ehu, lehi, and kalekale. Please see the next section for further information about *Aprion virescens*. Eteline snapper larvae were found in 13 stations with a maximum of 57 individuals at a given station (
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Etelinae")
+cat(m$mean_density)
+```
+fish per 1000 m^3^). The highest density of larvae was recorded in August followed by October. The earliest for detection was in late July (July 24th, DOY 205), the latest was in late October (Oct. 31st, DOY 304), and the mean was late August (DOY
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Etelinae")
+cat(m$mean_doy)
+```
+Figure 7B). The mean standard length (SL) was
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Etelinae")
+cat(m$mean_length)
+```
+mm (range of 1 – 18 mm SL; Figure 7C). The mean SST and  chlorophyll-α  where Eteline larvae were collected were 
+```{r}
+cat(m$mean_sst)
+```
+°C and 
+```{r}
+cat(m$mean_chla)
+```
+mg/m^3^, respectively.
+```{r fig-7, ECHO=F, results='asis', fig.cap="A five-panel scientific figure for Etelinae (Snapper) larvae.Panel A: A map showing detections scattered across the longitudinal range, with orange and red dots indicating presence in both mid-season and late-season.Panel B: A scatter plot of Density vs. Day of Year. This plot shows two distinct periods of density: one in August (around Day 232) and another in October (Day 302).Panel C: A histogram of Standard Length (mm). The distribution is bell-shaped, peaking between 4 and 5 mm.Panel D: A scatter plot of Density vs. SST (°C). Higher densities appear at both 26.1°C and 27.6°C.Panel E: A scatter plot of Density vs. Chlorophyll Concentration. The highest density points correspond to chlorophyll levels between 0.045 and 0.060 mg per cubic meter."}
+
+knitr::include_graphics("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Combined Figures/Etelinae_final_combined_plot.png") 
+
+cat("**Figure 7** **A)** Map showing the spatial distribution and density (fish per 1000 m^3^) of larvae from the subfamily Etelinae across Hawaiʻi Pae ʻĀina. **B)** Density (fish per 1000 m^3^) of Etelinae larvae plotted against Day of Year (DOY), indicating higher densities in October compared to August. **C)** histogram of standard length (mm) measurements. **D)** Larval density plotted against daily sea surface temperature (SST, °C). **E)** Larval density plotted against chlorophyll-α concentration (mg/m^3^).")
+```
+
+#### Uku, *Aprion virescens*
+Uku larvae were only collected in late July and August with patchy spatial distribution. Larvae were only observed windward of the archipelago and more frequently within the boundaries of Papahānaumokuākea, with a mean observed density of
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Aprion virescens")
+cat(m$mean_density)
+```
+fish per 1000/m^3^  near the central northern boundary (Figure 8A). Uku larvae were found in 10 stations with a maximum of 39 individuals at a given station. The furthest north uku larvae were found was 27.97°N and the furthest south was 18.95°N. The earliest uku larva was caught in late July (July 24th, DOY 205), the latest in late August (Aug. 29th, DOY 241) with a mean mid-August (DOY 
+```{r}
+cat(m$mean_doy)
+```
+). The mean uku length was
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Aprion virescens")
+cat(m$mean_length)
+```
+mm SL (range 2– 12 mm SL; Figure 8C). The mean SST and chlorophyll-α  where uku larvae were collected were
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Aprion virescens")
+cat(m$mean_sst)
+```
+°C  (Figure 8D) and 
+```{r}
+cat(m$mean_chla)
+```
+mg/m^3^ (Figure 8E), respectively.
+
+
+```{r fig-8, ECHO=F, results='asis', fig.cap="A five-panel scientific figure for Aprion virescens (Green Jobfish) larvae.Panel A: A map of the Hawaiian region showing sampling stations. Dots indicating presence are sparse, with notable detections in the northern central region.Panel B: A scatter plot of Density vs. Day of Year. It shows a peak in density occurring in August (around Day 222), distinct from the October peaks seen in other species.Panel C: A histogram of Standard Length (mm). The larvae range from 2 to 12 mm, with the highest frequency between 4 and 6 mm.Panel D: A scatter plot of Density vs. SST (°C). The highest density point occurs at approximately 26.5°C.Panel E: A scatter plot of Density vs. Chlorophyll Concentration. The highest density point corresponds to a low chlorophyll concentration of approximately 0.045 mg per cubic meter."}
+
+knitr::include_graphics("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Combined Figures/Aprion_final_combined_plot.png") 
+
+cat("**Figure 8** **A)** Map showing the spatial distribution and density (fish per 1000 m^3^) of *Aprion virescens* larvae across Hawaiʻi Pae ʻĀina. **B)** Density (fish per 1000 m^3^) of *Aprion virescens* larvae plotted against Day of Year (DOY), indicating higher densities in October compared to August. **C)** histogram of standard length (mm) measurements. **D)** Larval density plotted against daily sea surface temperature (SST, °C). **E)** Larval density plotted against chlorophyll-α concentration (mg/m^3^).")
+```
+
+### Aʻu, Istiophoridae
+Billfish larvae were caught throughout Hawaiʻi Pae ’Āina, the furthest north aʻu larvae were found was 29.26 °N and the furthest south was 18.73°N (Figure 9A). Of the 22 stations where aʻu larvae were found, counts ranged from 1 to 8 larvae at a given station with a mean of 
+2.4 larvae per station. Of the management unit taxa considered in this study, Istiophoridae had the lowest abundances at any given station. The mean larval density was
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Istiophoridae")
+cat(m$mean_density)
+```
+fish per 1000 m^3^ seawater (range of
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Istiophoridae")
+cat(m$density_range)
+```
+fish per 1000 m^3^ seawater). The earliest an aʻu maneʻo was caught was in late July (July 24th, DOY 205), the latest in late October (Oct. 31st, DOY 304; mean DOY 
+```{r}
+cat(m$mean_doy)
+```
+;Figure 8B). The mean aʻu maneʻo length was
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Istiophoridae")
+cat(m$mean_length)
+```
+mm SL (range 1– 8mm SL; Figure 9C). The mean SST and  chlorophyll-α  where  aʻu maneʻo were collected were
+```{r}
+ m<-intext_df%>%filter(Taxa_Col=="Istiophoridae")
+cat(m$mean_sst)
+```
+°C  (Figure 9D) and 
+```{r}
+cat(m$mean_chla)
+```
+mg/m^3^ (Figure 9E), respectively.
+
+
+
+```{r fig-9, echo=F, results='asis', fig.cap="A five-panel scientific figure for Istiophoridae (Billfish) larvae.Panel A: A map showing distribution. Large red density markers are visible in the central region, indicating higher presence in the autumn.Panel B: A scatter plot of Density vs. Day of Year. There is a clear trend of increasing density starting in late October (Day 282) and peaking at the end of the sampling period.Panel C: A histogram of Standard Length (mm). The frequency peaks at small sizes (4-5 mm) and tapers off quickly.Panel D: A scatter plot of Density vs. SST (°C). The highest densities are found in waters warmer than 26.5°C.Panel E: A scatter plot of Density vs. Chlorophyll Concentration, showing a cluster of higher density points around 0.055 mg per cubic meter."}
+
+knitr::include_graphics("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Combined Figures/Istiophoridae_final_combined_plot.png")
+
+cat("**Figure 9** **A)** Map showing the spatial distribution and density (fish per 1000 m^3^) of fish of the family Istiophoridae larvae across Hawaiʻi Pae ʻĀina. **B)** Density (fish per 1000 m^3^) of the family Istiophoridae larvae plotted against Day of Year (DOY), indicating higher densities in October compared to August. **C)** histogram of standard length (mm) measurements. **D)** Larval density plotted against daily sea surface temperature (SST, °C). **E)** Larval density plotted against chlorophyll-α concentration (mg/m^3^)..")
+```
+
+# Discussion
+PIRIS aims to enhance understanding of larval fish populations across the Pacific Islands Region by mapping distributions and characterizing larval habitats across the U.S. Pacific Islands regularly visited by NOAA research vessels. This technical memorandum provides an overview of the distributions of selected fish taxa of management interest observed around Hawaiʻi Pae ʻĀina in 2023 and introduces a comprehensive larval fish dataset at various taxonomic resolutions for public use. These samples provide the first large-scale characterization of ichthyoplankton distributions across Hawaiʻi Pae ʻĀina, spanning gradients in sea surface temperature and chlorophyll-α concentration. These ichthyoplankton distributions further our understanding of spawning patterns across this domain. Possible age ranges are discussed for various taxa based on existing length-age research, but future work will confirm the age ranges of these fishes. 
+
+## Fish Taxa
+The following discussion details each taxon’s larval distribution. We acknowledge that these data represent a single, limited timeframe, but they contribute to the current understanding of spawning time and geographic windows by comparing our observations to published research on adult reproductive windows and previous larval occurrences in Hawaiʻi.
+
+### Mahimahi, Coryphaenidae, *Coryphaena spp.*
+The observed mahimahi occurrence window in this survey, with the highest densities in October, suggests that while *C. hippurus* cohorts spawned in July are traditionally suggested to be the most likely to survive to adulthood (Kraul 1999), this is not the only window in which mahimahi spawn around Hawaiʻi. Unlike other taxa discussed, the authors were not able to find publicly available cultural information regarding mahimahi specifically at the larval life stage. Larval mahimahi caught in this study ranged from 2–19 mm SL (Figure 3C). Based on previous research of larvae between 6 and 9 mm SL, which were estimated to be 5–13 days old (Bignami et al., 2014), some of the larvae in our study are likely within this 5 to 13 day age range. Future gut content and otolith analyses can reveal the specific ages and feeding behaviors of the mahimahi collected in this survey. The mean SST and chlorophyll-α where mahimahi were collected were 
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Coryphaena spp.") 
+cat(m$mean_sst)
+```
+ °C and 
+```{r}
+cat(m$mean_chla)
+```
+mg/m^3, respectively. These observations correspond well with research finding Hawaiʻi-caught captive mahimahi spawn in water temperatures from 19 °C to 31 °C (Stieglitz et al., 2017) and exhibit rapid embryonic development at temperatures greater than 25 °C (Ostrowski & Divakaran 1990). Although more data are necessary to better understand mahimahi larval distributions in relation to environmental conditions, the attempts at mahimahi aquaculture in the 1980s and 1990s provided significant environmental context for the ichthyoplankton sampling presented here.
+
+### Scombridae
+Overall, the SST and chlorophyll \u03B1 ranges where Scombrids were observed were similar for all taxa except for ono (*Acanthocybium solandri*), which occurred within a much more restricted range of these conditions.  
+
+#### Aku; *Katsuwonus pelamis*
+The observed aku occurrence window in this survey, with higher densities in October compared to August, suggests a potential expansion of the spawning window previously described for Hawaiʻi. Historically, adult females were presumed to mature eggs between March and September (Brock, 1953); however, our results align with more recent surveys, such as a study off the Kona coast that captured over 300 aku larvae in September (Paine et al., 2008), supporting the idea that spawning continues into the autumn. This biological timing corresponds with traditional Hawaiian fishing practices, where the kapu protecting spawning aku was lifted at the start of the Makahiki season, often in late October (Titcomb & Pukui, 1972; Pukui and Elbert, 1986). Larval aku in our study reached lengths of approximately 8–10 mm SL, which likely correspond to an age of at least 10–11 days post-hatch, suggesting these individuals originated from spawning events within the month of October (Ashida et al., 2018). The largest larvae in our study approached the size range reported for juveniles (11.4–54.8 mm SL) collected near Japan, and given that metamorphosis is reported to occur around 10 days post-hatch, our larger larvae were likely on the cusp of transformation. The mean SST and chlorophyll-α where aku were collected were 
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Katsuwonus pelamis") 
+cat(m$mean_sst) 
+```
+°C and
+```{r}
+cat(m$mean_chla) 
+```
+mg/m^3^, respectively. While specific environmental thresholds for these larvae are still being refined, these conditions represent the window in which active transformation into the juvenile stage occurs in the South Pacific (Tanabe, 2001).
+
+
+#### ʻAhi (yellowfin), ʻahi pālaha (albacore) and (putative) ʻahi poʻonui (bigeye), tunas ,*Thunnus spp.*
+The observed *Thunnus* spp. occurrence window in this survey, with higher densities in October compared to August or July, overlaps with the expected spawning windows for this genus. In parts of the Pacific Ocean north of 20°N, spawning primarily occurs from July through December (Schaefer, 1998). Our temporal results align with previous work off Kona in September 2004, where 392 ʻahi hune (*T. albacares*), 43 *T. alalunga*, and a single *T. obesus* larva were caught (Paine et al., 2008). Indeed, the *Thunnus* larvae we identified to species—ʻahi hune (*T. albacares*), ʻahi poʻonui (*T. obesus*), and ʻahi pālaha (*T. alalunga*)—had similar counts per station compared to the aforementioned study. *Thunnus* spp. larvae in our study ranged from 1–10 mm SL, with estimated ages between 1 to 21 days after hatch based on growth rate data for *T. albacares* from Okinawa, Japan (Kaji et al., 1999\) and the Mississippi River Delta, USA (Lang et al., 1994). Of note, larval growth rates differ between species; however, we were unable to locate species-specific information for ʻahi poʻonui or ʻahi pālaha, so future analyses should seek to incorporate these data as they become available. Throughout the study, sea surface temperatures indicated that conditions were consistently above the minimum thermal threshold (25°C) for spawning reported by Schaefer (1998), though slightly lower than the optimal range of 26 °C to 31 °C reported for *T. albacares* in the Panama Bight (Wexler et al., 2011).
+
+#### Ono, *Acanthocybium solandri*
+The observed ono occurrence window in this survey, with larvae captured most frequently in August and the highest density catch in October, aligns with research on adult specimens suggesting a spawning season that begins in June and extends through at least September (Uchiyama & Boggs, 2006). These observations are further supported by studies in the Western and Central Pacific Ocean, where mature-active adults were observed over a five-month period peaking in November (Gao et al., 2020). Our results also track with previous larval surveys; for instance, Paine et al. (2008) caught two ono larvae during the day offshore from Kona in late September. In the current study, ono were found at only 17 stations with relatively low absolute numbers. These relatively low densities—compared to some stations where over 200 aku were observed—perhaps reflect a similar pattern to that seen in adult ono, which unlike ʻahi, do not form large schools (Titcomb & Pukui, 1972). Larvae in this study ranged from 1–13 mm SL (Figure 6C) and size-at-age cannot be estimated as such data for ono larvae does not yet exist in the literature (Uchiyama & Boggs, 2006; Matsumoto, 1967; Strasburg, 1964).
+
+### Lutjanidae: Etelinae
+The observed eteline snapper occurrence window in this survey, with the highest densities in August and detections spanning from late July to late October, aligns with expected regional spawning peaks. If spawning periods for these taxa are similar to those of onaga (*Etelis coruscans*), spawning would begin in July and peak in October (Everson et al., 1989). This biological timing corresponds with traditional observations where deep-sea fishing was permitted during the winter months, a period when eteline snappers should be finished with their spawning (Titcomb & Pukui, 1972; Everson et al., 1989). In the larval stage, eteline snappers present identification challenges, making it difficult to morphologically distinguish between *Pristipomoides* and *Aphareus* genera (Leis and Lee, 1994). These genera represent a suite of culturally and commercially important species including lehi (*Aphareus* spp.), and ʻōpakapaka, gindai/ʻulaʻula, and kalekale (*Pristipomoides* spp.). The mean standard length of our larvae was 5.2 mm SL (range 2–13 mm SL), suggesting these fish are at the very start of their pelagic larval duration (PLD). Previous research highlights a potential for broad dispersal, with some species remaining pelagic until reaching at least 54 mm (Leis and Lee, 1994). PLD estimates vary significantly across the subfamily, ranging from approximately 40 days for *P. multidens* (Ovenden et al., 2004\) to as many as 60–180 days for *P. filamentosus* (Gaither et al., 2011; DeMartini et al., 1994). For comparison, other members of the subfamily such as *E. carbunculus* (ehu) and *E. coruscans* (onaga) remain pelagic until reaching at least 51 mm and 22 mm, respectively (Leis and Lee, 1994). 
+
+#### Uku, *Aprion virescens*
+The observed uku occurrence window in this survey, primarily in August, aligns with published spawning records for the species; adult uku spawn from May to October, with a peak in June (Everson et al., 1989). Unlike the other eteline species discussed, uku are morphologically distinguishable as larvae, occupy a broader habitat depth range during adulthood (Asher et al., 2017; Allen, 1985), and are more sought after as food fish (Titcomb 1972). Larval uku caught in this study ranged from 3–7 mm SL and are estimated to be less than a week old, based on previous research indicating that larvae 3–6 mm are in their first week of life (Schmidt et al., 2023). Previous records indicate that most uku larvae are caught within the upper 40 m, which largely overlaps with the depth range sampled (Schmidt et al., 2023). The highest density of uku larvae was observed near 26.5°C, consistent with the historical mean surface temperature of 26.41°C reported for larval uku catches (Schmidt et al., 2023). While the pelagic larval duration (PLD) for uku is unknown, a recent modeling study (Suca et al., 2025\) utilized a range of 27–45 days based on existing records for the PLD of other eteline snappers (Ovenden et al., 2004\) and the maximum age at which pelagic uku larvae have been found, after which point it is assumed they transform and settle out into their adult habitat (Schmidt et al., 2023).
+
+### Aʻu, Istiophoridae
+Overall, aʻu maneʻo (prickly aʻu), a newly developed name for larval istiophorids, were found at lower densities in this study than the other taxa reported here. These larvae represent several species identified in this region, including *Makaira nigricans*, *Tetrapturus angustirostris*, and *Kajikia audax* (Hyde et al., 2005; Hyde et al., 2006). Due to the difficulty in morphologically identifying billfish to species at these sizes, we present these data at the family level, though historical records highlight their cultural importance as *aʻu* (Titcomb & Pukui, 1972). Larval aʻu maneʻo in this study reached a mean length of 5.3 mm SL (range 1–8 mm SL).  Ages of a’u mane’o (*Makaira nigricans*, *Tetrapturus angustirostris*) caught near Cross Seamount have been estimated utilizing particle back tracking, these conference presented data suggest that our larvae are between just hatched and two weeks old (Musyl et al., 2024\) The relatively low densities observed may be a result of our "tow-yo" sampling method; historically, istiophorid sampling conducted by PIFSC has occurred strictly at the surface (e.g., Whitney et al., 2021; Humphreys, 2000), and while our method included surface sampling between intervals, it may have captured fewer individuals than tows conducted entirely at the surface. The mean SST and chlorophyll-α where *aʻu maneʻo* were collected were
+```{r}
+m<-intext_df%>%filter(Taxa_Col=="Istiophoridae") 
+cat(m$mean_sst)
+```
+ °C and 
+```{r}
+cat(m$mean_chla)
+```
+mg/m^3^, respectively. These temperatures are notably lower than those observed in surveys off the Gulf of California, where *K. audax* larvae catch was highest between 27.7 °C and 31.5 °C (Armas et al., 1999). Similar to *M. nigricans*, the temperatures where our highest larval densities were recorded remain lower than those typically reported for these taxa in other oceanic regions.
+
+## Larvae, ʻIke Hawaiʻi and the Environment
+The environmental conditions encountered during the survey provide a first-pass characterization of larval habitat space for focal management unit taxa. Observed ranges of SST and chlorophyll-α (Table 2) provide empirical bounds on the thermal and productivity environments where larvae were detected during this study period. All sampling was conducted during the season of Kau, specifically within the months of Hilinama and Ikuwa (Malo, 1898; Handy et al.,1972). The observation of higher productivity and distinct thermal boundaries in August aligns with traditional Hawaiian seasonal calendars, which categorize this period as the season of Kau, where currents are consistent and it is the peak season for aku fishing (Kahāʻulelio, 2006). The transition observed in October, where warmer waters moved northward, corresponds with the shift toward the rainy months, a period traditionally noted for 'zigzagging' currents and a shift in deep-sea fishing focus (Kahāʻulelio, 2006; Maly, 2003). Temperature and chlorophyll-α concentration were selected as primary environmental variables due to their roles in potentially explaining species ranges (Hsieh et al., 2009), growth rates (Stieglitz et al., 2017) and serving as proxies for ichthyoplankton prey availability (Woodworth-Jefcoats & Wren, 2020) respectively. Additionally, temperature acts as a detectable cue for adult spawning (Stieglitz et al., 2017; Schaefer, 1998). While these variables, along with sea surface height (SSH), can indicate the presence of eddies or other oceanographic features, the specific effects of such features were not analyzed in this product.
+
+## Summary and Next Steps
+The PIRIS effort underscores the value of collaborative research and ship time utilization across diverse primary research projects, providing a model for broad-scale, regular sampling efforts. This collaborative effort is exemplified by the biocultural lens applied to naming practices, such as "aʻu maneʻo" for larval Istiophoridae, which intentionally weaves Kānaka ʻŌiwi knowledge with Western science practices. This intentional co-design connects modern fisheries research to the effective, place-based management once enforced by konohiki, providing a more holistic and culturally informed path toward sustaining Hawaiʻi's fish stocks today. The resulting dataset not only supports existing regional studies but also expands current knowledge of the early life stages of commercially and ecologically important taxa. While preliminary length data has been reported here, the archived larvae offer further potential for age determination via their otoliths. Coupling this age data with dispersal modeling would allow for the back-calculation of larval trajectories, providing valuable insights into the timing and location of adult spawning events. The associated environmental conditions reported here, particularly sea surface temperature and chlorophyll-α, represent a first-pass characterization of larval habitat requirements for our focal management taxa in this region. 
+The observed ranges of these variables provide empirical bounds on thermal and productivity environments that can inform region-specific parameterization of larval species distribution models and related habitat-based analyses. Together, these results advance our understanding of spawning patterns across the domain and establish a foundation for future modeling and synthesis efforts. Ongoing research will delve deeper into the environmental drivers of larval distributions across broad geographic regions, examining how such factors as lunar phase can affect larval distributions and occurrences. For example, the Hoku and Māhealani, or full moons (Malo, 1898; Handy et al., 1972) have been associated with plankton staying deep as a predator avoidance strategy (Handy et al., 1972; Shima et al. 2022) and currents run shoreward pushing larval fish with them (Maly, 2003; Handy et al. 1972). Understanding these and other environmental drivers could better inform fisheries science, as oceanographic conditions are known to affect larval growth and survival (Fennie et al., 2023). Ongoing PIRIS surveys have evolved to include on-net instrumentation such as a FastCAT CTD which enables more precise and real-time measurements of sampling depth and oceanographic conditions. This work serves to introduce this significant dataset to the broader scientific community, paving the way for future comprehensive studies.
+
+
+# Data Availability
+Metadata for the HICEAS Ichthyoplankton Survey will be publicly available on NOAA's InPort website. The R code utilized for generating the environmental data plots and maps will be posted in a public repository named [HICEAS Ecosystem.](https://github.com/a-larval-schmidt/HICEAS_Ecosystem) on GitHub.
+
+Public data used for this from ERDAPP had the dataset IDʻs “noaacrwsstDaily” and “CRW_sst_v3_1_monthly” respectively. 
+
+# Literature Cited {.unnumbered}
+## Literature
+Allen GR. 1985 FAO Species Catalogue. Vol. 6 Snappers of the world. An annotated and illustrated catalogue of lutjanid species known to date. 207 p. FAO, Rome.
+
+Alegado, R., Hintzen, K. and Kahanamoku, S., 2023 Kūlana Noiʻi: Indigenous Data Stewardship in Hawaiʻi.
+
+Andrade, P., and K. Morishige. 2022 Huli ‘ia: Every place has a story … Let’s listen. Parks Steward. Forum 38(2). [https://doi.org/10.5070/P538257525](https://doi.org/10.5070/P538257525)
+
+Armas, R. G., O. Sosa-Nishizaki, R. F. RodrÍguez, and V. A. L. PÉrez. 1999 Confirmation of the spawning area of the striped marlin, *Tetrapturus audax*, in the so-called core area of the eastern tropical Pacific off Mexico. Fish. Oceanogr. 8:238–242. [https://doi.org/10.1046/j.1365-2419.1999.00102.x](https://doi.org/10.1046/j.1365-2419.1999.00102.x)
+
+Asher, J., I. D. Williams, and E. Harvey. 2017 An assessment of mobile predator populations along shallow and mesophotic depth gradients in the Hawaiian Archipelago. Sci. Rep. 7:3905. [https://doi.org/10.1038/s41598-017-03568-1](https://doi.org/10.1038/s41598-017-03568-1)
+
+Ashida, H., and M. Horie. 2015 Reproductive condition, spawning season, batch fecundity and spawning fraction of skipjack tuna *Katsuwonus pelamis* caught around Amami-Oshima, Kagoshima, Japan. Fish. Sci. 81(5):861–869. [https://doi.org/10.1007/s12562-015-0909-0](https://doi.org/10.1007/s12562-015-0909-0)
+
+Ashida, H., K. Watanabe, and T. Tanabe. 2018 Growth variability of juvenile skipjack tuna (*Katsuwonus pelamis*) in the western and central Pacific Ocean. Environ. Biol. Fishes 101:429–439. [https://doi.org/10.1007/s10641-017-0708-9](https://doi.org/10.1007/s10641-017-0708-9)
+
+Auth, T. D., and R. D. Brodeur. 2013 An overview of ichthyoplankton research in the northern California Current region: Contributions to ecosystem assessments and management. CalCOFI Rep. 54:107–126.
+
+Balcombe, S. R., J. S. Lobegeiger, S. M. Marshall, J. C. Marshall, D. Ly, and D. N. Jones. 2012 Fish body condition and recruitment success reflect antecedent flows in an Australian dryland river. Fish. Sci. 78(4):841–847. [https://doi.org/10.1007/s12562-012-0519-z](https://doi.org/10.1007/s12562-012-0519-z)
+
+Bignami, S., S. Sponaugle, and R. K. Cowen. 2014 Effects of ocean acidification on the larvae of a high-value pelagic fisheries species, mahi-mahi *Coryphaena hippurus*. Aquat. Biol. 21:249–260. [https://doi.org/10.3354/ab00598](https://doi.org/10.3354/ab00598)
+
+Boehlert, G. W., and B. C. Mundy. 1994 Vertical and onshore-offshore distributional patterns of tuna larvae in relation to physical habitat features. Mar. Ecol. Prog. Ser. 107(1/2):1–13.
+
+Boehlert, G. W., and B. C. Mundy. 1996 Ichthyoplankton vertical distributions near Oahu, Hawaii, 1985-1986: Data report. NOAA Tech. Memo. NMFS-SWFSC-235. U.S. Dep. Commer.
+
+Bradford, A. L., E. M. Oleson, and J. Barlow. 2017 Abundance estimates of cetaceans from a line-transect survey within the U.S. Hawaiian Islands Exclusive Economic Zone. NOAA Tech. Memo. NMFS-PIFSC-62.
+
+Brock, V. E. 1952 Some aspects of the biology of the aku, *Katsuwonus pelamis* in the Hawaiian Islands. Div. Fish Game, Board Agric. For., Honolulu, HI.
+
+Brodeur RD, Peterson WT, Auth TD, Soulen HL, Parnel MM, Emerson AA (2008) Abundance and diversity of coastal fish larvae as indicators of recent changes in ocean and climate conditions in the Oregon upwelling zone. Mar Ecol Prog Ser 366:187-202 https://doi.org/10.3354/meps07539
+
+Chang, H.-Y., K. McKown, and Y. Chen. 2023 A long-term ichthyoplankton monitoring program suggests climate-induced environmental variabilities changed fish communities in the Hudson River estuary. Front. Mar. Sci. 9 [https://doi.org/10.3389/fmars.2022.1077997](https://doi.org/10.3389/fmars.2022.1077997)
+
+Chen, K. S., C. M. Petrik, R. G. Asch, A. R. Thompson, and T. D. Auth. 2025 Continuing long-term shifts in larval fish phenology in the Southern California Current ecosystem are matched by rapid advances in the North. Glob. Chang. Biol. 31(3):e70141. [https://doi.org/10.1111/gcb.70141](https://www.google.com/search?q=https://doi.org/10.1111/gcb.70141)
+
+Contreras EA, Whitney JL, Suca JJ, Gove JM, Kobayashi DR, Mundy, BC.. 2023 Spatial and temporal distributions of larval \`Opelu and akule off West Hawaiʻi. U.S. Dept. of Commerce, NOAA Technical Memorandum NOAA-TM-NMFS-PIFSC-144, 27 p.  https://doi.org/10.25923/6bwx-ym18.
+
+Everson, A. R., H. A. Williams, and B. M. Ito. 1989 Maturation and reproduction in two Hawaiian eteline snappers, Uku, *Aprion virescens*, and Onaga, *Etelis coruscans*. Fish. Bull. 87(4):877–888.
+
+Fennie, H. W., N. Ben-Aderet, S. J. Bograd, G. T. Kwan, J. A. Santora, I. D. Schroeder, and A. R. Thompson. 2023 Momma’s larvae: Maternal oceanographic experience and larval size influence early survival of rockfishes. Fish. Oceanogr. [https://doi.org/10.1111/fog.12658](https://doi.org/10.1111/fog.12658)
+
+Fling, S. 2024 Hawai’i and the white house. White House Hist. Assoc. Available at\[ [https://www.whitehousehistory.org/hawaii-and-the-white-house](https://www.whitehousehistory.org/hawaii-and-the-white-house)\]; accessed 10 December 2025
+
+Friedl, W. A. 1971 The relative sampling performance of 6- and 10-foot Isaacs-Kidd midwater trawls. Fish. Bull. 69(2).
+
+Fujioka, K., Y. Aoki, Y. Tsuda, K. Okamoto, H. Tsuchida, A. Sasaki, and H. Kiyofuji. 2024 Influence of temperature on hatching success of skipjack tuna (*Katsuwonus pelamis*): Implications for spawning availability of warm habitats. J. Fish Biol. 105(1):372–377.
+
+Gao, C., S. Tian, R. Kindong, and X. Dai. 2020 Biology and environmental preferences of wahoo, *Acanthocybium solandri* (Cuvier, 1832), in the Western and Central Pacific Ocean (WCPO). J. Mar. Sci. Eng. 8(3):184. [https://doi.org/10.3390/jmse8030184](https://doi.org/10.3390/jmse8030184)
+
+Habtes, S., F. E. Muller-Karger, M. A. Roffer, J. T. Lamkin, and B. A. Muhling. 2014 A comparison of sampling methods for larvae of medium and large epipelagic fish species during spring SEAMAP ichthyoplankton surveys in the Gulf of Mexico. Limnol. Oceanogr. Methods 12(2):86–101.
+
+Handy, E. S. C., and M. K. Pukui. 1998 *The Polynesian family system in Ka-ʻU, Hawaiʻi*. Mutual Publ., Honolulu, HI.
+
+Handy, E. S. C., Handy, E. G., & Pukui, M. K. (1972). Native planters in old Hawaii: Their life, lore, and environment (Bulletin 233). Bishop Museum Press.
+
+Hsieh, C.-H., Kim, H. J., Watson, W., Di Lorenzo, E., & Sugihara, G. (2009). Climate-driven changes in abundance and distribution of larvae of oceanic fishes in the southern California region. Global Change Biology, 15(9), 2137–2152. https://doi.org/10.1111/j.1365-2486.2009.01875.x
+
+Huang, D., J. Chen, L. Xu, X. Wang, J. Ning, Y. Li, et al. 2022 Larval fish assemblages and distribution patterns in the Zhongsha Atoll (Macclesfield Bank, South China Sea). Front. Mar. Sci. 8 [https://doi.org/10.3389/fmars.2021.787765](https://www.google.com/search?q=https://doi.org/10.3389/fmars.2021.787765)
+
+Humphreys, R. L., Jr. 2000 Cruise report: Townsend Cromwell, Cruise 99-11 (TC-249). NMFS Southwest Fish. Sci. Cent., Honolulu Lab.
+
+Hyde, J. R., R. Humphreys, Jr., M. Musyl, E. Lynn, and R. Vetter. 2006 A central north Pacific spawning ground for striped marlin, *Tetrapturus audax*. Bull. Mar. Sci. 79(3):683–690.
+
+Hyde, J. R., E. Lynn, R. Humphreys, Jr., M. Musyl, A. P. West, and R. Vetter. 2005 Shipboard identification of fish eggs and larvae by multiplex PCR, and description of fertilized eggs of blue marlin, shortbill spearfish, and wahoo. Mar. Ecol. Prog. Ser. 286:269–277.
+
+Joseph, J. 1963 Fecundity of yellowfin tuna (*Thunnus albacares*) and skipjack (*Katsuwonus pelamis*) from the eastern Pacific Ocean. Inter-Am. Trop. Tuna Comm. Bull. 7(4).
+
+Kahāʻulelio, D. (2006). KaʻOihana Lawaiʻa: Hawaiian Fishing Traditions (M. K. Pukui, Trans.; M. P. Nogelmeier, Ed.). Bishop Museum Press; Awaiaulu Press.
+
+Kaji, T., M. Tanaka, M. Oka, H. Takeuchi, S. Ohsumi, K. Teruya, and J. Hirokawa. 1999 Growth and morphological development of laboratory-reared yellowfin tuna *Thunnus albacares* larvae and early juveniles, with special emphasis on the digestive system. Fish. Sci. 65(5):700–707.
+
+Kanakaʻole, E. 2017 E hō mai. In *Nā oli no ka ’āina o Kanaka’ole (The chants for the Kanaka’ole lands): A compilation of oli and cultural practices* (P. K. Kanahele, H. Kanahele-Mossman, N. Kanaka’ole, K. Kanaka’ole, K. Kealiʻikanaka’oleohaililani, K. K. Mossman, K. Mossman, T. Tangarō, and R. Stewart, eds.), p. 2 Edith Kanaka’ole Foundation.
+
+Kauhi, B. E. 1996 *He mo’olelo no Kapa’ahu-Story of Kapa’ahu*. Pili Productions.
+
+Kealiikanakaoleohaililani, K., N. Kurashima, K. S. Francisco, C. P. Giardina, R. P. Louis, H. McMillen, C. K. Asing, K. Asing, T. A. Block, M. Browning, K. Camara, L. Camara, M. L. Dudley, M. Frazier, N. Gomes, A. E. Gordon, M. Gordon, L. Heu, A. Irvine, … and D. Yogi. 2018 Ritual \+ sustainability science? A portal into the science of aloha. Sustainability 10(10):3478. [https://doi.org/10.3390/su10103478](https://doi.org/10.3390/su10103478)
+
+Kendall, A. W., Jr., E. H. Ahlstrom, and H. G. Moser. 1984 Early life history stages of fishes and their characters. In *Ontogeny and systematics of fishes: Based on an international symposium dedicated to the memory of Elbert Halvor Ahlstrom* (H. G. Moser, W. J. Richards, D. M. Cohen, M. P. Fahay, A. W. Kendall, Jr., and S. L. Richardson, eds.), p. 11–22. Spec. Publ. No. 1 Am. Soc. Ichthyol. Herpetol.
+
+Kelly, H. L. 1931 The fish situation in Hawaii. In Hawaiian almanac and annual for 1931, p.39-46. Black & Auld, Printers, Honolulu, HI. [https://evols.library.manoa.hawaii.edu/server/api/core/bitstreams/978d7792-3f2e-44a5-a26e-95822c9272f1/content](https://evols.library.manoa.hawaii.edu/server/api/core/bitstreams/978d7792-3f2e-44a5-a26e-95822c9272f1/content)
+
+Kikiloi, K., A. M. Friedlander, A. Wilhelm, N. Lewis, K. Quiocho, W. ʻĀila, and S. Kahoʻohalahala. 2017 Papahānaumokuākea: Integrating culture in the design and management of one of the world’s largest marine protected areas. Coast. Manag. 45(6):436–451. [https://doi.org/10.1080/08920753.2017.1373450](https://doi.org/10.1080/08920753.2017.1373450)
+
+Kobayashi, D. R. 1989 Fine-scale distribution of larval fishes: patterns and processes adjacent to coral reefs in Kaneohe Bay, Hawaii. Mar. Biol. 100(3):285-293.
+
+Kosaki, R. H. 1954 Konohiki fishing rights. Rep. No. 1 Legis. Ref. Bur., Univ. Hawaii, Honolulu, HI. 57 p. [https://lrb.hawaii.gov/wp-content/uploads/1954\_KonohikiFishingRights.pdf](https://lrb.hawaii.gov/wp-content/uploads/1954_KonohikiFishingRights.pdf)
+
+Kohno, H., M. Shimizu, and Y. Nose. 1985 Geographic variation of the larval skipjack tuna, *Katsuwonus pelamis* (Linnaeus), from the Pacific Ocean. Bull. Far Seas Fish. Res. Lab. No. 22
+
+Kraul, S. 1980 Review and current status of the aquaculture potential for the mahimahi, *Coryphaena hippurus*. In *Advances in Tropical Aquaculture*, p. 445-459. IFREMER.
+
+Kraul, S. 1999 Seasonal abundance of the dolphinfish, *Coryphaena hippurus*, in Hawaii and the tropical Pacific Ocean. Sci. Mar. 63(3-4):261-266.
+
+Laimana, J. 2007 Living without kuleana. *Hūlili* 4(1):35-58.
+
+Lang, K. L., C. B. Grimes, and R. F. Shaw. 1994 Variations in the age and growth of yellowfin tuna larvae, *Thunnus albacares*, collected about the Mississippi River plume. Environ. Biol. Fishes 39:259–270. [https://doi.org/10.1007/BF00005128](https://doi.org/10.1007/BF00005128)
+
+Lee, C.-S., and L. Krishnan. 1985 Influences of calcium and magnesium ions on embryo survival, percentage hatching and larval survival of dolphin fish *Coryphaena hippurus* L. J. World Maric. Soc. 16:95-100. [https://doi.org/10.1111/j.1749-7345.1985.tb00191.x](https://doi.org/10.1111/j.1749-7345.1985.tb00191.x)
+
+Leis, J. M., and K. Lee. 1994 Larval development in the lutjanid subfamily Etelinae (Pisces): The genera *Aphareus*, *Aprion*, *Etelis* and *Pristipomoides*. Bull. Mar. Sci. 55(1):46–125.
+
+Leong, K. M., K. Quiocho, A. Blacklow, S. Rosa, D. Kleiber, K. B. Winter, K. S. Long, N. Puniwai, and M. R. Poe. 2024 Relational research to elevate cultural dimensions of marine organisms in Hawaiʻi. Ecol. Soc. 29(4):30. [https://doi.org/10.5751/ES-15573-290430](https://doi.org/10.5751/ES-15573-290430)
+
+Lindo-Atichati, D., Jia, Y., Wren, J. L. K., Antoniades, A., & Kobayashi, D. R. (2020). Eddies in the Hawaiian Archipelago Region: Formation, Characterization, and Potential Implications on Larval Retention of Reef Fish. *Journal of Geophysical Research: Oceans*, *125*(5), e2019JC015348. [https://doi.org/10.1029/2019JC015348](https://doi.org/10.1029/2019JC015348)
+
+Llopiz, J. K., and R. K. Cowen. 2008 Precocious, selective and successful feeding of larval billfishes in the oceanic Straits of Florida. Mar. Ecol. Prog. Ser. 358:231–244. [https://doi.org/10.3354/meps07320](https://doi.org/10.3354/meps07320)
+
+Lucas, P. F. N. 1995 A dictionary of Hawaiian legal land-terms, 177 p. Native Hawaiian Legal Corp., Honolulu, HI. Used page 57; Accessed December 10 2025 
+
+Lyczkowski-Shultz, J., D. S. Hanisko, K. J. Sulak, and G. D. Dennis III. 2004 Characterization of ichthyoplankton within the U.S. Geological Survey’s Northeastern Gulf of Mexico study area \- based on analysis of Southeast Area Monitoring and Assessment Program (SEAMAP) sampling surveys, 1982-1999. Sci. Investig. Rep. 2004-5059. U.S. Geol. Surv. [https://doi.org/10.3133/sir20045059](https://doi.org/10.3133/sir20045059)
+
+Malo, D. (1898). Hawaiian antiquities (Moolelo Hawaii) (N. B. Emerson, Trans.; Special Publication 2). Bishop Museum Press.
+
+Maly, K. 2003a. *A history of fishing practices and marine fisheries of the Hawaiian Islands (Ka hana lawaiʻa a me nā koʻa o na kai ʻewalu)*. Kumu Pono Associates, Hilo, HI. Pages 253-498
+
+Marshall, K. N., J. T. Duffy-Anderson, E. J. Ward, S. C. Anderson, M. E. Hunsicker, and B. C. Williams. 2019 Long-term trends in ichthyoplankton assemblage structure, biodiversity, and synchrony in the Gulf of Alaska and their relationships to climate. Prog. Oceanogr. 170:134-145. [https://doi.org/10.1016/j.pocean.2018.11.002](https://doi.org/10.1016/j.pocean.2018.11.002)
+
+Matsumoto, W. M. 1957 Morphology and distribution of larval wahoo *Acanthocybium solandri* (Cuvier) in the central Pacific Ocean. Fish. Bull. 66(2).
+
+Moffat, R. M., and G. L. Fitzpatrick. 1995 Surveying and the private ownership of land. In *Surveying the mahele: Mapping the Hawaiian land revolution* (R. M. Moffat and G. L. Fitzpatrick, eds.), p.33-40. Editions Ltd., Honolulu, HI.
+
+Moffitt, R. B., and F. A. Parrish. 1996 Habitat and life history of juvenile Hawaiian pink snapper, *Pristipomoides filamentosus*. Pac. Sci. 50(4):371-381.
+
+Morishige, K., P. Andrade, P. Pascua, K. Steward, E. Cadiz, L. Kapono, and U. Chong. 2018 Nā Kilo ʻĀina: Visions of biocultural restoration through indigenous relationships between people and place. Sustainability 10(10):3368. [https://doi.org/10.3390/su10103368](https://doi.org/10.3390/su10103368)
+
+Morse, R. E., K. D. Friedland, D. Tommasi, C. Stock, and J. A. Nye. 2017 Distinct zooplankton regime shift patterns across ecoregions of the U.S. Northeast continental shelf Large Marine Ecosystem. J. Mar. Syst. 165:77–91. [https://doi.org/10.1016/j.jmarsys.2016.09.011](https://doi.org/10.1016/j.jmarsys.2016.09.011)
+
+Musyl, M., McNaughton, L., & Kramer, R. (2024, October 10). Systematic review and meta-analysis of larval istiophorid distribution patterns in the Pacific Ocean with relevance for management \[Conference presentation\]. 7th International Billfish Symposium: Advancing Science and Management of Billfish in a Changing Ecosystem, San Diego, CA, United States.
+
+Newman, S. J., A. J. Williams, C. B. Wakefield, S. J. Nicol, B. M. Taylor, and J. M. O’Malley. 2016 Review of the life history characteristics, ecology and fisheries for deep-water tropical demersal fish in the Indo-Pacific region. Rev. Fish Biol. Fish. 26(3):537-562. [https://doi.org/10.1007/s11160-016-9442-1](https://doi.org/10.1007/s11160-016-9442-1)
+
+Office of Hawaiian Affairs, National Oceanic and Atmospheric Administration, U.S. Fish and Wildlife Service, and State of Hawaiʻi. 2021 Mai ka pō mai: A Native Hawaiian guidance document for Papahānaumokuākea Marine National Monument. Honolulu, HI.
+
+Orio, A. 2019 Understanding the spatiotemporal dynamics of demersal fish species in the Baltic Sea. Report No. 2019:7.
+
+Ostrowski, A. C., and S. Divakaran. 1991 Energy substrates for eggs and prefeeding larvae of the dolphin *Coryphaena hippurus*. Mar. Biol. 109:149–155. [https://doi.org/10.1007/BF01320242](https://doi.org/10.1007/BF01320242)
+
+Paine, M. A., J. R. McDowell, and J. E. Graves. 2008 Specific identification using COI sequence analysis of scombrid larvae collected off the Kona coast of Hawaii Island. Ichthyol. Res. 55:7–16. [https://doi.org/10.1007/s10228-007-0003-4](https://doi.org/10.1007/s10228-007-0003-4)
+
+Panprommin, D., N. Iamchuen, K. Soontornprasit, and S. Tuncharoen. 2020 The utility of DNA barcoding for the species identification of larval fish in the lower Ing River, Thailand. Turk. J. Fish. Aquat. Sci. 20:671–679. doi: 10.4194/1303-2712-v20\_9\_02
+
+Panprommin, D., K. Soontornprasit, S. Tuncharoen, and N. Iamchuen. 2021 Efficacy of DNA barcoding for the identification of larval fish species in the Upper and Middle Ing River, Thailand. Gene Rep. 23:101057. https://doi: 10.1016/j.genrep.2021.101057
+
+Pihana, H., and J. H. Lorenzo-Elarco. 2022 HĀNAU KA PALIHOA, LELE: The story, genealogy, and process of the Papahānaumokuākea Marine National Monument Native Hawaiian Cultural Working Group Nomenclature Subcommittee. Parks Steward. Forum 38(2):325–341. [https://doi.org/10.5070/P538257527](https://doi.org/10.5070/P538257527)
+
+Poepoe, K., Springer, S.K., Luccioni, M.D., Goo, N., Lind, P., Kawelo, H., Mae-Huihui, W., Kaupu, L., Gregg, M., Alapai, K. and Alapai-Hashimoto, K., 2025 Co-creating intergenerational knowledge about Hawaiian moi (Polydactylus sexfilis) reproductive cycles in a changing climate. *Proceedings B*, *292*(2061), p.20252028.
+
+Poloczanska, E. S., M. T. Burrows, C. J. Brown, J. García Molinos, B. S. Halpern, O. Hoegh-Guldberg, K. V. Kappel, P. J. Moore, A. J. Richardson, D. S. Schoeman, and W. J. Sydeman. 2016 Responses of marine organisms to climate change across oceans. Front. Mar. Sci. 3:62.
+
+Public Law 103-150. 1993 Joint resolution to acknowledge the 100th anniversary of the January 17, 1893 overthrow of the Kingdom of Hawaii, and to offer an apology to Native Hawaiians on behalf of the United States for the overthrow of the Kingdom of Hawaii. Stat. 107:1510.
+
+Pukui, M. K., and S. H. Elbert. 1986 *Hawaiian Dictionary*. University of Hawaiʻi Press, Honolulu, HI.
+
+Schaefer, K. M. 1998 Reproductive biology of yellowfin tuna (*Thunnus albacares*) in the eastern Pacific Ocean. Inter-Am. Trop. Tuna Comm. Bull. 21(5).
+
+Schilling, H. T., J. D. Everett, J. A. Smith, J. Stewart, J. M. Hughes, M. Roughan, … and I. M. Suthers. 2020 Multiple spawning events promote increased larval dispersal of a predatory fish in a western boundary current. Fish. Oceanogr. 29(4):309-323.
+
+Schlenker, L. S., R. Faillettaz, J. D. Stieglitz, C. H. Lam, R. H. Hoenig, G. K. Cox, R. M. Heuer, C. Pasparakis, D. D. Benetti, C. B. Paris, and M. Grosell. 2021 Remote predictions of mahi-mahi (*Coryphaena hippurus*) spawning in the open ocean using summarized accelerometry data. Front. Mar. Sci. 8 [https://doi.org/10.3389/fmars.2021.626082](https://doi.org/10.3389/fmars.2021.626082)
+
+Schmidt, A. L., J. L. Whitney, J. Suca, and K. R. Tanaka. 2023 Larval ecology of Uku (*Aprion virescens*) in the Main Hawaiian Islands: a review from historical data.
+
+Southeast Fisheries Science Center. 2022 SEAMAP ichthoplankton databases provided to NRDA data set (DS). InPort.
+
+Sepulveda, C. A., S. A. Aalbers, S. Ortega-Garcia, et al. 2011 Depth distribution and temperature preferences of wahoo (*Acanthocybium solandri*) off Baja California Sur, Mexico. Mar. Biol. 158:917–926. [https://doi.org/10.1007/s00227-010-1618-y](https://doi.org/10.1007/s00227-010-1618-y)
+
+Serafy, J., R. K. Cowen, C. B. Paris, T. R. Capo, and S. A. Luthy. 2003 Evidence of blue marlin *Makaira nigricans* spawning in the vicinity of Exuma Sound, Bahamas. Mar. Freshw. Res. 54:299–306.
+
+Shima, J. S., Osenberg, C. W., Noonburg, E. G., Alonzo, S. H., & Swearer, S. E. (2021). Lunar phases modulate density dependence and regulate maritime population of a coral reef fish. Proceedings of the Royal Society B: Biological Sciences, 288(1942), 20202609 https://doi.org/10.1098/rspb.2020.2609
+
+Simms, J. R., J. R. Rooker, S. A. Holt, G. J. Holt, and J. Bangma. 2010 Distribution, growth, and mortality of sailfish (*Istiophorus platypterus*) larvae in the northern Gulf of Mexico. Fish. Bull. 108:478–490.
+
+Smith, K. A., Whitney, J. L., McManus, M. A., Lecky, J., Copeland, A., Kobayashi, D. R., & Gove, J. M. (2021). Physical mechanisms driving biological accumulation in surface lines on coastal Hawaiian waters. Continental Shelf Research, 230, Article 104558 [https://doi.org/10.1016/j.csr.2021.104558](https://doi.org/10.1016/j.csr.2021.104558)	
+
+Sponaugle, S., K. L. Denit, S. A. Luthy, J. E. Serafy, and R. K. Cowen. 2005 Growth variation in larval *Makaira nigricans*. J. Fish Biol. 66(3):822–835. [https://doi.org/10.1111/j.0022-1112.2005.00657.x](https://doi.org/10.1111/j.0022-1112.2005.00657.x)
+
+Stieglitz, J. D., M. Grosell, and D. D. Benetti. 2017 Capture, transport, prophylaxis, acclimation, and continuous spawning of Mahi-mahi (*Coryphaena hippurus*) in captivity. Aquaculture 479:1–6. [https://doi.org/10.1016/j.aquaculture.2017.05.006](https://doi.org/10.1016/j.aquaculture.2017.05.006)
+
+Strasburg, D. W. (1964). Postlarval scombroid fishes of the genera Acanthocybium, Nealotus, and Diplospinus from the central Pacific Ocean. Pacific Science, 18(2), 174-185
+
+Suca, J. J., J. L. K. Wren, G. N. M. Mukai, D. R. Kobayashi, K. R. Tanaka, A. L. Schmidt, J. L. Whitney, and R. R. Rykaczewski. 2025 The role of wind on the simulated dispersal and recruitment of a commercially important Hawaiʻi bottomfish. Fish. Oceanogr. [https://doi.org/10.1111/fog.12725](https://doi.org/10.1111/fog.12725)
+
+Tanabe, T. 2001 Feeding habits of skipjack tuna *Katsuwonus pelamis* and other tuna *Thunnus* spp. juveniles in the tropical western Pacific. Fish. Sci. 67:563–570.
+
+Theisen, T. C., B. W. Bowen, W. Lanier, and J. D. Baldwin. 2008 High connectivity on a global scale in the pelagic wahoo, *Acanthocybium solandri* (tuna family Scombridae). Mol. Ecol. 17(18):4233–4247. [https://doi.org/10.1111/j.1365-294X.2008.03913.x](https://doi.org/10.1111/j.1365-294X.2008.03913.x)
+
+Titcomb, C. H., A. Y. Dillard, and G. G. Maskarinec. 2019 I ulu nō ka lālā i ke kumu: A descriptive study of child-rearing traditions recalled by Native Hawaiian elders. Hūlili 11(2):151-202\]
+
+Titcomb, M., and M. K. Pukui. 1972 *Native use of fish in Hawaii*, 2nd ed. University of Hawaiʻi Press, Honolulu, HI.
+
+Thompson, P. L., T. J. Davies, and A. Gonzalez. 2015 Ecosystem functions across trophic levels are linked to functional and phylogenetic diversity. PLOS ONE 10(2):e0117595.
+
+Tzanatos, E., D. E. Raitsos, G. Triantafyllou, S. Somarakis, and A. A. Tsonis. 2014 Indications of a climate effect on Mediterranean fisheries. Clim. Change 122(1):41-54.
+
+Uchiyama, J. H., and C. H. Boggs. 2006 Length-weight relationships of dolphinfish, *Coryphaena hippurus*, and wahoo, *Acanthocybium solandri*: Seasonal effects of spawning and possible migration in the central North Pacific. Mar. Fish. Rev. 68(1–4).
+
+Vave, R., N. Heck, S. Narayan, S. Carrizales, D. Kenison, and A. Paytan. 2024 Impacts of commercial and subsistence fishing on marine and cultural ecosystem services important to the wellbeing of an Indigenous community in Hawai’i. Ecosyst. Serv. 69:101661. [https://doi.org/10.1016/j.ecoser.2024.101661](https://doi.org/10.1016/j.ecoser.2024.101661)
+
+Walsh, H. J., D. E. Richardson, K. E. Marancik, and J. A. Hare. 2015 Long-term changes in the distributions of larval and adult fish in the Northeast U.S. Shelf Ecosystem. PLOS ONE 10(9):e0137382. [https://doi.org/10.1371/journal.pone.0137382](https://doi.org/10.1371/journal.pone.0137382)
+
+Wang, J., X. Chen, K. W. Staples, and Y. Chen. 2018 The skipjack tuna fishery in the west-central Pacific Ocean: Applying neural networks to detect habitat preferences. Fish. Sci. 84(2):309-321. [https://doi.org/10.1007/s12562-017-1161-6](https://doi.org/10.1007/s12562-017-1161-6)
+
+Wang, S. P., N. C. H. Lo, and J. K. T. Brodziak. 2013 Possible stock structure of dolphinfish (*Coryphaena hippurus*) in Taiwan coastal waters and globally based on reviews of growth parameters. Fish. Res. 147:127–136. [https://doi.org/10.1016/j.fishres.2013.05.003](https://doi.org/10.1016/j.fishres.2013.05.003)
+
+Wexler, J. B., D. Margulies, and V. P. Scholey. 2011 Temperature and dissolved oxygen requirements for survival of yellowfin tuna, *Thunnus albacares*, larvae. J. Exp. Mar. Biol. Ecol. 404(1–2):63–72.
+
+Whitney, J. L., J. M. Gove, M. A. McManus, et al. 2021 Surface slicks are pelagic nurseries for diverse ocean fauna. Sci. Rep. 11:3197. [https://doi.org/10.1038/s41598-021-81407-0](https://doi.org/10.1038/s41598-021-81407-0)
+
+Winter, K. B., Y. M. Rii, F. A. W. L. Reppun, K. DeLaforgue Hintzen, R. A. Alegado, B. W. Bowen, L. L. Bremer, M. Coffman, J. L. Deenik, M. J. Donahue, K. A. Falinski, K. Frank, E. C. Franklin, N. Kurashima, N. Kekuewa Lincoln, E. M. P. Madin, M. A. McManus, C. E. Nelson, R. Okano, A. Olegario, P. Pascua, K. L. L. Oleson, M. R. Price, M. J. Rivera, K. S. Rodgers, T. Ticktin, C. L. Sabine, C. M. Smith, A. Hewett, R. Kaluhiwa, M. Cypher, B. Thomas, J.-A. Leong, K. Kekuewa, J. Tanimoto, K. Kukea-Shultz, A. Kawelo, K. Kotubetey, B. J. Neilson, T. S. Lee, and R. J. Toonen. 2020 Collaborative research to inform adaptive comanagement: a framework for the Heʻeia National Estuarine Research Reserve. Ecol. Soc. 25(4):15. [https://doi.org/10.5751/ES-11895-250415](https://doi.org/10.5751/ES-11895-250415)
+
+Woodworth-Jefcoats, P. A., & Wren, J. L. K. (2020). Toward an environmental predictor of tuna recruitment. Fisheries Oceanography, 29(5), 436–441. [https://doi.org/10.1111/fog.12487](https://doi.org/10.1111/fog.12487)
+
+Wren, J. L. K., and D. R. Kobayashi. 2016 Exploration of the “larval pool”: development and ground-truthing of a larval transport model off leeward Hawaiʻi. PeerJ 4:e1636. [https://doi.org/10.7717/peerj.1636](https://doi.org/10.7717/peerj.1636)
+
+Wren, J. L. K., Kobayashi, D. R., Jia, Y., & Toonen, R. J. (2016). Modeled population connectivity across the Hawaiian Archipelago. *PLoS ONE, 11*(12), e0167626. [https://doi.org/10.1371/journal.pone.0167626](https://doi.org/10.1371/journal.pone.0167626)
+
+Wyban, C. A. 1992 *Tide and current: Fishponds of Hawaiʻi*. University of Hawaiʻi Press, Honolulu, HI.
+
+Yano, K. M., E. M. Oleson, A. L. Bradford, J. L. K. McCullough, M. C. Hill, A.L. Bradford, T.W. Joyce, J. J. Suca, J. L. Whitney, A.E. Henry. 2025 Cetacean and seabird data collected during the Hawaiian Islands Cetacean and Ecosystem Assessment Survey (HICEAS), July–December 2023 NOAA Tech. Memo. NMFS-PIFSC. [https://doi.org/10.25923/wmrn-8s61](https://doi.org/10.25923/wmrn-8s61)
+
+Yuen, H. S. H. 1955 Maturity and fecundity of bigeye tuna in the Pacific. Spec. Sci. Rep. Fish. 150 U.S. Fish Wildl. Serv.
+
+Zischke, M. T., and S. P. Griffiths. 2015 Per-recruit stock assessment of wahoo (*Acanthocybium solandri*) in the southwest Pacific Ocean. Fish. Bull. 113(4):407–418. [https://doi.org/10.7755/FB.113.4.4](https://doi.org/10.7755/FB.113.4.4)
+## Software
+Boettiger, C., Chamberlain, S., & Hart, T. (2024). *rerddap: General interface to ‘ERDDAP’ data servers* (Version 1.1.0). [https://CRAN.R-project.org/package=rerddap](https://CRAN.R-project.org/package=rerddap)
+
+Hahsler, M., Hornik, K., & Buchta, C. (2022). *TSP: Traveling salesperson problem (TSP)* (Version 1.2-2). [https://CRAN.R-project.org/package=TSP](https://CRAN.R-project.org/package=TSP)
+
+Mendelssohn, R. (2024). *rerddapXtracto: Extracts ‘environmental’ data from ‘ERDDAP’ web services* (Version 1.2.0). [https://CRAN.R-project.org/package=rerddapXtracto](https://CRAN.R-project.org/package=rerddapXtracto)
+
+Massicotte, P., & Pante, E. (2023). *marmap: Import, plot and analyze bathymetric and oceanographic data* (Version 1.0.10). [https://CRAN.R-project.org/package=marmap](https://CRAN.R-project.org/package=marmap)
+
+Massicotte, P., & South, A. (2023). *rnaturalearth: World map data from Natural Earth* (Version 1.0.1). [https://CRAN.R-project.org/package=rnaturalearth](https://CRAN.R-project.org/package=rnaturalearth)
+
+Samhouri, J. F., & Woodman, S. M. (2023). *swfscDAS: Southwest Fisheries Science Center survey data analysis system* (Version 0.6.0). [https://CRAN.R-project.org/package=swfscDAS](https://CRAN.R-project.org/package=swfscDAS)
+
+Wickham, H., Averick, M., Bryan, J., Chang, W., McGowan, L. D., François, R., Grolemund, G., Hayes, A., Henry, L., Hester, J., Kuhn, M., Pedersen, T. L., Miller, E., Bache, S. M., Müller, K., Cook, I., Ritchie, G., Stoudt, J., Cheng, H., … Yutani, H. (2019). Welcome to the tidyverse. *Journal of Open Source Software*, *4*(43), 1686 [https://doi.org/10.21105/joss.01686](https://doi.org/10.21105/joss.01686)
+
+Xie, Y. (2023). *knitr: A general-purpose package for dynamic report generation in R* (Version 1.45). [https://yihui.org/knitr/](https://yihui.org/knitr/)
+---
+# Appendix
+
+## Flowmeter formula
+
+ ((difference in counts\* rotor constant)/999999)\*area of net opening, where rotor constant for Flowmeter manufacturer was given as 26873
+ 
+## Previous ichtyoplankton survey efforts between 1984 and 2018
+
+```{r echo=F, results='asis',fig.cap="A map of Hawai'i Pae 'Aina including the area of Papahanaumokuakea National Marine Sanctuary. All of the survey efforts are represented by dots and these are clustered solely around the Main Hawaiian Islands which the highest concentration of points along the Kona Coast of Hawai'i Island."}
+knitr::include_graphics("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/appendix1_samplingdist_prepiris.png")
+
+cat("**figure Appendix 1**:Previous ichtyoplankton survey efforts between 1984 and 2018 as conducted by PIFSC/ the Honolulu Lab of the SWFSC.")
+```
+## Non-MUS Fish
+Reef fish of the families Mullidae, Acanthuridae and Labridae: Tribe Scarini were identified to the lowest taxonomic level possible but not measured. All other reef fish taxa were grouped together as “miscellaneous reef fish”, and non-target, non-reef taxa were grouped together as “miscellaneous fish”. For samples with large numbers (500+) of *Encrascholina punctifer,* henceforth referred to as nehu (oceanic), all other taxa were treated normally while only a quantitative split of the whole sample had nehu tabulated.
+
+## Nonfish Distrubutions
+
+
+```{r echo=F, results='asis', fig.cap=" Maps showing the spatial distribution (presence/absence) of four non-fish taxa. These are Halobates Phyllosomes, PHysalia and Cephalopods. The distribution of presence is nearly uniform for all except the Physalia which were mostly recorded on the northern side of the islands."}
+
+knitr::include_graphics("A:/My Drive/crusies/HICEAS_23/Ichthyoplankton Projects/Ichthyoplankton Projects/Map Figures/nonfish.png")
+
+cat("n/n/**Figure Appendix 2: Maps showing the spatial distribution (presence/absence) of four non-fish taxa.")
+```
